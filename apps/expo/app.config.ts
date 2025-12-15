@@ -17,17 +17,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     bundleIdentifier: "com.directedbyshawn.rubyapp",
     supportsTablet: true,
-    icon: {
-      light: "./assets/icon-light.png",
-      dark: "./assets/icon-dark.png",
-    },
+    icon: "./assets/ruby.icon",
   },
   android: {
     package: "com.directedbyshawn.rubyapp",
-    adaptiveIcon: {
-      foregroundImage: "./assets/icon-light.png",
-      backgroundColor: "#1F104A",
-    },
     edgeToEdgeEnabled: true,
   },
   extra: {
@@ -49,10 +42,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-splash-screen",
       {
         backgroundColor: "#E4E4E7",
-        image: "./assets/icon-light.png",
+        image: "./assets/ruby.icon",
         dark: {
           backgroundColor: "#18181B",
-          image: "./assets/icon-dark.png",
+          image: "./assets/ruby.icon",
         },
       },
     ],
