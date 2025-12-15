@@ -1,9 +1,8 @@
 import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { QueryClientProvider } from "@tanstack/react-query";
 
-import { queryClient } from "~/utils/api";
+import { Provider } from "~/context/convex-context";
 
 import "../styles.css";
 
@@ -12,7 +11,7 @@ import "../styles.css";
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
-    <QueryClientProvider client={queryClient}>
+    <Provider>
       {/*
           The Stack component displays the current page.
           It also allows you to configure your screens 
@@ -28,6 +27,6 @@ export default function RootLayout() {
         }}
       />
       <StatusBar />
-    </QueryClientProvider>
+    </Provider>
   );
 }

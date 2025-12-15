@@ -1,0 +1,35 @@
+{
+  "name": "@acme/backend",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./api": {
+      "types": "./src/convex/_generated/api.d.ts",
+      "default": "./src/convex/_generated/api.js"
+    }
+  },
+  "scripts": {
+    "build": "convex deploy --cmd 'echo Convex backend deployed'",
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "setup": "convex dev --until-success",
+    "dev": "convex dev",
+    "logs": "convex logs"
+  },
+  "devDependencies": {
+    "@acme/eslint-config": "workspace:*",
+    "@acme/prettier-config": "workspace:*",
+    "@acme/tsconfig": "workspace:*",
+    "@convex-dev/eslint-plugin": "^1.1.1",
+    "@types/node": "^22.19.1",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@acme/prettier-config",
+  "dependencies": {
+    "convex": "catalog:"
+  }
+}
