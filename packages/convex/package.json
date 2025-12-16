@@ -11,6 +11,9 @@
   "scripts": {
     "build": "convex deploy",
     "clean": "git clean -xdf .cache .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "setup": "convex dev --until-success",
     "dev": "convex dev",
     "logs": "convex logs"
