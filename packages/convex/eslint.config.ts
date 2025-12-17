@@ -5,7 +5,7 @@ import { baseConfig } from "@acme/eslint-config/base";
 
 export default defineConfig(
   {
-    ignores: [],
+    ignores: ["src/_generated/**"],
   },
   baseConfig,
   ...convexPlugin.configs.recommended,
