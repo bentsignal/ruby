@@ -8,6 +8,7 @@
   "packageManager": "pnpm@9.15.4",
   "pnpm": {
     "overrides": {
+      "@better-fetch/fetch": "1.1.21",
       "lightningcss": "1.30.1"
     }
   },

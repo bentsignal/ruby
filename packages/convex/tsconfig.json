@@ -15,8 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "isolatedModules": true,
-    "noEmit": true,
-    "composite": true
+    "noEmit": true
   },
   "include": ["*.ts", "src"],
   "exclude": ["node_modules", "./src/_generated"]

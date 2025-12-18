@@ -5,7 +5,7 @@ import { mutation, query } from "./_generated/server";
 export const getAll = query({
   args: {},
   handler: async (ctx) => {
-    return (await ctx.db.query("posts").collect()).reverse();
+    return await ctx.db.query("posts").order("desc").collect();
   },
 });
 
