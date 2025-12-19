@@ -9,7 +9,6 @@ const Login = () => {
         onPress={() =>
           authClient.signIn.social({
             provider: "google",
-            callbackURL: "ruby://",
           })
         }
         className="bg-primary rounded-md p-2"
