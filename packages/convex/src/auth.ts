@@ -19,10 +19,12 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     trustedOrigins: [
       "https://*.ruby.travel",
       "ruby://",
-      // ...(env.ENVIRONMENT === "development" ? devOrigins : []),
-      ...devOrigins,
+      ...(env.ENVIRONMENT === "development" ? devOrigins : []),
     ],
     baseURL: env.SITE_URL,
+    account: {
+      storeStateStrategy: "cookie",
+    },
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: false,
@@ -30,7 +32,10 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     plugins: [
       expo(),
       convex({ authConfig }),
-      oAuthProxy({ productionURL: "https://www.ruby.travel" }),
+      oAuthProxy({
+        productionURL: "https://www.ruby.travel",
+        currentURL: env.SITE_URL,
+      }),
     ],
     socialProviders: {
       google: {
