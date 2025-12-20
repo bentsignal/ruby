@@ -12,7 +12,11 @@ export default function Login() {
 
   useEffect(() => {
     if (isSignedIn) {
-      router.replace("/");
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/");
+      }
     }
   }, [isSignedIn, router]);
 
