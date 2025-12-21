@@ -10,7 +10,7 @@ import { ConvexReactClient } from "convex/react";
 import { env } from "~/expo.env";
 import { authClient } from "~/lib/auth-client";
 
-const convex = new ConvexReactClient(env.EXPO_PUBLIC_CONVEX_URL, {
+const convex = new ConvexReactClient(env("CONVEX_URL"), {
   // expectAuth: true,
 });
 

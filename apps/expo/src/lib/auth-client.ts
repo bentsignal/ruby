@@ -6,12 +6,17 @@ import { createAuthClient } from "better-auth/react";
 
 import { env } from "~/expo.env";
 
+const scheme = Constants.expoConfig?.scheme;
+if (scheme === undefined || scheme.length === 0) {
+  throw new Error("Missing Expo scheme");
+}
+
 export const authClient = createAuthClient({
-  baseURL: env.EXPO_PUBLIC_CONVEX_SITE_URL,
+  baseURL: env("CONVEX_SITE_URL"),
   plugins: [
     expoClient({
-      scheme: Constants.expoConfig?.scheme as string,
-      storagePrefix: Constants.expoConfig?.scheme as string,
+      scheme: scheme as string,
+      storagePrefix: scheme as string,
       storage: SecureStore,
     }),
     convexClient(),
