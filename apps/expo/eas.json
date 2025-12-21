@@ -13,12 +13,15 @@
     },
     "development": {
       "extends": "base",
+      "distribution": "internal"
+    },
+    "development:client": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal"
     },
-    "preview": {
-      "extends": "base",
-      "distribution": "internal",
+    "development:client:ios-sim": {
+      "extends": "development",
       "ios": {
         "simulator": true
       }
