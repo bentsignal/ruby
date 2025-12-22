@@ -1,4 +1,3 @@
-import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -8,20 +7,29 @@ import { Provider } from "~/context/convex-context";
 import "../styles.css";
 
 import { useEffect } from "react";
+import { useColorScheme } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
+import * as SystemUI from "expo-system-ui";
+
+import { useVar } from "~/hooks/use-color";
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const backgroundColor = useVar("background");
   const colorScheme = useColorScheme();
+
   useEffect(() => {
-    const hideSplashScreen = async () => {
+    const init = async () => {
+      await SystemUI.setBackgroundColorAsync(backgroundColor);
       await SplashScreen.hideAsync();
     };
-    setTimeout(() => {
-      void hideSplashScreen();
-    }, 4000);
-  }, []);
+    void init();
+  }, [backgroundColor]);
+
+  useEffect(() => {
+    void SystemUI.setBackgroundColorAsync(backgroundColor);
+  }, [backgroundColor, colorScheme]);
 
   return (
     <Provider>
@@ -29,14 +37,18 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle:
-              colorScheme === "dark"
-                ? { backgroundColor: "#18181B" }
-                : { backgroundColor: "#E4E4E7" },
+            contentStyle: { backgroundColor: "transparent" },
           }}
         >
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="login" />
+          <Stack.Screen
+            name="login"
+            options={{
+              presentation: "formSheet",
+              sheetAllowedDetents: [0.45],
+              sheetGrabberVisible: true,
+            }}
+          />
         </Stack>
       </SafeAreaProvider>
       <StatusBar />

@@ -22,18 +22,18 @@ export default function MyProfile() {
   }
 
   return (
-    <View className="w-full" style={{ paddingTop: insets.top }}>
-      <View>
-        <Auth.SignOutButton />
-        <Text className="text-2xl font-bold">My Profile</Text>
-        <View className="flex flex-row items-center gap-1">
-          <Text className="text-lg font-bold">Email: </Text>
-          <Text>{session.data?.user.email}</Text>
-        </View>
-        <View className="flex flex-row items-center gap-1">
-          <Text className="text-lg font-bold">Name: </Text>
-          <Text>{session.data?.user.name}</Text>
-        </View>
+    <View className="w-full px-4" style={{ paddingTop: insets.top }}>
+      <Auth.SignOutButton />
+      <Text className="text-foreground text-2xl font-bold">My Profile</Text>
+      <View className="flex flex-row items-center">
+        <Text className="text-foreground font-bold">Email: </Text>
+        <Text className="text-muted-foreground">
+          {session.data?.user.email}
+        </Text>
+      </View>
+      <View className="flex flex-row items-center">
+        <Text className="text-foreground font-bold">Name: </Text>
+        <Text className="text-muted-foreground">{session.data?.user.name}</Text>
       </View>
     </View>
   );

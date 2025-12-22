@@ -1,16 +1,51 @@
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
+import { Tabs } from "expo-router";
+import { House, UserRound } from "lucide-react-native";
+
+import { useVar } from "~/hooks/use-color";
 
 export default function TabLayout() {
+  const sidebar = useVar("sidebar");
+  const sidebarPrimaryForeground = useVar("sidebar-primary-foreground");
+  const sidebarAccentForeground = useVar("sidebar-accent-foreground");
+  const sidebarBorder = useVar("sidebar-border");
+
   return (
-    <NativeTabs disableTransparentOnScrollEdge={true}>
-      <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
-        <Icon sf="house.fill" drawable="custom_android_drawable" />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="my-profile">
-        <Icon sf="person.fill" drawable="custom_my_profile_drawable" />
-        <Label>Profile</Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        sceneStyle: { backgroundColor: "transparent" },
+        tabBarStyle: {
+          backgroundColor: sidebar,
+          borderTopWidth: 1,
+          borderTopColor: sidebarBorder,
+          paddingTop: 12,
+        },
+        tabBarActiveTintColor: sidebarAccentForeground,
+        tabBarInactiveTintColor: sidebarPrimaryForeground,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          tabBarLabel: "Home",
+          tabBarIcon: ({ color, size, focused }) => (
+            <House strokeWidth={focused ? 2 : 1.5} color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="my-profile"
+        options={{
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size, focused }) => (
+            <UserRound
+              strokeWidth={focused ? 2 : 1.5}
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
