@@ -43,11 +43,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // [
     //   "expo-splash-screen",
     //   {
-    //     backgroundColor: "#E4E4E7",
-    //     image: "./assets/ruby.icon",
+    //     backgroundColor: "#1659cc",
+    //     image: "./assets/ruby.icon/Assets/logo-cutout-bg.png",
     //     dark: {
-    //       backgroundColor: "#18181B",
-    //       image: "./assets/ruby.icon",
+    //       backgroundColor: "#1659cc",
+    //       image: "./assets/ruby.icon/Assets/logo-cutout-bg.png",
     //     },
     //   },
     // ],

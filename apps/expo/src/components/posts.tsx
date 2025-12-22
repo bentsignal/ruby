@@ -12,10 +12,9 @@ interface Post {
 export default function Posts() {
   const convex = useConvex();
 
-  const getAllPosts = async () => await convex.query(api.posts.getAll);
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
-    queryFn: getAllPosts,
+    queryFn: async () => await convex.query(api.posts.getAll),
   });
 
   if (isLoading || !posts) {
