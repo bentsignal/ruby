@@ -22,7 +22,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
   },
   android: {
-    package: "rubyapp",
+    package: "com.ruby.rubyapp",
     edgeToEdgeEnabled: true,
   },
   extra: {
@@ -40,16 +40,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-router",
     "expo-secure-store",
     "expo-web-browser",
-    // [
-    //   "expo-splash-screen",
-    //   {
-    //     backgroundColor: "#1659cc",
-    //     image: "./assets/ruby.icon/Assets/logo-cutout-bg.png",
-    //     dark: {
-    //       backgroundColor: "#1659cc",
-    //       image: "./assets/ruby.icon/Assets/logo-cutout-bg.png",
-    //     },
-    //   },
-    // ],
+    "expo-system-ui",
+    [
+      "expo-splash-screen",
+      {
+        backgroundColor: "#ffe3e0",
+        dark: {
+          backgroundColor: "#1e1616",
+        },
+      },
+    ],
   ],
 });
