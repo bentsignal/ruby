@@ -1,15 +1,12 @@
-import { Text, useWindowDimensions, View } from "react-native";
+import { Text, View } from "react-native";
 
 import * as Auth from "~/features/auth/atom";
-import { useRedirectIfSignedIn } from "~/hooks/use-redirect-if-signed-in";
-
-const drawerHeightPercentage = 0.35;
+import { useAuthDrawerSize } from "~/features/auth/hooks/use-auth-drawer-size";
+import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
 
 function Login() {
   useRedirectIfSignedIn();
-
-  const { height } = useWindowDimensions();
-  const drawerHeight = height * drawerHeightPercentage;
+  const { height: drawerHeight } = useAuthDrawerSize();
 
   return (
     <View
@@ -29,5 +26,4 @@ function Login() {
   );
 }
 
-export { drawerHeightPercentage };
 export default Login;
