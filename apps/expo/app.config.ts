@@ -45,10 +45,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-splash-screen",
       {
         backgroundColor: "#ffe3e0",
-        image: "./assets/splash-screen-light-mode-logo.png",
+        image: "./assets/light-mode-logo.png",
         dark: {
           backgroundColor: "#1e1616",
-          image: "./assets/splash-screen-dark-mode-logo.png",
+          image: "./assets/dark-mode-logo.png",
         },
       },
     ],
