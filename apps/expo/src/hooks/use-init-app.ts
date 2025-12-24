@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
 import * as SystemUI from "expo-system-ui";
 import { Roboto_500Medium } from "@expo-google-fonts/roboto/500Medium";
 import { useFonts } from "@expo-google-fonts/roboto/useFonts";
 
 import { useVar } from "~/hooks/use-color";
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 const useInitApp = () => {
   const backgroundColor = useVar("background");
