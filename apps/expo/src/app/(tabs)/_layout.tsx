@@ -30,7 +30,11 @@ export default function TabLayout() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ color, size, focused }) => (
-            <House strokeWidth={focused ? 2 : 1.5} color={color} size={size} />
+            <House
+              strokeWidth={focused ? 2.5 : 1.75}
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -40,7 +44,7 @@ export default function TabLayout() {
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size, focused }) => (
             <UserRound
-              strokeWidth={focused ? 2 : 1.5}
+              strokeWidth={focused ? 2.5 : 1.75}
               color={color}
               size={size}
             />
