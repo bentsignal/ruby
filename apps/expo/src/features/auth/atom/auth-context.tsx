@@ -1,23 +1,23 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
 
 import { createContext } from "@acme/context";
 
 import { authClient } from "~/features/auth/lib/auth-client";
+import { useLoading } from "~/hooks/use-loading";
 
 const { Context, useContext } = createContext<{
   name: string | undefined;
   email: string | undefined;
   isLoading: boolean;
   imSignedIn: boolean;
-  signInWithGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
+  signInWithGoogle: () => void;
+  signOut: () => void;
 }>({
   displayName: "AuthContext",
 });
 
 const Provider = ({ children }: { children: ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, start } = useLoading();
 
   const session = authClient.useSession();
   const name = session.data?.user.name;
@@ -25,31 +25,21 @@ const Provider = ({ children }: { children: ReactNode }) => {
   const imSignedIn = session.data !== null;
   const imSignedOut = !imSignedIn;
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = () => {
     if (imSignedIn) return;
-    try {
-      setIsLoading(true);
+    start(async () => {
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/",
       });
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
+    });
   };
 
-  const signOut = async () => {
+  const signOut = () => {
     if (imSignedOut) return;
-    try {
-      setIsLoading(true);
+    start(async () => {
       await authClient.signOut();
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
