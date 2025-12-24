@@ -1,7 +1,19 @@
 import { Tabs } from "expo-router";
-import { House, UserRound } from "lucide-react-native";
+import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
 import { useVar } from "~/hooks/use-color";
+
+const TabIcon = ({
+  icon: Icon,
+  color,
+  focused,
+}: {
+  icon: React.ElementType;
+  color: string;
+  focused: boolean;
+}) => {
+  return <Icon strokeWidth={focused ? 3 : 1.75} color={color} size={20} />;
+};
 
 export default function TabLayout() {
   const sidebar = useVar("sidebar");
@@ -29,12 +41,26 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarLabel: "Home",
-          tabBarIcon: ({ color, size, focused }) => (
-            <House
-              strokeWidth={focused ? 2.5 : 1.75}
-              color={color}
-              size={size}
-            />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={House} color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          tabBarLabel: "Search",
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={SearchIcon} color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          tabBarLabel: "Notifications",
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={BellIcon} color={color} focused={focused} />
           ),
         }}
       />
@@ -42,12 +68,8 @@ export default function TabLayout() {
         name="my-profile"
         options={{
           tabBarLabel: "Profile",
-          tabBarIcon: ({ color, size, focused }) => (
-            <UserRound
-              strokeWidth={focused ? 2.5 : 1.75}
-              color={color}
-              size={size}
-            />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon icon={UserRound} color={color} focused={focused} />
           ),
         }}
       />
