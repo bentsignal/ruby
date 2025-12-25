@@ -6,6 +6,9 @@
     "./api": {
       "types": "./src/_generated/api.d.ts",
       "default": "./src/_generated/api.js"
+    },
+    "./model": {
+      "types": "./src/_generated/dataModel.d.ts"
     }
   },
   "scripts": {
@@ -33,6 +36,7 @@
     "@better-auth/expo": "^1.4.7",
     "@convex-dev/better-auth": "catalog:",
     "better-auth": "^1.4.7",
-    "convex": "catalog:"
+    "convex": "catalog:",
+    "convex-helpers": "^0.1.108"
   }
 }

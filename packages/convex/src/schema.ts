@@ -7,6 +7,11 @@ export default defineSchema(
       title: v.string(),
       content: v.string(),
     }),
+    profiles: defineTable({
+      userId: v.string(),
+      name: v.string(),
+      image: v.optional(v.string()),
+    }).index("by_userId", ["userId"]),
   },
   { schemaValidation: true },
 );

@@ -1,28 +1,16 @@
 import { Pressable, Text } from "react-native";
-import { router } from "expo-router";
+import { LogOut } from "lucide-react-native";
 
 import { useRequiredContext } from "@acme/context";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { Button } from "~/atoms/button";
 import {
   Context as AuthContext,
   useContext as useAuthContext,
 } from "~/features/auth/atom/auth-context";
 import { GoogleIcon } from "~/features/auth/icons";
+import { useVar } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
-
-const TakeMeToLogin = () => {
-  useRequiredContext(AuthContext);
-  const imSignedIn = useAuthContext((c) => c.imSignedIn);
-
-  if (imSignedIn) return null;
-
-  return (
-    <Button onPress={() => router.push("/login")} disabled={imSignedIn}>
-      <ButtonText>Take Me To Login</ButtonText>
-    </Button>
-  );
-};
 
 const GoogleSignInButton = () => {
   useRequiredContext(AuthContext);
@@ -52,15 +40,22 @@ const GoogleSignInButton = () => {
   );
 };
 
-const SignOutButton = () => {
+const SignOutButton = ({ className }: { className?: string }) => {
   useRequiredContext(AuthContext);
   const signOut = useAuthContext((c) => c.signOut);
   const disabled = useAuthContext((c) => c.isLoading || !c.imSignedIn);
+  const primaryForeground = useVar("secondary-foreground");
   return (
-    <Button onPress={signOut} disabled={disabled}>
-      <ButtonText>Sign Out</ButtonText>
+    <Button
+      variant="secondary"
+      size="icon"
+      onPress={signOut}
+      disabled={disabled}
+      className={className}
+    >
+      <LogOut color={primaryForeground} size={16} />
     </Button>
   );
 };
 
-export { TakeMeToLogin, GoogleSignInButton, SignOutButton };
+export { GoogleSignInButton, SignOutButton };

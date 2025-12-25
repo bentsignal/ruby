@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
+import { useConvexAuth, useQuery } from "convex/react";
 
+import type { Doc } from "@acme/convex/model";
 import { createContext } from "@acme/context";
+import { api } from "@acme/convex/api";
 
 import { authClient } from "~/features/auth/lib/auth-client";
 import { useLoading } from "~/hooks/use-loading";
 
 const { Context, useContext } = createContext<{
-  name: string | undefined;
-  email: string | undefined;
+  myProfile: Doc<"profiles"> | undefined | null;
   isLoading: boolean;
   imSignedIn: boolean;
   signInWithGoogle: () => void;
@@ -19,11 +21,13 @@ const { Context, useContext } = createContext<{
 const Provider = ({ children }: { children: ReactNode }) => {
   const { isLoading, start } = useLoading();
 
-  const session = authClient.useSession();
-  const name = session.data?.user.name;
-  const email = session.data?.user.email;
-  const imSignedIn = session.data !== null;
+  const { isAuthenticated: imSignedIn } = useConvexAuth();
   const imSignedOut = !imSignedIn;
+
+  const myProfile = useQuery(
+    api.profile.getMyProfile,
+    imSignedIn ? {} : "skip",
+  );
 
   const signInWithGoogle = () => {
     if (imSignedIn) return;
@@ -44,7 +48,13 @@ const Provider = ({ children }: { children: ReactNode }) => {
 
   return (
     <Context.Provider
-      value={{ name, email, isLoading, imSignedIn, signInWithGoogle, signOut }}
+      value={{
+        myProfile,
+        isLoading,
+        imSignedIn,
+        signInWithGoogle,
+        signOut,
+      }}
     >
       {children}
     </Context.Provider>

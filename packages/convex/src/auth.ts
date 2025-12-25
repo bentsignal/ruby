@@ -1,15 +1,30 @@
-import type { GenericCtx } from "@convex-dev/better-auth";
+import type { AuthFunctions, GenericCtx } from "@convex-dev/better-auth";
 import { expo } from "@better-auth/expo";
 import { createClient } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 
 import type { DataModel } from "./_generated/dataModel";
-import { components } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import authConfig from "./auth.config";
 import { env } from "./convex.env";
 
-export const authComponent = createClient<DataModel>(components.betterAuth);
+const authFunctions: AuthFunctions = internal.auth;
+
+export const authComponent = createClient<DataModel>(components.betterAuth, {
+  authFunctions,
+  triggers: {
+    user: {
+      onCreate: async (ctx, doc) => {
+        await ctx.db.insert("profiles", {
+          userId: doc._id,
+          name: doc.name,
+          image: doc.image ?? undefined,
+        });
+      },
+    },
+  },
+});
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
   return betterAuth({
@@ -26,3 +41,5 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     plugins: [expo(), convex({ authConfig })],
   });
 };
+
+export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
