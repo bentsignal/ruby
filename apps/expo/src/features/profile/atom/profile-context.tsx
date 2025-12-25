@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { Doc } from "@acme/convex/model";
+import type { PublicProfile } from "@acme/convex/types";
 import { createContext } from "@acme/context";
 
 const { Context, useContext } = createContext<{
@@ -16,7 +16,7 @@ const Provider = ({
   profile,
   children,
 }: {
-  profile: Doc<"profiles">;
+  profile: PublicProfile;
   children: ReactNode;
 }) => {
   const { _id: id, name, image, username } = profile;

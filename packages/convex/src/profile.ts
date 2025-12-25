@@ -5,7 +5,7 @@ import type { PublicProfile } from "./types";
 import { query } from "./_generated/server";
 import { authedQuery } from "./utils";
 
-const redactProfileData = (profile: Doc<"profiles">): PublicProfile => {
+export const redactProfileData = (profile: Doc<"profiles">): PublicProfile => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { userId, _creationTime, ...publicProfile } = profile;
   return publicProfile;

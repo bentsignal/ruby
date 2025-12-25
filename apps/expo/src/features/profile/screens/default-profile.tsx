@@ -10,8 +10,8 @@ const DefaultProfile = ({ profile }: { profile: Doc<"profiles"> }) => {
   return (
     <SafeAreaView>
       <Profile.Provider profile={profile}>
-        <View className="flex-row items-center gap-2 px-4">
-          <Profile.ProfileImage />
+        <View className="flex-row items-center gap-2 px-2">
+          <Profile.ProfileImage className="mt-1" />
           <Profile.ProfileInfo />
           <Auth.SignOutButton className="ml-auto" />
         </View>
