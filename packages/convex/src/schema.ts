@@ -9,7 +9,9 @@ export default defineSchema(
       title: v.string(),
       content: v.string(),
     }),
-    profiles: defineTable(vProfile).index("by_userId", ["userId"]),
+    profiles: defineTable(vProfile)
+      .index("by_userId", ["userId"])
+      .index("by_username", ["username"]),
   },
   { schemaValidation: true },
 );

@@ -7,6 +7,7 @@ const { Context, useContext } = createContext<{
   id: string;
   name: string;
   image: string | undefined;
+  username: string;
 }>({
   displayName: "ProfileContext",
 });
@@ -18,8 +19,8 @@ const Provider = ({
   profile: Doc<"profiles">;
   children: ReactNode;
 }) => {
-  const { _id: id, name, image } = profile;
-  const contextValue = { id, name, image };
+  const { _id: id, name, image, username } = profile;
+  const contextValue = { id, name, image, username };
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 };
 

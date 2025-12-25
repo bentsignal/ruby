@@ -21,7 +21,13 @@ const BlankProfileImage = () => {
 const ProfileInfo = () => {
   useRequiredContext(ProfileContext);
   const name = useProfileContext((c) => c.name);
-  return <Text className="text-foreground text-xl font-bold">{name}</Text>;
+  const username = useProfileContext((c) => c.username);
+  return (
+    <View>
+      <Text className="text-foreground text-xl font-bold">{name}</Text>
+      <Text className="text-foreground text-sm">@{username}</Text>
+    </View>
+  );
 };
 
 export { ProfileImage, BlankProfileImage, ProfileInfo };
