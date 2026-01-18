@@ -12,7 +12,7 @@ if (scheme === undefined || scheme.length === 0) {
 }
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:3000",
+  baseURL: env("SITE_URL"),
   plugins: [
     expoClient({
       scheme: scheme as string,
