@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { cn } from "@acme/ui";
-import { ThemeProvider, ThemeToggle } from "@acme/ui/theme";
+import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
 import { Provider as ConvexProvider } from "~/context/convex-context";
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
   ),
   title: "Ruby",
   description: "A place to share your adventures.",
+  // TODO: add metadata & OG
   // openGraph: {
   //   title: "Create T3 Turbo",
   //   description: "Simple monorepo with shared backend for web & mobile apps",
@@ -63,11 +65,10 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       >
         <ThemeProvider>
           <ConvexProvider>
-            <AuthStore>{props.children}</AuthStore>
+            <AuthStore>
+              <Suspense fallback={<div />}>{props.children}</Suspense>
+            </AuthStore>
           </ConvexProvider>
-          <div className="absolute right-4 bottom-4">
-            <ThemeToggle />
-          </div>
           <Toaster />
         </ThemeProvider>
       </body>

@@ -17,8 +17,8 @@ const TabIcon = ({
 
 export default function TabLayout() {
   const sidebar = useVar("sidebar");
-  const sidebarPrimaryForeground = useVar("sidebar-primary-foreground");
-  const sidebarAccentForeground = useVar("sidebar-accent-foreground");
+  const sidebarActiveColor = useVar("sidebar-accent-foreground");
+  const sidebarInactiveColor = useVar("sidebar-foreground");
   const sidebarBorder = useVar("sidebar-border");
 
   return (
@@ -32,8 +32,8 @@ export default function TabLayout() {
           paddingTop: 4,
           borderTopColor: sidebarBorder,
         },
-        tabBarActiveTintColor: sidebarAccentForeground,
-        tabBarInactiveTintColor: sidebarPrimaryForeground,
+        tabBarActiveTintColor: sidebarActiveColor,
+        tabBarInactiveTintColor: sidebarInactiveColor,
         tabBarShowLabel: false,
         animation: "none",
       }}
