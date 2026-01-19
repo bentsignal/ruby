@@ -137,5 +137,6 @@ These stores should typically not be global (with exceptions for things like aut
 
 Next.js, Expo, and Convex all have a file that shows what environment variables they require
 
-- `./apps/nextjs/src/env.ts` Lists the environment variables that are required for the next.js web app.
-- View
+- `./apps/nextjs/src/env.ts` Lists the environment variables that are required for the next.js app.
+- `./apps/expo/src/expo.env.ts` Lists the environment variables that are required for the expo app.
+- `./packages/convex/src/convex.env.ts` Lists the environment variables that are required for the Convex backend.
