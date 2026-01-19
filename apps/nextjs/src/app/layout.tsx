@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { cn } from "@acme/ui";
@@ -65,9 +64,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       >
         <ThemeProvider>
           <ConvexProvider>
-            <AuthStore>
-              <Suspense fallback={<div />}>{props.children}</Suspense>
-            </AuthStore>
+            <AuthStore>{props.children}</AuthStore>
           </ConvexProvider>
           <Toaster />
         </ThemeProvider>
