@@ -12,44 +12,50 @@ import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-
 function TabBar() {
   const pathname = usePathname();
   return (
-    <nav className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-      <div className="bg-sidebar border-sidebar-border flex items-center gap-1 rounded-full border px-2 py-2 shadow-lg">
-        <TabBarLink href="/" label="Home">
-          <Home
-            size={24}
-            strokeWidth={pathname === "/" ? 2.5 : 1.75}
-            className="transition-all"
-          />
-        </TabBarLink>
-        <TabBarLink href="/search" label="Search">
-          <Search
-            size={24}
-            strokeWidth={pathname === "/search" ? 2.5 : 1.75}
-            className="transition-all"
-          />
-        </TabBarLink>
-        <TabBarLink href="/notifications" label="Notifications">
-          <Bell
-            size={24}
-            strokeWidth={pathname === "/notifications" ? 2.5 : 1.75}
-            className="transition-all"
-          />
-        </TabBarLink>
-        <HoverCard.Container>
-          <HoverCard.Trigger asChild>
-            <TabBarLink href="/profile" label="Profile">
-              <UserRound
-                size={24}
-                strokeWidth={pathname === "/profile" ? 2.5 : 1.75}
-                className="transition-all"
-              />
-            </TabBarLink>
-          </HoverCard.Trigger>
-          <HoverCard.Content>
-            <SmallProfilePreview />
-          </HoverCard.Content>
-        </HoverCard.Container>
-      </div>
+    <nav
+      className={cn(
+        "flex items-center gap-1",
+        "fixed bottom-6 left-1/2 z-50 -translate-x-1/2",
+        "bg-sidebar/80 border-sidebar-border border",
+        "rounded-full px-2 py-2",
+        "shadow-lg backdrop-blur-sm",
+      )}
+    >
+      <TabBarLink href="/" label="Home">
+        <Home
+          size={24}
+          strokeWidth={pathname === "/" ? 2.5 : 1.75}
+          className="transition-all"
+        />
+      </TabBarLink>
+      <TabBarLink href="/search" label="Search">
+        <Search
+          size={24}
+          strokeWidth={pathname === "/search" ? 2.5 : 1.75}
+          className="transition-all"
+        />
+      </TabBarLink>
+      <TabBarLink href="/notifications" label="Notifications">
+        <Bell
+          size={24}
+          strokeWidth={pathname === "/notifications" ? 2.5 : 1.75}
+          className="transition-all"
+        />
+      </TabBarLink>
+      <HoverCard.Container>
+        <HoverCard.Trigger asChild>
+          <TabBarLink href="/profile" label="Profile">
+            <UserRound
+              size={24}
+              strokeWidth={pathname === "/profile" ? 2.5 : 1.75}
+              className="transition-all"
+            />
+          </TabBarLink>
+        </HoverCard.Trigger>
+        <HoverCard.Content>
+          <SmallProfilePreview />
+        </HoverCard.Content>
+      </HoverCard.Container>
     </nav>
   );
 }
