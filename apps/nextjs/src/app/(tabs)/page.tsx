@@ -7,8 +7,6 @@ import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
 
 import { api } from "@acme/convex/api";
 
-import logoSmall from "~/assets/logo-small.webp";
-
 export default function HomePage() {
   const convex = useConvex();
 
@@ -21,13 +19,6 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto mb-24 flex max-w-2xl flex-col gap-6 p-4">
-      <Image
-        src={logoSmall}
-        alt="Logo"
-        width={40}
-        height={40}
-        className="mx-auto mt-4 mb-3 rounded-xl"
-      />
       {posts.map((post) => (
         <article
           key={post._id}
@@ -35,6 +26,7 @@ export default function HomePage() {
         >
           <div className="flex items-center gap-3">
             {post.profile.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={post.profile.image}
                 alt={post.profile.name}
