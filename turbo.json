@@ -52,7 +52,8 @@
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
     "PORT",
-    "CONVEX_DEPLOY_KEY"
+    "CONVEX_DEPLOY_KEY",
+    "UPLOADTHING_APP_ID"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
