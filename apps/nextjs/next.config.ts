@@ -1,4 +1,14 @@
+import { createJiti } from "jiti";
+
 import { env } from "~/env";
+
+const jiti = createJiti(import.meta.url);
+
+async function validateEnv() {
+  await jiti.import("./src/env");
+}
+
+validateEnv();
 
 /** @type {import("next").NextConfig} */
 const config = {
