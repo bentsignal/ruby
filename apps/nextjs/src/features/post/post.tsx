@@ -1,11 +1,11 @@
 import Image from "next/image";
 import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
 
-import type { PostWithProfile } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/types";
 
 import * as Profile from "~/features/profile/atom";
 
-export const Post = ({ post }: { post: PostWithProfile }) => {
+export const Post = ({ post }: { post: UIPost }) => {
   return (
     <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
       <Profile.Store profile={post.creator}>
@@ -18,11 +18,11 @@ export const Post = ({ post }: { post: PostWithProfile }) => {
         </div>
       </Profile.Store>
 
-      {post.imageUrls.length > 0 && post.imageUrls[0] && (
+      {post.images.length > 0 && post.images[0] && (
         <div className="bg-muted relative w-full overflow-hidden rounded-lg">
           <Image
-            src={post.imageUrls[0]}
-            alt={post.caption ?? "Post image"}
+            src={post.images[0].url}
+            alt={post.images[0].alt ?? post.caption ?? ""}
             width={800}
             height={600}
             className="object-cover"

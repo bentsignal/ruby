@@ -1,9 +1,9 @@
 import { createStore } from "rostra";
 
-import type { PublicProfile } from "@acme/convex/types";
+import type { UIProfile } from "@acme/convex/types";
 
 interface StoreProps {
-  profile: PublicProfile;
+  profile: UIProfile;
 }
 
 function useInternalStore({ profile }: StoreProps) {

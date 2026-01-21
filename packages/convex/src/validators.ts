@@ -4,13 +4,29 @@ const vProfile = v.object({
   userId: v.string(),
   name: v.string(),
   username: v.string(),
-  imageKey: v.optional(v.string()),
+  image: v.optional(v.string()),
+});
+
+const vTrip = v.object({
+  creatorId: v.id("profiles"),
+  name: v.string(),
+  imageId: v.optional(v.id("images")),
+  description: v.optional(v.string()),
+  location: v.optional(v.string()),
+  startDate: v.optional(v.number()),
+  endDate: v.optional(v.number()),
+});
+
+const vImage = v.object({
+  url: v.string(),
+  alt: v.optional(v.string()),
 });
 
 const vPost = v.object({
+  tripId: v.id("trips"),
   profileId: v.id("profiles"),
+  imagesIds: v.array(v.id("images")),
   caption: v.optional(v.string()),
-  imageUrls: v.array(v.string()),
 });
 
-export { vProfile, vPost };
+export { vProfile, vPost, vTrip, vImage };

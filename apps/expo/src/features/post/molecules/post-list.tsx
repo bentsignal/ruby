@@ -6,15 +6,15 @@ import {
 import { LegendList } from "@legendapp/list";
 
 import type { Id } from "@acme/convex/model";
-import type { PostWithProfile } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/types";
 
 import { Post } from "./post";
 
-function PostListItem({ item }: LegendListRenderItemProps<PostWithProfile>) {
+function PostListItem({ item }: LegendListRenderItemProps<UIPost>) {
   return <Post post={item} />;
 }
 
-function PostList({ posts }: { posts: PostWithProfile[] }) {
+function PostList({ posts }: { posts: UIPost[] }) {
   const inset = useSafeAreaInsets();
   return (
     <LegendList
@@ -34,7 +34,8 @@ function Skeletons() {
     _id: index as unknown as Id<"posts">,
     _creationTime: 0,
     profileId: "" as Id<"profiles">,
-    imageUrls: [],
+    tripId: "" as Id<"trips">,
+    images: [],
     caption: "",
     creator: {
       username: "",

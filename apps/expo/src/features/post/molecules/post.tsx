@@ -2,12 +2,12 @@ import { Image, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { Bookmark, Heart, MessageCircle, Share } from "lucide-react-native";
 
-import type { PostWithProfile } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/types";
 
 import * as Profile from "~/features/profile/atom";
 import { useVar } from "~/hooks/use-color";
 
-export const Post = ({ post }: { post: PostWithProfile }) => {
+export const Post = ({ post }: { post: UIPost }) => {
   const foreground = useVar("foreground");
   return (
     <View className="mb-8 flex-col gap-2">
@@ -20,8 +20,8 @@ export const Post = ({ post }: { post: PostWithProfile }) => {
           </Text>
         </View>
         <PagerView style={{ height: 200, width: "100%" }}>
-          {post.imageUrls.map((imageUrl) => (
-            <Image source={{ uri: imageUrl }} key={imageUrl} />
+          {post.images.map((image) => (
+            <Image source={{ uri: image.url }} key={image.url} />
           ))}
         </PagerView>
       </Profile.Store>

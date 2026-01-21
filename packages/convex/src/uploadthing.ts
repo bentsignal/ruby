@@ -22,7 +22,7 @@ export const uploadPFP = internalAction({
     const key = await uploadImage(image, fileName);
     await ctx.runMutation(internal.profile.updatePFP, {
       profileId: args.profileId,
-      imageKey: key,
+      image: getFileURL(key),
     });
   },
 });

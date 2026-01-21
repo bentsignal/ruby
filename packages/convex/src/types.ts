@@ -1,20 +1,19 @@
 import type { Infer } from "convex/values";
 
 import type { Id } from "./_generated/dataModel";
-import type { vPost, vProfile } from "./validators";
+import type { vImage, vPost, vProfile } from "./validators";
+
+type UIImage = Infer<typeof vImage>;
 
 type Profile = Infer<typeof vProfile>;
-interface PublicProfile {
-  username: string;
-  name: string;
-  image: string | undefined;
-}
+type UIProfile = Omit<Profile, "userId">;
 
 type Post = Infer<typeof vPost>;
-type PostWithProfile = Post & {
+type UIPost = Omit<Post, "profileId" | "imagesIds"> & {
   _id: Id<"posts">;
   _creationTime: number;
-  creator: PublicProfile;
+  creator: UIProfile;
+  images: UIImage[];
 };
 
-export type { Post, PostWithProfile, Profile, PublicProfile };
+export type { Post, UIPost, Profile, UIProfile, UIImage };
