@@ -11,5 +11,5 @@ export default defineSchema(
       .index("by_userId", ["userId"])
       .index("by_username", ["username"]),
   },
-  { schemaValidation: false },
+  { schemaValidation: true },
 );
