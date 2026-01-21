@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
 
@@ -9,12 +9,27 @@ import { api } from "@acme/convex/api";
 import { useLoading } from "~/hooks/use-loading";
 import { authClient } from "../../../lib/auth-client";
 
-function useInternalStore() {
+function useInternalStore({
+  isAuthenticatedServerSide,
+}: {
+  isAuthenticatedServerSide: boolean;
+}) {
   const { isLoading, start } = useLoading();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const { isAuthenticated: imSignedIn } = useConvexAuth();
+  // use serverside auth value until client is mounted
+  const { isAuthenticated: isAuthenticatedClientSide } = useConvexAuth();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setMounted(true);
+    }, 1000);
+  }, []);
+
+  const imSignedIn = mounted
+    ? isAuthenticatedClientSide
+    : isAuthenticatedServerSide;
   const imSignedOut = !imSignedIn;
 
   const myProfile = useQuery(api.profile.getMine, imSignedIn ? {} : "skip");
@@ -40,6 +55,7 @@ function useInternalStore() {
     myProfile,
     isLoading,
     imSignedIn,
+    imSignedOut,
     signInWithGoogle,
     signOut,
     isLoginModalOpen,

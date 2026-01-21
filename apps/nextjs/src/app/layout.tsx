@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 
 import { cn } from "@acme/ui";
@@ -9,6 +11,7 @@ import { Provider as ConvexProvider } from "~/context/convex-context";
 import { env } from "~/env";
 import * as Auth from "~/features/auth/atom";
 import { LoginModal } from "~/features/auth/molecules/login-modal";
+import { isAuthenticated } from "~/lib/auth-server";
 
 import "~/app/styles.css";
 
@@ -55,7 +58,7 @@ const roboto = Roboto({
   weight: ["500"],
 });
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -69,17 +72,26 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           roboto.variable,
         )}
       >
-        <ThemeProvider>
-          <ConvexProvider>
-            <Auth.Store>
-              {props.children}
-              <LoginModal />
-            </Auth.Store>
-          </ConvexProvider>
-          <Toaster />
-        </ThemeProvider>
+        <Suspense fallback={<div />}>
+          <Wrapper>{children}</Wrapper>
+        </Suspense>
       </body>
     </html>
+  );
+}
+
+async function Wrapper({ children }: { children: ReactNode }) {
+  const isAuthenticatedServerSide = await isAuthenticated();
+  return (
+    <ThemeProvider>
+      <ConvexProvider>
+        <Auth.Store isAuthenticatedServerSide={isAuthenticatedServerSide}>
+          {children}
+          <LoginModal />
+        </Auth.Store>
+      </ConvexProvider>
+      <Toaster />
+    </ThemeProvider>
   );
 }
 
