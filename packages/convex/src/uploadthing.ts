@@ -38,12 +38,11 @@ export const downloadImage = async (url: string) => {
     .then((buffer) => new Uint8Array(buffer));
 };
 
-export const uploadImage = async (image: Uint8Array, fileName: string) => {
-  const arrayBuffer = new ArrayBuffer(image.length);
-  const view = new Uint8Array(arrayBuffer);
-  view.set(image);
-  const blob = new Blob([view], { type: "image/png" });
-  const file = new UTFile([blob], fileName, { type: "image/png" });
+export const uploadImage = async (
+  image: Uint8Array<ArrayBuffer>,
+  fileName: string,
+) => {
+  const file = new UTFile([image], fileName, { type: "image/png" });
   const uploadedFile = await utapi.uploadFiles(file);
   if (uploadedFile.error) {
     throw new Error(
