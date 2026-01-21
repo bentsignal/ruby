@@ -1,16 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Suspense } from "react";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
+import { cookies } from "next/headers";
 
 import { cn } from "@acme/ui";
-import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
 import { Provider as ConvexProvider } from "~/context/convex-context";
 import { env } from "~/env";
 import * as Auth from "~/features/auth/atom";
 import { LoginModal } from "~/features/auth/molecules/login-modal";
+import * as Theme from "~/features/theme/atom";
+import { getTheme } from "~/features/theme/utils";
 import { isAuthenticated } from "~/lib/auth-server";
 
 import "~/app/styles.css";
@@ -58,7 +59,16 @@ const roboto = Roboto({
   weight: ["500"],
 });
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const isAuthenticatedServerSide = await isAuthenticated();
+
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("theme");
+  const theme = getTheme(themeCookie?.value);
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -72,26 +82,22 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           roboto.variable,
         )}
       >
-        <Suspense fallback={<div />}>
-          <Wrapper>{children}</Wrapper>
-        </Suspense>
+        <Theme.Store
+          attribute="class"
+          defaultTheme="dark"
+          disableTransitionOnChange
+          initialTheme={theme}
+        >
+          <ConvexProvider>
+            <Auth.Store isAuthenticatedServerSide={isAuthenticatedServerSide}>
+              {children}
+              <LoginModal />
+            </Auth.Store>
+          </ConvexProvider>
+          <Toaster />
+        </Theme.Store>
       </body>
     </html>
-  );
-}
-
-async function Wrapper({ children }: { children: ReactNode }) {
-  const isAuthenticatedServerSide = await isAuthenticated();
-  return (
-    <ThemeProvider>
-      <ConvexProvider>
-        <Auth.Store isAuthenticatedServerSide={isAuthenticatedServerSide}>
-          {children}
-          <LoginModal />
-        </Auth.Store>
-      </ConvexProvider>
-      <Toaster />
-    </ThemeProvider>
   );
 }
 

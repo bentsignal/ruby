@@ -40,15 +40,13 @@
     "eslint": "catalog:",
     "prettier": "catalog:",
     "react": "catalog:react19",
-    "typescript": "catalog:",
-    "zod": "catalog:"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "class-variance-authority": "catalog:",
     "lucide-react": "catalog:",
     "react": "catalog:react19",
-    "tailwind-merge": "catalog:",
-    "zod": "catalog:"
+    "tailwind-merge": "catalog:"
   },
   "prettier": "@acme/prettier-config"
 }

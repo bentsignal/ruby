@@ -7,9 +7,9 @@ import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
-import { ThemeSwitcher } from "@acme/ui/theme";
 
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
+import * as Theme from "~/features/theme/atom";
 
 function TabBar() {
   const pathname = usePathname();
@@ -56,7 +56,7 @@ function TabBar() {
         </HoverCard.Trigger>
         <HoverCard.Content className="flex w-auto! flex-col items-start">
           <SmallProfilePreview />
-          <ThemeSwitcher />
+          <Theme.Toggle />
         </HoverCard.Content>
       </HoverCard.Container>
       <Button size="icon" className="rounded-full">

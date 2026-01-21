@@ -27,8 +27,6 @@ const config: NextConfig = {
     ],
     formats: ["image/avif", "image/webp"],
   },
-
-  cacheComponents: true,
   reactCompiler: true,
 };
 
