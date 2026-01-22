@@ -51,7 +51,11 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 };
 
 const generateUsername = async (ctx: MutationCtx, name: string) => {
-  const splitName = name.toLowerCase().split(" ").join("_");
+  const splitName = name
+    .toLowerCase()
+    .split(" ")
+    .map((part) => part.slice(0, 5))
+    .join("_");
   let goodUsername = false;
   let username = "";
   while (!goodUsername) {
