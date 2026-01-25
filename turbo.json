@@ -45,16 +45,7 @@
       "interactive": true
     }
   },
-  "globalEnv": [
-    "POSTGRES_URL",
-    "AUTH_DISCORD_ID",
-    "AUTH_DISCORD_SECRET",
-    "AUTH_REDIRECT_PROXY_URL",
-    "AUTH_SECRET",
-    "PORT",
-    "CONVEX_DEPLOY_KEY",
-    "UPLOADTHING_APP_ID"
-  ],
+  "globalEnv": ["AUTH_SECRET", "CONVEX_DEPLOY_KEY", "UPLOADTHING_APP_ID"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",
