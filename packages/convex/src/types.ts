@@ -6,7 +6,7 @@ import type { vFriendshipStatus, vImage, vPost, vProfile } from "./validators";
 type UIImage = Infer<typeof vImage>;
 
 type Profile = Infer<typeof vProfile>;
-type UIProfile = Omit<Profile, "userId">;
+type UIProfile = Omit<Profile, "userId" | "searchTerm">;
 
 type Post = Infer<typeof vPost>;
 type UIPost = Omit<Post, "profileId" | "imagesIds"> & {
