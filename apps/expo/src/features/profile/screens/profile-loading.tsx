@@ -1,18 +1,33 @@
-import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect } from "react";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
-import * as Auth from "~/features/auth/atom";
-import * as Profile from "../atom";
+import { LoadingSpinner } from "~/components/loading-spinner";
+import { SafeAreaView } from "~/components/safe-area-view";
 
-const ProfileLoading = () => {
+function ProfileLoading() {
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      opacity.value = withTiming(1, { duration: 300 });
+    }, 2000);
+  }, [opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
   return (
-    <SafeAreaView>
-      <View className="flex-row items-center gap-2 px-4">
-        <Profile.BlankProfileImage />
-        <Auth.SignOutButton className="ml-auto" />
-      </View>
+    <SafeAreaView className="flex-1 items-center justify-center">
+      <Animated.View style={animatedStyle}>
+        <LoadingSpinner />
+      </Animated.View>
     </SafeAreaView>
   );
-};
+}
 
 export { ProfileLoading };

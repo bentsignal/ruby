@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react-native";
 
 import { Button } from "~/atoms/button";
 import { GoogleIcon } from "~/features/auth/icons";
-import { useVar } from "~/hooks/use-color";
+import { useColor } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
 import { useStore as useAuthStore } from "./auth-store";
 
@@ -37,7 +37,7 @@ const GoogleSignInButton = () => {
 const SignOutButton = ({ className }: { className?: string }) => {
   const signOut = useAuthStore((s) => s.signOut);
   const disabled = useAuthStore((s) => s.isLoading || !s.imSignedIn);
-  const primaryForeground = useVar("secondary-foreground");
+  const primaryForeground = useColor("primary-foreground");
   return (
     <Button
       variant="secondary"

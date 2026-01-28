@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
@@ -9,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { Provider as ConvexProvider } from "~/context/convex-context";
 import * as Auth from "~/features/auth/atom";
 import { useAuthDrawerSize } from "~/features/auth/hooks/use-auth-drawer-size";
-import { useVar } from "~/hooks/use-color";
+import { useColor } from "~/hooks/use-color";
 
 import "../styles.css";
 
@@ -18,7 +17,7 @@ import { useInitApp } from "~/hooks/use-init-app";
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const backgroundColor = useVar("background");
+  const backgroundColor = useColor("background");
 
   const liquidGlassIsAvailable = isLiquidGlassAvailable();
 
@@ -50,11 +49,21 @@ export default function RootLayout() {
             <Stack.Screen
               name="login"
               options={{
-                presentation:
-                  Platform.OS === "ios" && liquidGlassIsAvailable
-                    ? "formSheet"
-                    : "modal",
+                presentation: "formSheet",
                 sheetAllowedDetents: [loginDrawerHeightPercentage],
+                sheetGrabberVisible: true,
+                contentStyle: {
+                  backgroundColor: liquidGlassIsAvailable
+                    ? "transparent"
+                    : backgroundColor,
+                },
+              }}
+            />
+            <Stack.Screen
+              name="edit-profile"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [1],
                 sheetGrabberVisible: true,
                 contentStyle: {
                   backgroundColor: liquidGlassIsAvailable

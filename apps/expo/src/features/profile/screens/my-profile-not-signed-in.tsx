@@ -3,10 +3,10 @@ import { router } from "expo-router";
 import { LogIn } from "lucide-react-native";
 
 import { Button, ButtonText } from "~/atoms/button";
-import { useVar } from "~/hooks/use-color";
+import { useColor } from "~/hooks/use-color";
 
-const MyProfileNotSignedIn = () => {
-  const primaryForeground = useVar("primary-foreground");
+function MyProfileNotSignedIn() {
+  const primaryForeground = useColor("primary-foreground");
 
   return (
     <View className="flex-1 items-center justify-center">
@@ -22,6 +22,6 @@ const MyProfileNotSignedIn = () => {
       </Button>
     </View>
   );
-};
+}
 
 export { MyProfileNotSignedIn };

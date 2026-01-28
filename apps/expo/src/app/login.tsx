@@ -4,7 +4,6 @@ import { LoadingSpinner } from "~/components/loading-spinner";
 import * as Auth from "~/features/auth/atom";
 import { useAuthDrawerSize } from "~/features/auth/hooks/use-auth-drawer-size";
 import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
-import { useVar } from "~/hooks/use-color";
 
 function Login() {
   useRedirectIfSignedIn();
@@ -32,13 +31,12 @@ function Login() {
 
 const LoadingOverlay = () => {
   const isLoading = Auth.useStore((s) => s.isLoading);
-  const foreground = useVar("foreground");
 
   if (!isLoading) return null;
 
   return (
     <View className="bg-background/60 absolute top-0 right-0 z-1 h-full w-full items-center justify-center">
-      <LoadingSpinner color={foreground} className="h-10 w-10 shadow-xl" />
+      <LoadingSpinner className="h-10 w-10 shadow-xl" />
     </View>
   );
 };

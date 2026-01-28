@@ -8,7 +8,7 @@ import * as SystemUI from "expo-system-ui";
 import { Roboto_500Medium } from "@expo-google-fonts/roboto/500Medium";
 import { useFonts } from "@expo-google-fonts/roboto/useFonts";
 
-import { useVar } from "~/hooks/use-color";
+import { useColor } from "~/hooks/use-color";
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
@@ -16,7 +16,7 @@ configureReanimatedLogger({
 });
 
 const useInitApp = () => {
-  const backgroundColor = useVar("background");
+  const backgroundColor = useColor("background");
   const colorScheme = useColorScheme();
 
   // initialize root background color to match system theme

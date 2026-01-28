@@ -5,16 +5,19 @@ import { Bookmark, Heart, MessageCircle, Share } from "lucide-react-native";
 import type { UIPost } from "@acme/convex/types";
 
 import * as Profile from "~/features/profile/atom";
-import { useVar } from "~/hooks/use-color";
+import { useColor } from "~/hooks/use-color";
 
 export const Post = ({ post }: { post: UIPost }) => {
-  const foreground = useVar("foreground");
+  const foreground = useColor("foreground");
   return (
     <View className="mb-8 flex-col gap-2">
       <Profile.Store profile={post.creator}>
         <View className="mx-2 flex-row items-center gap-2">
-          <Profile.ProfileImage className="mt-1" variant="post" />
-          <Profile.ProfileInfo />
+          <Profile.PFP variant="sm" />
+          <View>
+            <Profile.Name className="text-foreground text-base font-bold" />
+            <Profile.Username className="text-foreground text-xs" />
+          </View>
           <Text className="text-muted-foreground ml-auto text-xs">
             {new Date(post._creationTime).toLocaleDateString()}
           </Text>

@@ -9,13 +9,16 @@ import Animated, {
 import { scheduleOnUI } from "react-native-worklets";
 import { Loader } from "lucide-react-native";
 
+import { useColor } from "~/hooks/use-color";
+
 const LoadingSpinner = ({
-  color,
+  color = "foreground",
   className,
 }: {
-  color: string;
-  className: string;
+  color?: string;
+  className?: string;
 }) => {
+  const cssColor = useColor(color);
   const rotation = useSharedValue(0);
   useEffect(() => {
     const spin = () => {
@@ -33,7 +36,7 @@ const LoadingSpinner = ({
   }));
   return (
     <Animated.View style={animatedStyle}>
-      <Loader color={color} className={className} />
+      <Loader color={cssColor} className={className} />
     </Animated.View>
   );
 };

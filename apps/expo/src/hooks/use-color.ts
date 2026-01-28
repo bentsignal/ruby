@@ -1,5 +1,9 @@
 import { useCSSVariable } from "uniwind";
 
-export function useVar(color: string) {
-  return useCSSVariable(`--${color}`) as string;
+export function useColor(color: string) {
+  const cssVariable = useCSSVariable(`--${color}`);
+  if (cssVariable === undefined) {
+    throw new Error(`Color variable ${color} not found`);
+  }
+  return cssVariable as string;
 }

@@ -1,7 +1,9 @@
+import { Pressable } from "react-native";
 import { Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
-import { useVar } from "~/hooks/use-color";
+import { useColor } from "~/hooks/use-color";
+import { useRedirect } from "~/hooks/use-redirect";
 
 const TabIcon = ({
   icon: Icon,
@@ -16,10 +18,12 @@ const TabIcon = ({
 };
 
 export default function TabLayout() {
-  const sidebar = useVar("sidebar");
-  const sidebarActiveColor = useVar("sidebar-accent-foreground");
-  const sidebarInactiveColor = useVar("sidebar-foreground");
-  const sidebarBorder = useVar("sidebar-border");
+  const sidebar = useColor("sidebar");
+  const sidebarActiveColor = useColor("sidebar-accent-foreground");
+  const sidebarInactiveColor = useColor("sidebar-foreground");
+  const sidebarBorder = useColor("sidebar-border");
+
+  const { redirectIfNotSignedIn } = useRedirect();
 
   return (
     <Tabs
@@ -36,6 +40,22 @@ export default function TabLayout() {
         tabBarInactiveTintColor: sidebarInactiveColor,
         tabBarShowLabel: false,
         animation: "none",
+        tabBarButton: (props) => {
+          const { onPress, children, ref: _ref, href, ...rest } = props;
+          return (
+            <Pressable
+              {...rest}
+              onPress={(e) => {
+                redirectIfNotSignedIn({
+                  redirectURL: href,
+                  ifSignedIn: () => onPress?.(e),
+                });
+              }}
+            >
+              {children}
+            </Pressable>
+          );
+        },
       }}
     >
       <Tabs.Screen
@@ -72,6 +92,12 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={UserRound} color={color} focused={focused} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="(profile)/[username]"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
