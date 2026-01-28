@@ -14,5 +14,5 @@ export default defineSchema(
       .index("by_profileA", ["profileIdA"])
       .index("by_profileB", ["profileIdB"]),
   },
-  { schemaValidation: false },
+  { schemaValidation: true },
 );
