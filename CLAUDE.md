@@ -8,7 +8,7 @@ This is a **Turborepo monorepo** containing a Next.js web app and Expo React Nat
 
 ## Key Tech Stack
 
-- React 19, React Native 0.81 (react compiled enabled)
+- React 19, React Native 0.81 (react compiler enabled)
 - Expo SDK 54, Expo Router
 - Tailwind CSS v4 (Uniwind on mobile)
 - Convex for backend/db
