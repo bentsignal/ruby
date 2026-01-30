@@ -15,11 +15,15 @@ This is a **Turborepo monorepo** containing a Next.js web app and Expo React Nat
 - Better Auth for authentication
 - Rostra for state management
 
+Since the react compiler is enabled, you often don't need to manually memoize with useMemo and useCallback.
+
 ## Commands
+
+This project uses pnpm for package management.
 
 ```bash
 # Development
-pnpm dev                # Run all apps in watch mode, you should ***NEVER*** do this without asking the user, since usually the dev server is already running
+pnpm dev                # Run all apps in watch mode, you should ***NEVER*** do this without asking the user, since the dev server is usually already running
 
 # Code quality
 pnpm lint               # Lint all packages
@@ -72,8 +76,8 @@ tooling
 Uses **Convex** as the backend-as-a-service.
 
 - `src/schema.ts` - Database schema.
-- `src/auth.ts` - Better Auth integration with Convex, Google OAuth
-- Auto-generated types in `src/_generated/`. DO NOT MAKE CHANGES IN HERE EVER.
+- `src/auth.ts` - Better Auth integration with Google OAuth
+- Auto-generated code in `src/_generated/`. DO NOT MAKE CHANGES IN HERE EVER.
 
 API usage in apps:
 
@@ -93,50 +97,10 @@ Uses **Better Auth** with Convex adapter for both platforms:
 
 Auth should typically be handled through the Auth Store.
 
-### State Management
-
-Uses **Rostra** (lightweight hook-based store). Values returned from selectors will only re-render if the selected value changes
-
-```typescript
-import { useState } from "react";
-import { createStore } from "rostra";
-
-function useInternalStore({ initialCount }: { initialCount: number }) {
-  const [count, setCount] = useState(initialCount);
-  const increment = () => setCount(prev => prev + 1);
-  return { count, increment };
-};
-
-const { Store, useStore } = createStore(useInternalStore);
-
-function Counter() {
-  return (
-    <Store initialCount={10}>
-      <Value />
-      <IncrementButton />
-    </Store>
-  );
-};
-
-function Value() {
-  const count = useStore(store => store.count);
-  const isCountEven = useStore(store => store.count % 2 === 0);
-  return <p>Count: {count}, {isCountEven ? "Count is even" : "Count is odd"</p>;
-};
-
-function IncrementButton() {
-  const increment = useStore(store => store.increment);
-  return <button onClick={increment}>Increment</button>;
-};
-
-```
-
-These stores should typically not be global (with exceptions for things like auth). The idea is to have them as low as possible, but high enough that anything that needs the data in the store is below them.
-
 ### Environment Variables
 
 Next.js, Expo, and Convex all have a file that shows what environment variables they require
 
-- `./apps/nextjs/src/env.ts` Lists the environment variables that are required for the next.js app.
-- `./apps/expo/src/expo.env.ts` Lists the environment variables that are required for the expo app.
-- `./packages/convex/src/convex.env.ts` Lists the environment variables that are required for the Convex backend.
+- Next.js: `./apps/nextjs/src/env.ts`
+- Expo: `./apps/expo/src/expo.env.ts`
+- Convex: `./packages/convex/src/convex.env.ts`
