@@ -4,19 +4,22 @@ import { Bookmark, Heart, MessageCircle, Share } from "lucide-react-native";
 
 import type { UIPost } from "@acme/convex/types";
 
-import * as Profile from "~/features/profile/atom";
+import { Name } from "~/features/profile/atoms/name";
+import { PFP } from "~/features/profile/atoms/pfp";
+import { Username } from "~/features/profile/atoms/username";
+import { ProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
 
 export const Post = ({ post }: { post: UIPost }) => {
   const foreground = useColor("foreground");
   return (
     <View className="mb-8 flex-col gap-2">
-      <Profile.Store profile={post.creator}>
+      <ProfileStore profile={post.creator}>
         <View className="mx-2 flex-row items-center gap-2">
-          <Profile.PFP variant="sm" />
+          <PFP variant="sm" />
           <View>
-            <Profile.Name className="text-foreground text-base font-bold" />
-            <Profile.Username className="text-foreground text-xs" />
+            <Name className="text-base" />
+            <Username className="text-foreground text-xs" />
           </View>
           <Text className="text-muted-foreground ml-auto text-xs">
             {new Date(post._creationTime).toLocaleDateString()}
@@ -27,7 +30,7 @@ export const Post = ({ post }: { post: UIPost }) => {
             <Image source={{ uri: image.url }} key={image.url} />
           ))}
         </PagerView>
-      </Profile.Store>
+      </ProfileStore>
       <View className="mx-2 flex-row items-center gap-6">
         <Heart className="size-4.5" color={foreground} />
         <MessageCircle className="size-3" color={foreground} />

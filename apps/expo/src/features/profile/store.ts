@@ -12,4 +12,5 @@ function useInternalStore({ profile, relationship }: StoreProps) {
   return { name, image, username, bio, link, relationship };
 }
 
-export const { Store, useStore } = createStore(useInternalStore);
+export const { Store: ProfileStore, useStore: useProfileStore } =
+  createStore(useInternalStore);

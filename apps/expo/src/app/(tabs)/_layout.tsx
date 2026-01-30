@@ -38,7 +38,6 @@ export default function TabLayout() {
         },
         tabBarActiveTintColor: sidebarActiveColor,
         tabBarInactiveTintColor: sidebarInactiveColor,
-        animation: "shift",
         tabBarShowLabel: false,
         tabBarButton: (props) => {
           const { onPress, children, ref: _ref, href, ...rest } = props;
@@ -59,7 +58,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(index)"
         options={{
           tabBarLabel: "Home",
           animation: "none",
@@ -96,12 +95,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={UserRound} color={color} focused={focused} />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="(profile)/[username]"
-        options={{
-          href: null,
         }}
       />
     </Tabs>

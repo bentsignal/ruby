@@ -7,6 +7,5 @@ export default function MyProfile() {
   if (!myProfile) {
     return <ProfileLoading />;
   }
-
   return <ProfilePage profile={myProfile} relationship={"my-profile"} />;
 }

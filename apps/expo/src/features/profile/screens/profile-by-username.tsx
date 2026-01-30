@@ -6,9 +6,9 @@ import { api } from "@acme/convex/api";
 import * as Auth from "~/features/auth/atom";
 import { AccountNotFound } from "~/features/profile/screens/account-not-found";
 import { ProfileLoading } from "~/features/profile/screens/profile-loading";
-import { ProfilePage } from "~/features/profile/screens/profile-page";
+import { ProfilePage } from "./profile-page";
 
-export default function ProfileByUsername() {
+export function ProfileByUsername() {
   const { username } = useLocalSearchParams<{ username: string }>();
 
   const router = useRouter();

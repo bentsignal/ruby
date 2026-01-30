@@ -4,24 +4,27 @@ import { useRouter } from "expo-router";
 
 import type { UIProfile } from "@acme/convex/types";
 
-import * as Profile from "../atom";
+import { Name } from "../atoms/name";
+import { PFP } from "../atoms/pfp";
+import { Username } from "../atoms/username";
+import { ProfileStore } from "../store";
 
 function ProfileSearchItem({ item }: LegendListRenderItemProps<UIProfile>) {
   const router = useRouter();
 
   return (
-    <Profile.Store profile={item}>
+    <ProfileStore profile={item}>
       <Pressable
-        onPress={() => router.push(`/${item.username}`)}
+        onPress={() => router.push(`/search/${item.username}`)}
         className="active:bg-muted/50 flex-row items-center gap-3 px-4 py-3"
       >
-        <Profile.PFP variant="sm" />
+        <PFP variant="sm" />
         <View className="flex-1">
-          <Profile.Name className="text-base" />
-          <Profile.Username className="text-foreground text-sm" />
+          <Name className="text-base" />
+          <Username className="text-foreground text-sm" />
         </View>
       </Pressable>
-    </Profile.Store>
+    </ProfileStore>
   );
 }
 

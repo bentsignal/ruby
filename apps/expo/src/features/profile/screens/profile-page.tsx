@@ -4,9 +4,15 @@ import type { Relationship, UIProfile } from "@acme/convex/types";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import * as Auth from "~/features/auth/atom";
-import * as Profile from "~/features/profile/atom";
+import { Bio } from "~/features/profile/atoms/bio";
+import { Name } from "~/features/profile/atoms/name";
+import { PFP } from "~/features/profile/atoms/pfp";
+import { PrimaryButton } from "~/features/profile/atoms/primary-button";
+import { UserProvidedLink } from "~/features/profile/atoms/user-provided-link";
+import { Username } from "~/features/profile/atoms/username";
+import { ProfileStore } from "~/features/profile/store";
 
-function ProfilePage({
+export function ProfilePage({
   profile,
   relationship,
 }: {
@@ -15,24 +21,22 @@ function ProfilePage({
 }) {
   return (
     <SafeAreaView>
-      <Profile.Store profile={profile} relationship={relationship}>
-        <View className="flex flex-col gap-4 px-4 pt-4">
-          <View className="flex-row items-center gap-4">
-            <Profile.PFP variant="md" />
+      <ProfileStore profile={profile} relationship={relationship}>
+        <View className="flex flex-col gap-4 pt-4">
+          <View className="mx-4 flex-row items-center gap-4">
+            <PFP variant="md" />
             <View className="flex flex-col">
-              <Profile.Name className="font-bold" />
-              <Profile.Username />
+              <Name />
+              <Username />
             </View>
             <Auth.SignOutButton className="ml-auto" />
           </View>
-          <Profile.Bio />
-          <Profile.UserProvidedLink />
-          <Profile.PrimaryButton />
+          <Bio className="mx-4" />
+          <UserProvidedLink className="mx-4" />
+          <PrimaryButton className="mx-4" />
           <View className="bg-border h-px" />
         </View>
-      </Profile.Store>
+      </ProfileStore>
     </SafeAreaView>
   );
 }
-
-export { ProfilePage };
