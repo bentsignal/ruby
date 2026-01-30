@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
 import type { Doc } from "./_generated/dataModel";
@@ -60,5 +61,34 @@ export const updatePFP = internalMutation({
     await ctx.db.patch(args.profileId, {
       image: args.image,
     });
+  },
+});
+
+export const search = authedQuery({
+  args: {
+    searchTerm: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const trimmedSearchTerm = args.searchTerm.trim();
+    if (!trimmedSearchTerm) {
+      return {
+        page: [] as UIProfile[],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
+
+    const results = await ctx.db
+      .query("profiles")
+      .withSearchIndex("search_searchTerm", (q) =>
+        q.search("searchTerm", trimmedSearchTerm),
+      )
+      .paginate(args.paginationOpts);
+
+    return {
+      ...results,
+      page: results.page.map(getPublicProfile),
+    };
   },
 });

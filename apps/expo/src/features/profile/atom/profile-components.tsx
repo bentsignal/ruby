@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import {
   Check,
   Globe,
@@ -93,30 +93,25 @@ function Bio({ className }: { className?: string }) {
 }
 
 function UserProvidedLink({ className }: { className?: string }) {
-  const link = useProfileStore((s) => s.link);
+  const linkString = useProfileStore((s) => s.link);
   const mutedForeground = useColor("muted-foreground");
+  if (!linkString) return null;
+  const link = normalizeProfileLink(linkString);
   if (!link) return null;
-  const { href, display } = normalizeProfileLink(link);
   return (
     <Button
       variant="link"
       className={cn("h-auto w-fit justify-start p-0", className)}
-      onPress={() => Linking.openURL(href)}
+      onPress={() => Linking.openURL(link.href)}
     >
       <Globe size={16} color={mutedForeground} />
-      <ButtonText className="text-muted-foreground">{display}</ButtonText>
+      <ButtonText className="text-muted-foreground">{link.display}</ButtonText>
     </Button>
   );
 }
 
 function PrimaryButton({ className }: { className?: string }) {
-  const initialStatus = useProfileStore((s) => s.relationship);
-  const username = useProfileStore((s) => s.username);
-  const reactiveStatus = useQuery(api.friends.getRelationship, { username });
-  const relationship =
-    reactiveStatus?.relationship === undefined
-      ? initialStatus
-      : reactiveStatus.relationship;
+  const relationship = useProfileStore((s) => s.relationship);
   if (relationship === undefined) return null;
   if (relationship === "my-profile") {
     return <EditProfileButton className={className} />;

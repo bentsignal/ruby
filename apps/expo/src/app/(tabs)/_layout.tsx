@@ -38,8 +38,8 @@ export default function TabLayout() {
         },
         tabBarActiveTintColor: sidebarActiveColor,
         tabBarInactiveTintColor: sidebarInactiveColor,
+        animation: "shift",
         tabBarShowLabel: false,
-        animation: "none",
         tabBarButton: (props) => {
           const { onPress, children, ref: _ref, href, ...rest } = props;
           return (
@@ -62,6 +62,7 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarLabel: "Home",
+          animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={House} color={color} focused={focused} />
           ),
@@ -71,6 +72,7 @@ export default function TabLayout() {
         name="search"
         options={{
           tabBarLabel: "Search",
+          animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={SearchIcon} color={color} focused={focused} />
           ),
@@ -80,6 +82,7 @@ export default function TabLayout() {
         name="notifications"
         options={{
           tabBarLabel: "Notifications",
+          animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={BellIcon} color={color} focused={focused} />
           ),
@@ -89,6 +92,7 @@ export default function TabLayout() {
         name="my-profile"
         options={{
           tabBarLabel: "Profile",
+          animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={UserRound} color={color} focused={focused} />
           ),
