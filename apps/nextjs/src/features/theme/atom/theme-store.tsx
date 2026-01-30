@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ThemeProvider as NextThemeProvider,
   useTheme as useNextTheme,
@@ -13,8 +13,11 @@ function useInternalStore({ initialTheme }: { initialTheme: Theme }) {
   const { setTheme: setNextTheme } = useNextTheme();
   const [theme, setTheme] = useState<Theme>(initialTheme);
 
+  useEffect(() => {
+    document.cookie = `theme=${theme}; path=/; max-age=${60 * 60 * 24 * 30}`;
+  }, [theme]);
+
   const changeTheme = (newTheme: Theme) => {
-    document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 30}`;
     setNextTheme(newTheme);
     setTheme(newTheme);
   };

@@ -21,7 +21,7 @@
     "@convex-dev/better-auth": "^0.10.4",
     "@convex-dev/react-query": "^0.1.0",
     "@expo-google-fonts/roboto": "^0.4.2",
-    "@legendapp/list": "^2.0.14",
+    "@legendapp/list": "^2.0.19",
     "@tailwindcss/postcss": "catalog:",
     "@tanstack/react-query": "catalog:",
     "better-auth": "catalog:",
