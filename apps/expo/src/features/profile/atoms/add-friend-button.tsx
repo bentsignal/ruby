@@ -14,7 +14,7 @@ export function AddFriendButton({ className }: { className?: string }) {
   const primaryForeground = useColor("primary-foreground");
   return (
     <Button
-      className={cn("rounded-full", className)}
+      className={cn("", className)}
       onPress={() => sendFriendRequest({ username })}
     >
       <UserRoundPlus size={16} color={primaryForeground} />

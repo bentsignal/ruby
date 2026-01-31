@@ -3,7 +3,6 @@ import { LogOut } from "lucide-react-native";
 
 import { Button } from "~/atoms/button";
 import { GoogleIcon } from "~/features/auth/icons";
-import { useProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
 import { useStore as useAuthStore } from "./auth-store";
@@ -39,12 +38,6 @@ const SignOutButton = ({ className }: { className?: string }) => {
   const signOut = useAuthStore((s) => s.signOut);
   const disabled = useAuthStore((s) => s.isLoading || !s.imSignedIn);
   const primaryForeground = useColor("primary-foreground");
-  const relationship = useProfileStore((s) => s.relationship, {
-    optional: true,
-  });
-  if (relationship !== undefined && relationship !== "my-profile") {
-    return null;
-  }
   return (
     <Button
       variant="secondary"

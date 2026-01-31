@@ -24,7 +24,7 @@ export function FriendsButton({ className }: { className?: string }) {
         onPress={() => setIsOpen(true)}
       >
         <UserRound size={16} color={foreground} />
-        <ButtonText>Friends</ButtonText>
+        <ButtonText variant="outline">Friends</ButtonText>
       </Button>
       <Modal
         transparent

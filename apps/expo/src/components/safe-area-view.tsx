@@ -16,8 +16,8 @@ function SafeAreaView({
   return (
     <View
       style={{
-        marginTop: top ? insets.top : 0,
-        marginBottom: bottom ? insets.bottom : 0,
+        paddingTop: top ? insets.top : 0,
+        paddingBottom: bottom ? insets.bottom : 0,
       }}
       {...props}
     >
