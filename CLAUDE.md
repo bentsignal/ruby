@@ -19,7 +19,7 @@ Since the react compiler is enabled, you often don't need to manually memoize wi
 
 ## Commands
 
-This project uses pnpm for package management.
+This project uses pnpm for package management. Do not install packages yourself. If you need a new package installed, stop, inform the user, and wait for them to confirm they've installed it themselves.
 
 ```bash
 # Development
