@@ -1,3 +1,3 @@
-import { TabPageStack } from "../tab-page-stack";
+import { TabPageStack } from "~/layouts/tab-page-stack";
 
 export default TabPageStack;

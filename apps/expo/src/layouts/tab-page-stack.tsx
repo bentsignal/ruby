@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 
 import { useColor } from "~/hooks/use-color";
 
-export function TabPageStack({ children }: { children: React.ReactNode }) {
+export function TabPageStack({ children }: { children?: React.ReactNode }) {
   const backgroundColor = useColor("background");
   return (
     <Stack

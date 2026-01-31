@@ -18,7 +18,7 @@ export function PrimaryButton({ className }: { className?: string }) {
     return <OutgoingRequestButton className={className} />;
   }
   if (relationship === "friends") {
-    return <FriendsButton className={className} />;
+    return <FriendsButton />;
   }
   return <AddFriendButton className={className} />;
 }
