@@ -5,6 +5,7 @@ import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui/separator";
 
 import * as Profile from "~/features/profile/atom";
+import { MainLayout } from "~/layouts/main";
 import { fetchAuthQuery, redirectIfNotLoggedIn } from "~/lib/auth-server";
 
 export default async function ProfileWrapper({
@@ -15,11 +16,11 @@ export default async function ProfileWrapper({
   const { username } = await params;
   await redirectIfNotLoggedIn({ redirectURL: `/${username}` });
   return (
-    <div className="max-w-auto mx-auto flex flex-col gap-4 px-4 pt-8 sm:max-w-md sm:pt-12 lg:max-w-xl">
+    <MainLayout className="flex flex-col gap-4">
       <Suspense fallback={<SkeletonProfile />}>
         <ProfilePage username={username} />
       </Suspense>
-    </div>
+    </MainLayout>
   );
 }
 

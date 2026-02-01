@@ -17,6 +17,7 @@
     "@acme/ui": "workspace:*",
     "@convex-dev/better-auth": "^0.10.4",
     "@convex-dev/react-query": "^0.1.0",
+    "@legendapp/list": "catalog:",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-form": "catalog:",
     "@tanstack/react-query": "catalog:",
