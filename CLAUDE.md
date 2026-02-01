@@ -19,7 +19,7 @@ Since the react compiler is enabled, you often don't need to manually memoize wi
 
 ## Commands
 
-This project uses pnpm for package management. Do not install packages yourself. If you need a new package installed, stop, inform the user, and wait for them to confirm they've installed it themselves.
+This project uses pnpm for package management.
 
 ```bash
 # Development
@@ -36,6 +36,22 @@ pnpm typecheck          # TypeScript check across monorepo
 pnpm ui-add             # Interactive shadcn/ui component installer, components from here can be used in the next.js web app, but NOT in the expo react native app
 
 ```
+
+To run a command for a specific app or package, use `--filter <target-name>`
+
+### Examples
+
+- Installing zustand to the nextjs web app: `pnpm i zustand --filter nextjs`
+- Running lint on the convex backend: `pnpn run lint --filter convex`
+- Running typecheck on the expo mobile app: `pnpm run typecheck --filter expo`
+
+When you have finished making changes for the user, make sure to run the following commands:
+
+1. `pnpm run lint`
+2. `pnpm run format:fix`s
+3. `pnpm run typecheck`
+
+Make sure that these are all passing before you stop working.
 
 ## Directory structure
 

@@ -59,7 +59,10 @@ function ClearButton({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      className={cn("text-sidebar-foreground cursor-pointer py-2 pl-2", className)}
+      className={cn(
+        "text-sidebar-foreground cursor-pointer py-2 pl-2",
+        className,
+      )}
       onClick={() => setSearchTerm("")}
     >
       <X className="size-4" />

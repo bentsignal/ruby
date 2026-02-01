@@ -1,7 +1,9 @@
 const envVars = {
-  CONVEX_URL: process.env.EXPO_PUBLIC_CONVEX_URL,
-  CONVEX_SITE_URL: process.env.EXPO_PUBLIC_CONVEX_SITE_URL,
-  SITE_URL: process.env.EXPO_PUBLIC_SITE_URL,
+  CONVEX_URL: process.env.EXPO_PUBLIC_CONVEX_URL as string | undefined,
+  CONVEX_SITE_URL: process.env.EXPO_PUBLIC_CONVEX_SITE_URL as
+    | string
+    | undefined,
+  SITE_URL: process.env.EXPO_PUBLIC_SITE_URL as string | undefined,
 } as const;
 
 export function env(variable: keyof typeof envVars): string {
