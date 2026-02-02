@@ -3,6 +3,7 @@
 
 // import { api } from "@acme/convex/api";
 
+import { Platform, Text } from "react-native";
 import { router } from "expo-router";
 
 import { Button, ButtonText } from "~/atoms/button";
@@ -28,6 +29,11 @@ export default function Home() {
         <Button onPress={() => router.push("/_sitemap")}>
           <ButtonText>Sitemap</ButtonText>
         </Button>
+      )}
+      {__DEV__ && Platform.OS === "android" && (
+        <Text className="bg-card border-border m-3 rounded-lg border p-3 text-center text-red-500">
+          Make sure to run `nr android:forward` before trying to sign in.
+        </Text>
       )}
     </SafeAreaView>
   );

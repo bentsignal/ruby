@@ -15,8 +15,6 @@ export function SearchPageResults() {
   const { results, resultsStatus, loadingStatus, loadMoreItems } =
     useSearchResults();
 
-  console.log(results.length);
-
   const showLoadingSpinner =
     ["CanLoadMore", "LoadingFirstPage"].includes(loadingStatus) &&
     results.length > 15;

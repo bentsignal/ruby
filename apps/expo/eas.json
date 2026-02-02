@@ -19,10 +19,13 @@
       "extends": "development",
       "developmentClient": true
     },
-    "development:client:ios-sim": {
+    "development:client:sim": {
       "extends": "development:client",
       "ios": {
         "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
