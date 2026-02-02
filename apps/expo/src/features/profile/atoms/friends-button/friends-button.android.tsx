@@ -1,5 +1,5 @@
-import { Alert } from "react-native";
-import { Button as ComposeButton, ContextMenu } from "@expo/ui/jetpack-compose";
+import { useState } from "react";
+import { Alert, Modal, Pressable, View } from "react-native";
 import { useMutation } from "convex/react";
 import { UserRound } from "lucide-react-native";
 
@@ -8,18 +8,19 @@ import { api } from "@acme/convex/api";
 import { Button, ButtonText } from "~/atoms/button";
 import { useProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
-import { cn } from "~/utils/style-utils";
 
-export function FriendsButton({ className }: { className?: string }) {
+export function FriendsButton() {
+  const [modalVisible, setModalVisible] = useState(false);
   const removeFriend = useMutation(api.friends.removeFriend);
+  const name = useProfileStore((s) => s.name);
   const username = useProfileStore((s) => s.username);
   const foreground = useColor("foreground");
-  const destructiveForeground = useColor("destructive-foreground");
 
   const handleRemoveFriend = () => {
+    setModalVisible(false);
     Alert.alert(
-      "Remove friend?",
-      "This will remove this user from your friends.",
+      `Are you sure you want to unfriend ${name}?`,
+      "You'll have to send a new friend request if you change your mind.",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -34,28 +35,44 @@ export function FriendsButton({ className }: { className?: string }) {
   };
 
   return (
-    <ContextMenu>
-      <ContextMenu.Trigger>
-        <Button
-          variant="outline"
-          className={cn("gap-2 rounded-full", className)}
+    <View className="mx-4">
+      <Button
+        variant="outline"
+        className="w-full"
+        onPress={() => setModalVisible(true)}
+      >
+        <UserRound size={16} color={foreground} />
+        <ButtonText variant="outline">Friends</ButtonText>
+      </Button>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <Pressable
+          className="flex-1 items-center justify-center bg-black/50"
+          onPress={() => setModalVisible(false)}
         >
-          <UserRound size={16} color={foreground} />
-          <ButtonText variant="outline">Friends</ButtonText>
-        </Button>
-      </ContextMenu.Trigger>
-      <ContextMenu.Items>
-        <ComposeButton
-          variant="outlined"
-          color={destructiveForeground}
-          onPress={handleRemoveFriend}
-        >
-          Remove friend
-        </ComposeButton>
-        <ComposeButton variant="outlined" color={foreground}>
-          Cancel
-        </ComposeButton>
-      </ContextMenu.Items>
-    </ContextMenu>
+          <View className="bg-background mx-8 w-full max-w-sm rounded-2xl p-4">
+            <Button
+              variant="destructive"
+              className="mb-2 w-full"
+              onPress={handleRemoveFriend}
+            >
+              <ButtonText variant="destructive">Remove friend</ButtonText>
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onPress={() => setModalVisible(false)}
+            >
+              <ButtonText variant="outline">Cancel</ButtonText>
+            </Button>
+          </View>
+        </Pressable>
+      </Modal>
+    </View>
   );
 }
