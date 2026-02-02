@@ -62,12 +62,12 @@ Make sure that these are all passing before you stop working.
 .vscode
   └─ Recommended extensions and settings for VSCode users
 apps
-  ├─ expo
+  ├─ mobile
   │   ├─ Expo SDK 54
   │   ├─ React Native 0.81 using React 19
   │   ├─ Navigation using Expo Router
   │   └─ Tailwind CSS v4 using Uniwind
-  └─ nextjs
+  └─ web
       ├─ Next.js 16
       ├─ React 19
       └─ Tailwind CSS v4
