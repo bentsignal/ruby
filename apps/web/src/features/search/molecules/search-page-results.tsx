@@ -1,8 +1,8 @@
 "use client";
 
 import type { LegendListRenderItemProps } from "@legendapp/list";
-import Link from "next/link";
 import { LegendList } from "@legendapp/list";
+import { Link } from "@tanstack/react-router";
 import { Loader } from "lucide-react";
 
 import type { UIProfile } from "@acme/convex/types";
@@ -77,8 +77,9 @@ function ProfileSearchItem({ item }: LegendListRenderItemProps<UIProfile>) {
   return (
     <Profile.Store profile={item}>
       <Link
-        href={`/${item.username}`}
-        prefetch={true}
+        to="/$username"
+        params={{ username: item.username }}
+        preload="intent"
         className="hover:bg-muted/50 flex items-center gap-3 rounded-lg px-4 py-3"
       >
         <Profile.PFP variant="sm" />

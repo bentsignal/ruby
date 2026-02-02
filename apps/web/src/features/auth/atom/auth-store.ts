@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
 
@@ -17,10 +17,10 @@ function useInternalStore({
 }) {
   const { isLoading, start } = useLoading();
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const showLogin = searchParams.get("showLogin");
-  const redirectToFromParams = searchParams.get("redirectTo");
+  const navigate = useNavigate();
+  const search = useSearch({ from: "__root__" });
+  const showLogin = search.showLogin;
+  const redirectToFromParams = search.redirectTo;
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(
     showLogin === "true",
@@ -59,7 +59,7 @@ function useInternalStore({
   const signOut = () => {
     if (imSignedOut) return;
     start(async () => {
-      router.push("/");
+      void navigate({ to: "/" });
       await authClient.signOut();
     });
   };

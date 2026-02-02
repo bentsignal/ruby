@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
+import { Image } from "@unpic/react";
 import { useMutation, useQuery } from "convex/react";
 import {
   Check,
@@ -45,6 +45,7 @@ function PFP({
       alt="Profile"
       width={size}
       height={size}
+      layout="fixed"
       className={cn("rounded-full", getPFPClassName(variant), className)}
     />
   );
@@ -136,7 +137,7 @@ function PrimaryButton({ className }: { className?: string }) {
 function EditProfileButton({ className }: { className?: string }) {
   return (
     <Button className={cn("rounded-full", className)} asChild>
-      <Link href="/edit-profile" prefetch>
+      <Link to="/edit-profile" preload="intent">
         <PencilIcon className="size-4" />
         Edit Profile
       </Link>

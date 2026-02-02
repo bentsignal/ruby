@@ -9,7 +9,7 @@ import { ConvexReactClient } from "convex/react";
 import { env } from "~/env";
 import { authClient } from "~/lib/auth-client";
 
-const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL, {
+const convex = new ConvexReactClient(env.VITE_CONVEX_URL, {
   expectAuth: true,
 });
 
@@ -24,6 +24,8 @@ const queryClient = new QueryClient({
   },
 });
 convexQueryClient.connect(queryClient);
+
+export { convex, convexQueryClient, queryClient };
 
 export const Provider = ({
   children,

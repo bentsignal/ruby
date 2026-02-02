@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
 import { cn } from "@acme/ui";
@@ -13,7 +12,8 @@ import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-
 import * as Theme from "~/features/theme/atom";
 
 function TabBar() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   const myUsername = Auth.useStore((s) => s.myProfile?.username ?? "");
   return (
     <div
@@ -130,7 +130,7 @@ function TabBarLink({
   }
 
   return (
-    <Link ref={ref} href={href} aria-label={label} prefetch={true} {...props}>
+    <Link ref={ref} to={href} aria-label={label} preload="intent" {...props}>
       {children}
     </Link>
   );
