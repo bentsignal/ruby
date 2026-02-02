@@ -107,16 +107,16 @@ const posts = useQuery(api.posts.getAll);
 
 Uses **Better Auth** with Convex adapter for both platforms:
 
-- **Web**: `apps/nextjs/src/lib/auth-client.ts`, `auth-server.ts`
-- **Mobile**: `apps/expo/src/features/auth/lib/auth-client.ts`
+- **Web**: `apps/web/src/lib/auth-client.ts`, `auth-server.ts`
+- **Mobile**: `apps/mobile/src/features/auth/lib/auth-client.ts`
 - OAuth handled via `@better-auth/expo` plugin with `ruby://` scheme on mobile
 
 Auth should typically be handled through the Auth Store.
 
 ### Environment Variables
 
-Next.js, Expo, and Convex all have a file that shows what environment variables they require
+Web, Mobile, and Convex all have a file that shows what environment variables they require
 
-- Next.js: `./apps/nextjs/src/env.ts`
-- Expo: `./apps/expo/src/expo.env.ts`
+- Web: `./apps/web/src/env.ts`
+- Mobile: `./apps/mobile/src/expo.env.ts`
 - Convex: `./packages/convex/src/convex.env.ts`
