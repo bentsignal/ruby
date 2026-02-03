@@ -1,6 +1,6 @@
-import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
 
 import { env } from "~/env";
 

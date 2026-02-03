@@ -1,8 +1,8 @@
 "use client";
 
 import type { LegendListRenderItemProps } from "@legendapp/list";
-import { LegendList } from "@legendapp/list";
 import { Link } from "@tanstack/react-router";
+import { LegendList } from "@legendapp/list";
 import { Loader } from "lucide-react";
 
 import type { UIProfile } from "@acme/convex/types";

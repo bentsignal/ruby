@@ -1,11 +1,13 @@
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import type { QueryClient } from "@tanstack/react-query";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { z } from "zod/v4";
@@ -106,6 +108,17 @@ function RootComponent() {
           <ConvexProvider>
             <Auth.Store isAuthenticatedServerSide={isAuthenticated}>
               <Outlet />
+              <TanStackDevtools
+                config={{
+                  position: "bottom-right",
+                }}
+                plugins={[
+                  {
+                    name: "react-router",
+                    render: <TanStackRouterDevtoolsPanel />,
+                  },
+                ]}
+              />
               <LoginModal />
             </Auth.Store>
           </ConvexProvider>
