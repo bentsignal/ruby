@@ -10,13 +10,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { z } from "zod/v4";
 
-import "@fontsource-variable/geist";
-import "@fontsource-variable/geist-mono";
-import "@fontsource/roboto/500.css";
-
 import { cn } from "@acme/ui";
 import { Toaster } from "@acme/ui/toast";
 
+import appStyles from "~/app/styles.css?url";
 import { Provider as ConvexProvider } from "~/context/convex-context";
 import { env } from "~/env";
 import * as Auth from "~/features/auth/atom";
@@ -25,26 +22,23 @@ import * as Theme from "~/features/theme/atom";
 import { getTheme } from "~/features/theme/utils";
 import { getAuth } from "~/lib/auth-server";
 
-import "~/app/styles.css";
-
-const getServerData = createServerFn({ method: "GET" }).handler(() => {
+const getThemeFromCookie = createServerFn({ method: "GET" }).handler(() => {
   const themeCookie = getCookie("theme");
   return {
     theme: getTheme(themeCookie),
   };
 });
 
-const rootSearchSchema = z.object({
-  showLogin: z.string().optional(),
-  redirectTo: z.string().optional(),
-});
-
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
 }>()({
-  validateSearch: rootSearchSchema,
+  validateSearch: z.object({
+    showLogin: z.boolean().optional(),
+    redirectTo: z.string().optional(),
+  }),
   head: () => ({
+    links: [{ rel: "stylesheet", href: appStyles }],
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -64,13 +58,14 @@ export const Route = createRootRouteWithContext<{
   }),
   beforeLoad: async ({ context }) => {
     const token = await getAuth();
-    const { theme } = await getServerData();
 
     // During SSR only (the only time serverHttpClient exists),
     // set the auth token to make HTTP queries with.
     if (token) {
       context.convexQueryClient.serverHttpClient?.setAuth(token);
     }
+
+    const { theme } = await getThemeFromCookie();
 
     return {
       isAuthenticated: !!token,

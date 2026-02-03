@@ -95,13 +95,11 @@ function SkeletonProfile() {
 
 function ProfileNotFound() {
   return (
-    <MainLayout className="flex flex-col gap-4">
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Profile Not Found</h1>
-        <p className="text-muted-foreground">
-          The profile you&apos;re looking for doesn&apos;t exist.
-        </p>
-      </div>
-    </MainLayout>
+    <div className="flex h-screen flex-col items-center justify-center gap-4">
+      <h1 className="text-2xl font-bold">Profile Not Found</h1>
+      <p className="text-muted-foreground">
+        The profile you&apos;re looking for doesn&apos;t exist.
+      </p>
+    </div>
   );
 }

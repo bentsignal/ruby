@@ -19,14 +19,12 @@ function useInternalStore({
 
   const navigate = useNavigate();
   const search = useSearch({ from: "__root__" });
-  const showLogin = search.showLogin;
-  const redirectToFromParams = search.redirectTo;
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(
-    showLogin === "true",
+    search.showLogin ?? false,
   );
   const [redirectTo, setRedirectTo] = useState<string | null>(
-    redirectToFromParams ?? null,
+    search.redirectTo ?? null,
   );
   const setRedirectURL = (url: string) => setRedirectTo(url);
 

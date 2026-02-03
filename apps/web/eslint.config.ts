@@ -5,7 +5,7 @@ import { reactConfig } from "@acme/eslint-config/react";
 
 export default defineConfig(
   {
-    ignores: [".vinxi/**", "dist/**"],
+    ignores: [".vinxi/**", "dist/**", "src/routeTree.gen.ts", ".tanstack/**"],
   },
   baseConfig,
   reactConfig,

@@ -28,5 +28,5 @@ export function redirectIfNotLoggedIn({
   redirectURL,
 }: { redirectURL?: string } = {}): never {
   const redirectTo = redirectURL ?? "/";
-  throw redirect({ to: "/", search: { showLogin: "true", redirectTo } });
+  throw redirect({ to: "/", search: { showLogin: true, redirectTo } });
 }
