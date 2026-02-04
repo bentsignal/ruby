@@ -60,9 +60,6 @@ export const Route = createRootRouteWithContext<{
   }),
   beforeLoad: async ({ context }) => {
     const token = await getAuth();
-
-    // During SSR only (the only time serverHttpClient exists),
-    // set the auth token to make HTTP queries with.
     if (token) {
       context.convexQueryClient.serverHttpClient?.setAuth(token);
     }
@@ -91,13 +88,6 @@ function RootComponent() {
         className={cn(
           "bg-background text-foreground min-h-screen font-sans antialiased",
         )}
-        style={
-          {
-            "--font-geist-sans": "'Geist Variable', sans-serif",
-            "--font-geist-mono": "'Geist Mono Variable', monospace",
-            "--font-roboto": "'Roboto', sans-serif",
-          } as React.CSSProperties
-        }
       >
         <Theme.Store
           attribute="class"

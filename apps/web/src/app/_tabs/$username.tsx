@@ -1,5 +1,6 @@
 import {
   createFileRoute,
+  Link,
   notFound,
   useLoaderData,
 } from "@tanstack/react-router";
@@ -7,6 +8,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 import type { Relationship, UIProfile } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
+import { Button } from "@acme/ui/button";
 import { Separator } from "@acme/ui/separator";
 
 import * as Profile from "~/features/profile/atom";
@@ -95,11 +97,14 @@ function SkeletonProfile() {
 
 function ProfileNotFound() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold">Profile Not Found</h1>
+    <div className="flex h-screen flex-col items-center justify-center gap-2">
+      <h1 className="text-2xl font-bold">Page Not Found</h1>
       <p className="text-muted-foreground">
-        The profile you&apos;re looking for doesn&apos;t exist.
+        The page you&apos;re looking for doesn&apos;t exist, sorry about that.
       </p>
+      <Button className="mt-1">
+        <Link to="/">Go Home</Link>
+      </Button>
     </div>
   );
 }
