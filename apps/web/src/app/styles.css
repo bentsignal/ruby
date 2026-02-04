@@ -27,7 +27,7 @@
   :root {
     --font-geist-sans: "Geist Variable";
     --font-geist-mono: "Geist Mono Variable";
-    --font-roboto: "Roboto";
+    --font-roboto: "Roboto Variable";
   }
   * {
     @apply border-border;
