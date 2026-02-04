@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactNode } from "react";
 import { StrictMode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

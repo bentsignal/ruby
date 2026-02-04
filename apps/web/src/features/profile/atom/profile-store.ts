@@ -1,5 +1,3 @@
-"use client";
-
 import { createStore } from "rostra";
 
 import type { Relationship, UIProfile } from "@acme/convex/types";

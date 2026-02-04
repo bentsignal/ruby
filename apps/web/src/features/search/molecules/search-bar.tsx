@@ -1,5 +1,3 @@
-"use client";
-
 import * as Search from "../atom";
 
 function SearchBar() {

@@ -1,5 +1,3 @@
-"use client";
-
 import { createStore } from "rostra";
 
 import useDebouncedInput from "~/hooks/use-debounced-input";
