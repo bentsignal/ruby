@@ -35,6 +35,7 @@
     "convex": "catalog:",
     "lucide-react": "catalog:",
     "next-themes": "^0.4.6",
+    "nitro": "3.0.1-alpha.2",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "rostra": "catalog:",
