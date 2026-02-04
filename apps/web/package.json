@@ -53,6 +53,7 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
