@@ -31,15 +31,15 @@ function useInternalStore({
     if (!storeSearchTermInURL) return;
 
     const currentQ = search.q ?? "";
-    if (currentQ === debouncedSearchTerm) return;
+    if (currentQ === searchTerm) return;
 
-    const newSearch = debouncedSearchTerm ? { q: debouncedSearchTerm } : {};
+    const newSearch = searchTerm ? { q: searchTerm } : {};
     void navigate({
       to: ".",
       search: newSearch,
       replace: true,
     });
-  }, [debouncedSearchTerm, storeSearchTermInURL, navigate, search.q]);
+  }, [searchTerm, storeSearchTermInURL, navigate, search.q]);
 
   return {
     searchTerm,
