@@ -4,7 +4,7 @@
 
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
-@import "@fontsource/roboto";
+@import "@fontsource-variable/roboto";
 
 @source "../../../../packages/ui/src/*.{ts,tsx}";
 

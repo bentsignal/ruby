@@ -19,7 +19,7 @@
     "@convex-dev/react-query": "^0.1.0",
     "@fontsource-variable/geist": "^5.2.7",
     "@fontsource-variable/geist-mono": "^5.2.7",
-    "@fontsource/roboto": "^5.2.7",
+    "@fontsource-variable/roboto": "^5.2.9",
     "@legendapp/list": "catalog:",
     "@t3-oss/env-core": "^0.13.8",
     "@tanstack/devtools-vite": "^0.5.0",
