@@ -30,15 +30,15 @@ function useInternalStore({
 
   useEffect(() => {
     if (!storeSearchTermInURL) return;
-    if (urlSearchTerm === searchTerm) return;
+    if (urlSearchTerm === debouncedSearchTerm) return;
 
-    const newSearch = searchTerm ? { q: searchTerm } : {};
+    const newSearch = debouncedSearchTerm ? { q: debouncedSearchTerm } : {};
     void navigate({
       to: ".",
       search: newSearch,
       replace: true,
     });
-  }, [searchTerm, storeSearchTermInURL, navigate, urlSearchTerm]);
+  }, [debouncedSearchTerm, storeSearchTermInURL, navigate, urlSearchTerm]);
 
   return {
     searchTerm,

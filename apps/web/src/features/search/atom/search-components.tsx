@@ -44,10 +44,10 @@ function Input({
     }
   };
 
-  // auto focus on mount
   useEffect(() => {
     focusInput();
   }, []);
+
   return (
     <input
       ref={inputRef}

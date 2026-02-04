@@ -5,12 +5,10 @@ import * as Search from "~/features/search/atom";
 import { SearchPageResults } from "~/features/search/molecules/search-page-results";
 import { MainLayout } from "~/layouts/main";
 
-const searchParamsSchema = z.object({
-  q: z.string().optional(),
-});
-
 export const Route = createFileRoute("/_tabs/search")({
-  validateSearch: searchParamsSchema,
+  validateSearch: z.object({
+    q: z.string().optional(),
+  }),
   beforeLoad: ({ context }) => {
     if (!context.isAuthenticated) {
       throw redirect({
