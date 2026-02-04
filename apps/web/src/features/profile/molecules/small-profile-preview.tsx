@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 
 import * as Auth from "~/features/auth/atom";
 import * as Profile from "~/features/profile/atom";
@@ -13,8 +13,9 @@ function SmallProfilePreview() {
     <div className="flex flex-col items-start gap-2">
       <Profile.Store profile={myProfile}>
         <Link
-          href={`/${myProfile.username}`}
-          prefetch={true}
+          to="/$username"
+          params={{ username: myProfile.username }}
+          preload="intent"
           className="cursor-pointer"
         >
           <div className="flex items-center gap-2">

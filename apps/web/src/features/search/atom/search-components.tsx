@@ -1,6 +1,5 @@
-"use client";
-
 import type { InputHTMLAttributes } from "react";
+import { useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
 
 import { cn } from "~/utils/style-utils";
@@ -33,10 +32,25 @@ function Input({
   className,
   ...props
 }: Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const searchTerm = useSearchStore((s) => s.searchTerm);
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
+
+  const focusInput = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const length = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(length, length);
+    }
+  };
+
+  // auto focus on mount
+  useEffect(() => {
+    focusInput();
+  }, []);
   return (
     <input
+      ref={inputRef}
       className={cn(
         "text-sidebar-foreground placeholder:text-muted-foreground h-10 flex-1 bg-transparent px-4 outline-none",
         className,

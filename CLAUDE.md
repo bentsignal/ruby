@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Turborepo monorepo** containing a Next.js web app and Expo React Native app that share a Convex backend. Users share updates on their adventures through posts.
+This is a **Turborepo monorepo** containing a TanStack Start web app and Expo React Native app that share a Convex backend. Users share updates on their adventures through posts.
 
 ## Key Tech Stack
 
 - React 19, React Native 0.81 (react compiler enabled)
-- Expo SDK 54, Expo Router
+- TanStack Start (Vite + TanStack Router) for web
+- Expo SDK 54, Expo Router for mobile
 - Tailwind CSS v4 (Uniwind on mobile)
 - Convex for backend/db
 - Better Auth for authentication
@@ -33,7 +34,7 @@ pnpm format:fix         # Fix formatting
 pnpm typecheck          # TypeScript check across monorepo
 
 # Adding components
-pnpm ui-add             # Interactive shadcn/ui component installer, components from here can be used in the next.js web app, but NOT in the expo react native app
+pnpm ui-add             # Interactive shadcn/ui component installer, components from here can be used in the web app, but NOT in the expo react native app
 
 ```
 
@@ -41,8 +42,8 @@ To run a command for a specific app or package, use `--filter <target-name>`
 
 ### Examples
 
-- Installing zustand to the nextjs web app: `pnpm i zustand --filter nextjs`
-- Running lint on the convex backend: `pnpn run lint --filter convex`
+- Installing zustand to the web app: `pnpm i zustand --filter @acme/web`
+- Running lint on the convex backend: `pnpm run lint --filter convex`
 - Running typecheck on the expo mobile app: `pnpm run typecheck --filter expo`
 
 When you have finished making changes for the user, make sure to run the following commands:
@@ -68,7 +69,7 @@ apps
   │   ├─ Navigation using Expo Router
   │   └─ Tailwind CSS v4 using Uniwind
   └─ web
-      ├─ Next.js 16
+      ├─ TanStack Start (Vite + TanStack Router)
       ├─ React 19
       └─ Tailwind CSS v4
 packages

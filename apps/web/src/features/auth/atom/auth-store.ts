@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
 
@@ -17,17 +15,18 @@ function useInternalStore({
 }) {
   const { isLoading, start } = useLoading();
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const showLogin = searchParams.get("showLogin");
-  const redirectToFromParams = searchParams.get("redirectTo");
+  const navigate = useNavigate();
+  const urlShowLogin = useSearch({
+    from: "__root__",
+    select: (s) => s.showLogin ?? false,
+  });
+  const urlRedirectTo = useSearch({
+    from: "__root__",
+    select: (s) => s.redirectTo ?? null,
+  });
 
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(
-    showLogin === "true",
-  );
-  const [redirectTo, setRedirectTo] = useState<string | null>(
-    redirectToFromParams ?? null,
-  );
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(urlShowLogin);
+  const [redirectTo, setRedirectTo] = useState(urlRedirectTo);
   const setRedirectURL = (url: string) => setRedirectTo(url);
 
   // use serverside auth value until client is mounted
@@ -59,7 +58,7 @@ function useInternalStore({
   const signOut = () => {
     if (imSignedOut) return;
     start(async () => {
-      router.push("/");
+      void navigate({ to: "/", replace: true });
       await authClient.signOut();
     });
   };

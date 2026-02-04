@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@unpic/react";
 import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
 
 import type { UIPost } from "@acme/convex/types";
@@ -28,6 +28,7 @@ export const Post = ({ post }: { post: UIPost }) => {
             alt={post.images[0].alt ?? post.caption ?? ""}
             width={800}
             height={600}
+            layout="constrained"
             className="object-cover"
           />
         </div>

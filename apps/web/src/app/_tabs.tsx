@@ -1,7 +1,10 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
 import { cn } from "@acme/ui";
@@ -12,8 +15,22 @@ import * as Auth from "~/features/auth/atom";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
 import * as Theme from "~/features/theme/atom";
 
+export const Route = createFileRoute("/_tabs")({
+  component: TabsLayout,
+});
+
+function TabsLayout() {
+  return (
+    <>
+      <Outlet />
+      <TabBar />
+    </>
+  );
+}
+
 function TabBar() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   const myUsername = Auth.useStore((s) => s.myProfile?.username ?? "");
   return (
     <div
@@ -26,7 +43,7 @@ function TabBar() {
       )}
     >
       <TabBarLink href="/" label="Home">
-        <TabBarButton>
+        <TabBarSlot>
           <Home
             size={24}
             strokeWidth={pathname === "/" ? 2.5 : 1.75}
@@ -35,10 +52,10 @@ function TabBar() {
               pathname === "/" && "text-sidebar-accent-foreground",
             )}
           />
-        </TabBarButton>
+        </TabBarSlot>
       </TabBarLink>
       <TabBarLink href="/search" label="Search">
-        <TabBarButton>
+        <TabBarSlot>
           <Search
             size={24}
             strokeWidth={pathname === "/search" ? 2.5 : 1.75}
@@ -47,10 +64,10 @@ function TabBar() {
               pathname === "/search" && "text-sidebar-accent-foreground",
             )}
           />
-        </TabBarButton>
+        </TabBarSlot>
       </TabBarLink>
       <TabBarLink href="/notifications" label="Notifications">
-        <TabBarButton>
+        <TabBarSlot>
           <Bell
             size={24}
             strokeWidth={pathname === "/notifications" ? 2.5 : 1.75}
@@ -59,12 +76,12 @@ function TabBar() {
               pathname === "/notifications" && "text-sidebar-accent-foreground",
             )}
           />
-        </TabBarButton>
+        </TabBarSlot>
       </TabBarLink>
       <HoverCard.Container openDelay={1250}>
         <HoverCard.Trigger asChild>
           <TabBarLink href={`/${myUsername}`} label="Profile">
-            <TabBarButton>
+            <TabBarSlot>
               <UserRound
                 size={24}
                 strokeWidth={pathname === `/${myUsername}` ? 2.5 : 1.75}
@@ -74,7 +91,7 @@ function TabBar() {
                     "text-sidebar-accent-foreground",
                 )}
               />
-            </TabBarButton>
+            </TabBarSlot>
           </TabBarLink>
         </HoverCard.Trigger>
         <HoverCard.Content className="flex flex-col items-start px-6! pt-5 pb-3!">
@@ -91,7 +108,7 @@ function TabBar() {
   );
 }
 
-function TabBarButton({ children }: { children: React.ReactNode }) {
+function TabBarSlot({ children }: { children: React.ReactNode }) {
   return (
     <div className="text-sidebar-foreground hover:bg-sidebar-accent flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors">
       {children}
@@ -112,16 +129,17 @@ function TabBarLink({
   ref?: React.Ref<HTMLAnchorElement>;
 }) {
   const imNotSignedIn = Auth.useStore((s) => s.imSignedOut);
-  const setIsLoginModalOpen = Auth.useStore((s) => s.setIsLoginModalOpen);
-  const setRedirectURL = Auth.useStore((s) => s.setRedirectURL);
+  const navigate = useNavigate();
 
   if (imNotSignedIn) {
     return (
       <button
         aria-label={label}
         onClick={() => {
-          setIsLoginModalOpen(true);
-          setRedirectURL(href);
+          void navigate({
+            to: "/",
+            search: (prev) => ({ ...prev, showLogin: true, redirectTo: href }),
+          });
         }}
       >
         {children}
@@ -130,10 +148,8 @@ function TabBarLink({
   }
 
   return (
-    <Link ref={ref} href={href} aria-label={label} prefetch={true} {...props}>
+    <Link ref={ref} to={href} aria-label={label} preload="intent" {...props}>
       {children}
     </Link>
   );
 }
-
-export { TabBar };

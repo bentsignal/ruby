@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { createStore } from "rostra";
 
 import useDebouncedInput from "~/hooks/use-debounced-input";
@@ -24,27 +22,23 @@ function useInternalStore({
     initialValue: initialSearchTerm,
   });
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const urlSearchTerm = useSearch({
+    from: "/_tabs/search",
+    select: (s) => s.q,
+  });
 
   useEffect(() => {
     if (!storeSearchTermInURL) return;
+    if (urlSearchTerm === searchTerm) return;
 
-    const currentQ = searchParams.get("q") ?? "";
-    if (currentQ === debouncedSearchTerm) return;
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (debouncedSearchTerm) {
-      params.set("q", debouncedSearchTerm);
-    } else {
-      params.delete("q");
-    }
-
-    const newUrl = params.toString()
-      ? `?${params.toString()}`
-      : window.location.pathname;
-    router.replace(newUrl, { scroll: false });
-  }, [debouncedSearchTerm, storeSearchTermInURL, router, searchParams]);
+    const newSearch = searchTerm ? { q: searchTerm } : {};
+    void navigate({
+      to: ".",
+      search: newSearch,
+      replace: true,
+    });
+  }, [searchTerm, storeSearchTermInURL, navigate, urlSearchTerm]);
 
   return {
     searchTerm,

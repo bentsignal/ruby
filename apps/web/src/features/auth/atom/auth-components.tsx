@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { LogIn, LogOut } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
@@ -43,13 +44,15 @@ function TakeMeToLoginButton() {
 }
 
 function TakeMeToLoginLink() {
-  const setIsLoginModalOpen = useAuthStore((s) => s.setIsLoginModalOpen);
+  const navigate = useNavigate();
+  function handleClick() {
+    void navigate({
+      to: "/",
+      search: (prev) => ({ ...prev, showLogin: true }),
+    });
+  }
   return (
-    <Button
-      variant="link"
-      onClick={() => setIsLoginModalOpen(true)}
-      className="px-0!"
-    >
+    <Button variant="link" onClick={handleClick} className="px-0!">
       <LogIn size={16} />
       <span>Take me to login</span>
     </Button>

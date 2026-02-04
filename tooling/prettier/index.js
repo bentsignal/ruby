@@ -12,8 +12,8 @@ const config = {
   importOrder: [
     "<TYPES>",
     "^(react/(.*)$)|^(react$)|^(react-native(.*)$)",
-    "^(next/(.*)$)|^(next$)",
     "^(expo(.*)$)|^(expo$)",
+    "^(@tanstack/(.*)$)|^(@tanstack$)",
     "<THIRD_PARTY_MODULES>",
     "",
     "<TYPES>^@acme",
