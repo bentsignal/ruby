@@ -1,6 +1,14 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod/v4";
 
+const runtimeEnv = import.meta.env.SSR
+  ? ((
+      globalThis as unknown as {
+        process?: { env?: Record<string, string | undefined> };
+      }
+    ).process?.env ?? {})
+  : import.meta.env;
+
 export const env = createEnv({
   clientPrefix: "VITE_",
   client: {
@@ -11,6 +19,6 @@ export const env = createEnv({
     VITE_CONVEX_SITE_URL: z.string().url(),
     VITE_SITE_URL: z.string().url(),
   },
-  runtimeEnv: import.meta.env,
+  runtimeEnv,
   emptyStringAsUndefined: true,
 });
