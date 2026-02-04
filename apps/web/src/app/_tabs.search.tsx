@@ -1,10 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod/v4";
 
 import * as Search from "~/features/search/atom";
 import { SearchPageResults } from "~/features/search/molecules/search-page-results";
 import { MainLayout } from "~/layouts/main";
-import { getAuth, redirectIfNotLoggedIn } from "~/lib/auth-server";
 
 const searchParamsSchema = z.object({
   q: z.string().optional(),
@@ -12,17 +11,19 @@ const searchParamsSchema = z.object({
 
 export const Route = createFileRoute("/_tabs/search")({
   validateSearch: searchParamsSchema,
-  beforeLoad: async () => {
-    const token = await getAuth();
-    if (!token) {
-      redirectIfNotLoggedIn({ redirectURL: "/search" });
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/",
+        search: { showLogin: true, redirectTo: "/search" },
+      });
     }
   },
   component: SearchPage,
 });
 
 function SearchPage() {
-  const { q } = Route.useSearch();
+  const q = Route.useSearch({ select: (s) => s.q });
 
   return (
     <Search.Store initialSearchTerm={q} storeSearchTermInURL={true}>

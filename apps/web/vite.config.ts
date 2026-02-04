@@ -16,6 +16,9 @@ export default defineConfig({
     tanstackStart({
       srcDirectory: "src",
       router: { routesDirectory: "app" },
+      spa: {
+        enabled: true,
+      },
     }),
     viteReact({
       babel: {

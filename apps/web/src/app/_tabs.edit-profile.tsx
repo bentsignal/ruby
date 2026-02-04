@@ -1,6 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_tabs/edit-profile")({
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/",
+        search: { showLogin: true, redirectTo: "/edit-profile" },
+      });
+    }
+  },
   component: EditProfilePage,
 });
 

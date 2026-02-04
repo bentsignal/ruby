@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { getAuth, redirectIfNotLoggedIn } from "~/lib/auth-server";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_tabs/create")({
-  beforeLoad: async () => {
-    const token = await getAuth();
-    if (!token) {
-      redirectIfNotLoggedIn({ redirectURL: "/create" });
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/",
+        search: { showLogin: true, redirectTo: "/create" },
+      });
     }
   },
   component: CreatePage,

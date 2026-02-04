@@ -2,9 +2,11 @@ import {
   createFileRoute,
   Link,
   notFound,
+  redirect,
   useLoaderData,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { House } from "lucide-react";
 
 import type { Relationship, UIProfile } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
@@ -13,11 +15,7 @@ import { Separator } from "@acme/ui/separator";
 
 import * as Profile from "~/features/profile/atom";
 import { MainLayout } from "~/layouts/main";
-import {
-  fetchAuthQuery,
-  getAuth,
-  redirectIfNotLoggedIn,
-} from "~/lib/auth-server";
+import { fetchAuthQuery } from "~/lib/auth-server";
 
 const getProfileData = createServerFn({ method: "GET" })
   .inputValidator((username: string) => username)
@@ -32,10 +30,12 @@ const getProfileData = createServerFn({ method: "GET" })
   );
 
 export const Route = createFileRoute("/_tabs/$username")({
-  beforeLoad: async ({ params }) => {
-    const token = await getAuth();
-    if (!token) {
-      redirectIfNotLoggedIn({ redirectURL: `/${params.username}` });
+  beforeLoad: ({ params, context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/",
+        search: { showLogin: true, redirectTo: `/${params.username}` },
+      });
     }
   },
   loader: async ({ params }) => {
@@ -98,12 +98,13 @@ function SkeletonProfile() {
 function ProfileNotFound() {
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-2">
-      <h1 className="text-2xl font-bold">Page Not Found</h1>
+      <h1 className="text-2xl font-bold">Sorry about that</h1>
       <p className="text-muted-foreground">
-        The page you&apos;re looking for doesn&apos;t exist, sorry about that.
+        We couldn't find the page you're looking for.
       </p>
       <Button className="mt-1">
-        <Link to="/">Go Home</Link>
+        <House className="size-4" />
+        <Link to="/">Back to home</Link>
       </Button>
     </div>
   );

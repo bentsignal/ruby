@@ -25,13 +25,14 @@ function useInternalStore({
   });
 
   const navigate = useNavigate();
-  const search = useSearch({ from: "/_tabs/search" });
+  const urlSearchTerm = useSearch({
+    from: "/_tabs/search",
+    select: (s) => s.q,
+  });
 
   useEffect(() => {
     if (!storeSearchTermInURL) return;
-
-    const currentQ = search.q ?? "";
-    if (currentQ === searchTerm) return;
+    if (urlSearchTerm === searchTerm) return;
 
     const newSearch = searchTerm ? { q: searchTerm } : {};
     void navigate({
@@ -39,7 +40,7 @@ function useInternalStore({
       search: newSearch,
       replace: true,
     });
-  }, [searchTerm, storeSearchTermInURL, navigate, search.q]);
+  }, [searchTerm, storeSearchTermInURL, navigate, urlSearchTerm]);
 
   return {
     searchTerm,

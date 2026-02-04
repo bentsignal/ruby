@@ -1,5 +1,6 @@
 "use client";
 
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Loader } from "lucide-react";
 
 import * as Dialog from "@acme/ui/dialog";
@@ -9,17 +10,27 @@ import * as Auth from "~/features/auth/atom";
 import { useIsMobile } from "~/hooks/use-is-mobile";
 
 export function LoginModal() {
-  const isLoginModalOpen = Auth.useStore((s) => s.isLoginModalOpen);
-  const setIsLoginModalOpen = Auth.useStore((s) => s.setIsLoginModalOpen);
-
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  const urlSaysShowLogin = useSearch({
+    from: "__root__",
+    select: (s) => s.showLogin ?? false,
+  });
+  const imNotloggedIn = Auth.useStore((s) => s.imSignedOut);
+
+  const shouldShowLogin = imNotloggedIn && urlSaysShowLogin;
+
+  function handleOpenChange(open: boolean) {
+    void navigate({
+      to: "/",
+      search: (prev) => ({ ...prev, showLogin: open ? true : undefined }),
+    });
+  }
 
   if (isMobile) {
     return (
-      <Drawer.Container
-        open={isLoginModalOpen}
-        onOpenChange={setIsLoginModalOpen}
-      >
+      <Drawer.Container open={shouldShowLogin} onOpenChange={handleOpenChange}>
         <Drawer.Content className="my-4">
           <LoadingOverlay />
           <Drawer.Header className="text-left">
@@ -45,10 +56,7 @@ export function LoginModal() {
   }
 
   return (
-    <Dialog.Container
-      open={isLoginModalOpen}
-      onOpenChange={setIsLoginModalOpen}
-    >
+    <Dialog.Container open={shouldShowLogin} onOpenChange={handleOpenChange}>
       <Dialog.Content className="sm:max-w-[425px]">
         <LoadingOverlay />
         <Dialog.Header>

@@ -18,14 +18,17 @@ function useInternalStore({
   const { isLoading, start } = useLoading();
 
   const navigate = useNavigate();
-  const search = useSearch({ from: "__root__" });
+  const urlShowLogin = useSearch({
+    from: "__root__",
+    select: (s) => s.showLogin ?? false,
+  });
+  const urlRedirectTo = useSearch({
+    from: "__root__",
+    select: (s) => s.redirectTo ?? null,
+  });
 
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(
-    search.showLogin ?? false,
-  );
-  const [redirectTo, setRedirectTo] = useState<string | null>(
-    search.redirectTo ?? null,
-  );
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(urlShowLogin);
+  const [redirectTo, setRedirectTo] = useState(urlRedirectTo);
   const setRedirectURL = (url: string) => setRedirectTo(url);
 
   // use serverside auth value until client is mounted
@@ -57,7 +60,7 @@ function useInternalStore({
   const signOut = () => {
     if (imSignedOut) return;
     start(async () => {
-      void navigate({ to: "/" });
+      void navigate({ to: "/", replace: true });
       await authClient.signOut();
     });
   };

@@ -10,13 +10,13 @@
 
 import { Route as rootRouteImport } from './app/__root'
 import { Route as TabsRouteImport } from './app/_tabs'
-import { Route as TabsIndexRouteImport } from './app/_tabs/index'
-import { Route as TabsSearchRouteImport } from './app/_tabs/search'
-import { Route as TabsNotificationsRouteImport } from './app/_tabs/notifications'
-import { Route as TabsEditProfileRouteImport } from './app/_tabs/edit-profile'
-import { Route as TabsCreateRouteImport } from './app/_tabs/create'
-import { Route as TabsUsernameRouteImport } from './app/_tabs/$username'
-import { Route as ApiAuthSplatRouteImport } from './app/api/auth/$'
+import { Route as TabsIndexRouteImport } from './app/_tabs.index'
+import { Route as TabsSearchRouteImport } from './app/_tabs.search'
+import { Route as TabsNotificationsRouteImport } from './app/_tabs.notifications'
+import { Route as TabsEditProfileRouteImport } from './app/_tabs.edit-profile'
+import { Route as TabsCreateRouteImport } from './app/_tabs.create'
+import { Route as TabsUsernameRouteImport } from './app/_tabs.$username'
+import { Route as ApiAuthSplatRouteImport } from './app/api.auth.$'
 
 const TabsRoute = TabsRouteImport.update({
   id: '/_tabs',
