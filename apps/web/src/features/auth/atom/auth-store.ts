@@ -19,18 +19,10 @@ function useInternalStore({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const urlShowLogin = useSearch({
-    from: "__root__",
-    select: (s) => s.showLogin ?? false,
-  });
-  const urlRedirectTo = useSearch({
+  const redirectTo = useSearch({
     from: "__root__",
     select: (s) => s.redirectTo ?? null,
   });
-
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(urlShowLogin);
-  const [redirectTo, setRedirectTo] = useState(urlRedirectTo);
-  const setRedirectURL = (url: string) => setRedirectTo(url);
 
   // use serverside auth value until client is mounted
   const { isAuthenticated: isAuthenticatedClientSide } = useConvexAuth();
@@ -83,9 +75,6 @@ function useInternalStore({
     imSignedOut,
     signInWithGoogle,
     signOut,
-    isLoginModalOpen,
-    setIsLoginModalOpen,
-    setRedirectURL,
   };
 }
 
