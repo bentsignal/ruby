@@ -63,7 +63,7 @@ function useInternalStore({
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            navigate({ to: "/", replace: true });
+            void navigate({ to: "/", replace: true });
             queryClient.removeQueries({ queryKey: ["auth-token"] });
           },
         },
