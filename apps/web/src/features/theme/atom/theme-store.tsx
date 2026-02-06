@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ThemeProvider as NextThemeProvider,
   useTheme as useNextTheme,
@@ -8,6 +9,7 @@ import { createStore } from "rostra";
 import type { Theme } from "../types";
 
 function useInternalStore({ initialTheme }: { initialTheme: Theme }) {
+  const queryClient = useQueryClient();
   const { setTheme: setNextTheme } = useNextTheme();
   const [theme, setTheme] = useState<Theme>(initialTheme);
 
@@ -18,6 +20,7 @@ function useInternalStore({ initialTheme }: { initialTheme: Theme }) {
   const changeTheme = (newTheme: Theme) => {
     setNextTheme(newTheme);
     setTheme(newTheme);
+    queryClient.setQueryData(["theme"], newTheme);
   };
 
   return { theme, changeTheme };

@@ -1,16 +1,14 @@
 import {
   createFileRoute,
-  Link,
   notFound,
   redirect,
   useLoaderData,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { House } from "lucide-react";
+import { Loader } from "lucide-react";
 
 import type { Relationship, UIProfile } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
-import { Button } from "@acme/ui/button";
 import { Separator } from "@acme/ui/separator";
 
 import * as Profile from "~/features/profile/atom";
@@ -46,8 +44,7 @@ export const Route = createFileRoute("/_tabs/$username")({
     return result;
   },
   component: ProfilePage,
-  pendingComponent: SkeletonProfile,
-  notFoundComponent: ProfileNotFound,
+  pendingComponent: LoadingProfile,
 });
 
 function ProfilePage() {
@@ -75,37 +72,10 @@ function ProfilePage() {
   );
 }
 
-function SkeletonProfile() {
+function LoadingProfile() {
   return (
-    <MainLayout className="flex flex-col gap-4">
-      <div className="flex animate-pulse flex-col gap-5">
-        <div className="flex items-center gap-4">
-          <Profile.BlankPFP variant="md" />
-          <div className="flex flex-col gap-2">
-            <div className="bg-muted h-4 w-24 rounded-full" />
-            <div className="bg-muted h-4 w-16 rounded-full" />
-          </div>
-          <div className="bg-muted ml-auto h-9 w-28 rounded-full" />
-        </div>
-        <div className="bg-muted mb-1 h-4 w-[65%] rounded-full" />
-        <div className="bg-muted mb-1 h-4 w-36 rounded-full" />
-        <Separator />
-      </div>
+    <MainLayout className="animate-in fade-in my-0 flex h-screen flex-col items-center justify-center gap-4 py-0 pb-8 duration-1000">
+      <Loader className="size-6 animate-spin" />
     </MainLayout>
-  );
-}
-
-function ProfileNotFound() {
-  return (
-    <div className="flex h-screen flex-col items-center justify-center gap-2">
-      <h1 className="text-2xl font-bold">Sorry about that</h1>
-      <p className="text-muted-foreground">
-        We couldn't find the page you're looking for.
-      </p>
-      <Button className="mt-1">
-        <House className="size-4" />
-        <Link to="/">Back to home</Link>
-      </Button>
-    </div>
   );
 }

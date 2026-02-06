@@ -61,7 +61,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
   }),
   beforeLoad: async ({ context }) => {
-    const token = await getAuth();
+    const token = await context.queryClient.fetchQuery({
+      queryKey: ["auth-token"],
+      queryFn: async () => (await getAuth()) ?? null,
+      staleTime: 5 * 60 * 1000,
+      gcTime: Infinity,
+    });
     // all queries, mutations and actions through TanStack Query will be
     // authenticated during SSR if we have a valid token
     if (token) {
@@ -70,7 +75,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       context.convexQueryClient.serverHttpClient?.setAuth(token);
     }
 
-    const { theme } = await getThemeFromCookie();
+    const { theme } = await context.queryClient.fetchQuery({
+      queryKey: ["theme"],
+      queryFn: async () => await getThemeFromCookie(),
+      staleTime: Infinity,
+      gcTime: Infinity,
+    });
 
     return {
       isAuthenticated: !!token,

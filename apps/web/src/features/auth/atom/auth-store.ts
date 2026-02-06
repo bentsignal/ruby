@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
@@ -14,8 +15,9 @@ function useInternalStore({
   isAuthenticatedServerSide: boolean;
 }) {
   const { isLoading, start } = useLoading();
-
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+
   const urlShowLogin = useSearch({
     from: "__root__",
     select: (s) => s.showLogin ?? false,
@@ -58,8 +60,14 @@ function useInternalStore({
   const signOut = () => {
     if (imSignedOut) return;
     start(async () => {
-      void navigate({ to: "/", replace: true });
-      await authClient.signOut();
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            navigate({ to: "/", replace: true });
+            queryClient.removeQueries({ queryKey: ["auth-token"] });
+          },
+        },
+      });
     });
   };
 

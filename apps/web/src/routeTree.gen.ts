@@ -59,12 +59,12 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof TabsIndexRoute
   '/$username': typeof TabsUsernameRoute
   '/create': typeof TabsCreateRoute
   '/edit-profile': typeof TabsEditProfileRoute
   '/notifications': typeof TabsNotificationsRoute
   '/search': typeof TabsSearchRoute
-  '/': typeof TabsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -90,12 +90,12 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/$username'
     | '/create'
     | '/edit-profile'
     | '/notifications'
     | '/search'
-    | '/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,7 +128,7 @@ declare module '@tanstack/react-router' {
     '/_tabs': {
       id: '/_tabs'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof TabsRouteImport
       parentRoute: typeof rootRouteImport
     }
