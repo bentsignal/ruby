@@ -32,6 +32,7 @@ function TabBar() {
   const location = useLocation();
   const pathname = location.pathname;
   const myUsername = Auth.useStore((s) => s.myProfile?.username ?? "");
+  const imNotSignedIn = Auth.useStore((s) => s.imSignedOut);
   return (
     <div
       className={cn(
@@ -78,7 +79,7 @@ function TabBar() {
           />
         </TabBarSlot>
       </TabBarLink>
-      <HoverCard.Container openDelay={1250}>
+      <HoverCard.Container openDelay={0} closeDelay={200}>
         <HoverCard.Trigger asChild>
           <TabBarLink href={`/${myUsername}`} label="Profile">
             <TabBarSlot>
@@ -94,7 +95,12 @@ function TabBar() {
             </TabBarSlot>
           </TabBarLink>
         </HoverCard.Trigger>
-        <HoverCard.Content className="flex flex-col items-start px-6! pt-5 pb-3!">
+        <HoverCard.Content
+          className={cn(
+            "flex flex-col items-start px-6! pt-5 pb-3!",
+            imNotSignedIn && "hidden",
+          )}
+        >
           <SmallProfilePreview />
           <Theme.Toggle />
         </HoverCard.Content>

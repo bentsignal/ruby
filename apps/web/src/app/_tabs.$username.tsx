@@ -11,9 +11,9 @@ import type { Relationship, UIProfile } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui/separator";
 
+import { fetchAuthQuery } from "~/features/auth/lib/server";
 import * as Profile from "~/features/profile/atom";
 import { MainLayout } from "~/layouts/main";
-import { fetchAuthQuery } from "~/lib/auth-server";
 
 const getProfileData = createServerFn({ method: "GET" })
   .inputValidator((username: string) => username)

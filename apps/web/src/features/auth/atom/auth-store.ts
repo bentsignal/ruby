@@ -5,9 +5,10 @@ import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
+import { toast } from "@acme/ui/toast";
 
 import { useLoading } from "~/hooks/use-loading";
-import { authClient } from "../../../lib/auth-client";
+import { authClient } from "../lib/client";
 
 function useInternalStore({
   isAuthenticatedServerSide,
@@ -60,11 +61,15 @@ function useInternalStore({
   const signOut = () => {
     if (imSignedOut) return;
     start(async () => {
+      void navigate({ to: "/", replace: true });
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            void navigate({ to: "/", replace: true });
             queryClient.removeQueries({ queryKey: ["auth-token"] });
+          },
+          onError: (error) => {
+            console.error(error);
+            toast.error("Failed to sign out");
           },
         },
       });

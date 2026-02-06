@@ -19,11 +19,11 @@ import type { RouterContext } from "~/router";
 import appStyles from "~/app/styles.css?url";
 import { env } from "~/env";
 import * as Auth from "~/features/auth/atom";
+import { authClient } from "~/features/auth/lib/client";
+import { getToken } from "~/features/auth/lib/server";
 import { LoginModal } from "~/features/auth/molecules/login-modal";
 import * as Theme from "~/features/theme/atom";
 import { getTheme } from "~/features/theme/utils";
-import { authClient } from "~/lib/auth-client";
-import { getToken } from "~/lib/auth-server";
 
 const getThemeFromCookie = createServerFn({ method: "GET" }).handler(() => {
   const themeCookie = getCookie("theme");
