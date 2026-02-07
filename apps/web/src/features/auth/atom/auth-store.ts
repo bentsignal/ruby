@@ -53,7 +53,7 @@ function useInternalStore({
   const signOut = () => {
     if (imSignedOut) return;
     start(async () => {
-      void navigate({ to: "/", replace: true });
+      void navigate({ to: "/", replace: true, search: { signedOut: true } });
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
@@ -62,6 +62,15 @@ function useInternalStore({
           onError: (error) => {
             console.error(error);
             toast.error("Failed to sign out");
+          },
+          onResponse: () => {
+            setTimeout(() => {
+              void navigate({
+                to: ".",
+                replace: true,
+                search: (prev) => ({ ...prev, signedOut: undefined }),
+              });
+            }, 2000);
           },
         },
       });

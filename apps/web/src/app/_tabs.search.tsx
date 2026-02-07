@@ -9,8 +9,8 @@ export const Route = createFileRoute("/_tabs/search")({
   validateSearch: z.object({
     q: z.string().optional(),
   }),
-  beforeLoad: ({ context }) => {
-    if (!context.isAuthenticated) {
+  beforeLoad: ({ context, search }) => {
+    if (!context.isAuthenticated || search.signedOut) {
       throw redirect({
         to: "/",
         search: { showLogin: true, redirectTo: "/search" },

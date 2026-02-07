@@ -116,7 +116,7 @@ function TabBar() {
       {tabs.map((tab) => {
         if (tab.to === "/create") {
           return (
-            <Link to={tab.to} aria-label={tab.label}>
+            <Link to={tab.to} aria-label={tab.label} key={tab.to}>
               <TabBarSlot>
                 <tab.children />
               </TabBarSlot>
@@ -127,7 +127,7 @@ function TabBar() {
         if (tab.to === "/$username") {
           if (imSignedIn) {
             return (
-              <HoverCard.Container openDelay={0} closeDelay={200}>
+              <HoverCard.Container openDelay={0} closeDelay={200} key={tab.to}>
                 <HoverCard.Trigger asChild>
                   <Link to={tab.to} params={tab.params} aria-label={tab.label}>
                     <TabBarSlot>
@@ -148,7 +148,12 @@ function TabBar() {
             );
           }
           return (
-            <Link to={tab.to} params={tab.params} aria-label={tab.label}>
+            <Link
+              to={tab.to}
+              params={tab.params}
+              aria-label={tab.label}
+              key={tab.to}
+            >
               <TabBarSlot>
                 <tab.children isActive={false} />
               </TabBarSlot>
@@ -157,7 +162,7 @@ function TabBar() {
         }
 
         return (
-          <Link to={tab.to} aria-label={tab.label}>
+          <Link to={tab.to} aria-label={tab.label} key={tab.to}>
             <TabBarSlot>
               <tab.children isActive={pathname === tab.to} />
             </TabBarSlot>

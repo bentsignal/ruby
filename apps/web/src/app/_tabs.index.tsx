@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Loader, LogIn } from "lucide-react";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { LogIn } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
 
@@ -12,24 +12,19 @@ export const Route = createFileRoute("/_tabs/")({
 
 function HomePage() {
   const imNotSignedIn = Auth.useStore((s) => s.imSignedOut);
-  const isAuthLoading = Auth.useStore((s) => s.isLoading);
+  const urlSaysSignedOut = useSearch({
+    from: "__root__",
+    select: (s) => s.signedOut ?? false,
+  });
 
-  if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-2">
-        <Loader className="size-6 animate-spin" />
-      </div>
-    );
-  }
-
-  if (imNotSignedIn) {
+  if (imNotSignedIn || urlSaysSignedOut) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-2">
         <p className="text-foreground text-2xl font-bold">
           You must be logged into view this page.
         </p>
         <Button asChild>
-          <Link to="/" search={{ showLogin: true }}>
+          <Link to="/" search={(prev) => ({ ...prev, showLogin: true })}>
             <LogIn size={16} />
             <span className="font-bold">Login</span>
           </Link>

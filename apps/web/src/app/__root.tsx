@@ -40,6 +40,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   validateSearch: z.object({
     showLogin: z.boolean().optional(),
     redirectTo: z.string().optional(),
+    signedOut: z.boolean().optional(),
   }),
   head: () => ({
     links: [{ rel: "stylesheet", href: appStyles }],
