@@ -1,9 +1,10 @@
+import type { LucideIcon } from "lucide-react";
 import {
   createFileRoute,
   Link,
+  linkOptions,
   Outlet,
   useLocation,
-  useNavigate,
 } from "@tanstack/react-router";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
@@ -28,89 +29,22 @@ function TabsLayout() {
   );
 }
 
-function TabBar() {
-  const location = useLocation();
-  const pathname = location.pathname;
-  const myUsername = Auth.useStore((s) => s.myProfile?.username ?? "");
-  const imNotSignedIn = Auth.useStore((s) => s.imSignedOut);
+function TabBarIcon({
+  Icon,
+  isActive,
+}: {
+  Icon: LucideIcon;
+  isActive: boolean;
+}) {
   return (
-    <div
+    <Icon
+      size={24}
+      strokeWidth={isActive ? 2.5 : 1.75}
       className={cn(
-        "flex items-center gap-1",
-        "fixed bottom-6 left-1/2 z-50 -translate-x-1/2",
-        "bg-sidebar/80 border-sidebar-border border",
-        "rounded-full px-3 py-2",
-        "shadow-lg backdrop-blur-sm",
+        "transition-all",
+        isActive && "text-sidebar-accent-foreground",
       )}
-    >
-      <TabBarLink href="/" label="Home">
-        <TabBarSlot>
-          <Home
-            size={24}
-            strokeWidth={pathname === "/" ? 2.5 : 1.75}
-            className={cn(
-              "transition-all",
-              pathname === "/" && "text-sidebar-accent-foreground",
-            )}
-          />
-        </TabBarSlot>
-      </TabBarLink>
-      <TabBarLink href="/search" label="Search">
-        <TabBarSlot>
-          <Search
-            size={24}
-            strokeWidth={pathname === "/search" ? 2.5 : 1.75}
-            className={cn(
-              "transition-all",
-              pathname === "/search" && "text-sidebar-accent-foreground",
-            )}
-          />
-        </TabBarSlot>
-      </TabBarLink>
-      <TabBarLink href="/notifications" label="Notifications">
-        <TabBarSlot>
-          <Bell
-            size={24}
-            strokeWidth={pathname === "/notifications" ? 2.5 : 1.75}
-            className={cn(
-              "transition-all",
-              pathname === "/notifications" && "text-sidebar-accent-foreground",
-            )}
-          />
-        </TabBarSlot>
-      </TabBarLink>
-      <HoverCard.Container openDelay={0} closeDelay={200}>
-        <HoverCard.Trigger asChild>
-          <TabBarLink href={`/${myUsername}`} label="Profile">
-            <TabBarSlot>
-              <UserRound
-                size={24}
-                strokeWidth={pathname === `/${myUsername}` ? 2.5 : 1.75}
-                className={cn(
-                  "transition-all",
-                  pathname === `/${myUsername}` &&
-                    "text-sidebar-accent-foreground",
-                )}
-              />
-            </TabBarSlot>
-          </TabBarLink>
-        </HoverCard.Trigger>
-        <HoverCard.Content
-          className={cn(
-            "flex flex-col items-start px-6! pt-5 pb-3!",
-            imNotSignedIn && "hidden",
-          )}
-        >
-          <SmallProfilePreview />
-          <Theme.Toggle />
-        </HoverCard.Content>
-      </HoverCard.Container>
-      <TabBarLink href="/create" label="Create">
-        <div className={cn("rounded-full!", buttonVariants({ size: "icon" }))}>
-          <PlusIcon size={16} />
-        </div>
-      </TabBarLink>
-    </div>
+    />
   );
 }
 
@@ -122,40 +56,114 @@ function TabBarSlot({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TabBarLink({
-  href,
-  label,
-  children,
-  ref,
-  ...props
-}: {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-  ref?: React.Ref<HTMLAnchorElement>;
-}) {
-  const imNotSignedIn = Auth.useStore((s) => s.imSignedOut);
-  const navigate = useNavigate();
+function TabBar() {
+  const location = useLocation();
+  const pathname = location.pathname;
+  const myUsername = Auth.useStore((s) => s.myProfile?.username);
+  const imSignedIn = Auth.useStore((s) => s.imSignedIn);
 
-  if (imNotSignedIn) {
-    return (
-      <button
-        aria-label={label}
-        onClick={() => {
-          void navigate({
-            to: "/",
-            search: (prev) => ({ ...prev, showLogin: true, redirectTo: href }),
-          });
-        }}
-      >
-        {children}
-      </button>
-    );
-  }
+  const tabs = linkOptions([
+    {
+      to: "/",
+      label: "Home",
+      children: ({ isActive }: { isActive: boolean }) => (
+        <TabBarIcon Icon={Home} isActive={isActive} />
+      ),
+    },
+    {
+      to: "/search",
+      label: "Search",
+      children: ({ isActive }: { isActive: boolean }) => (
+        <TabBarIcon Icon={Search} isActive={isActive} />
+      ),
+    },
+    {
+      to: "/notifications",
+      label: "Notifications",
+      children: ({ isActive }: { isActive: boolean }) => (
+        <TabBarIcon Icon={Bell} isActive={isActive} />
+      ),
+    },
+    {
+      to: "/$username",
+      params: { username: myUsername ?? "my-profile" },
+      label: "Profile",
+      children: ({ isActive }: { isActive: boolean }) => (
+        <TabBarIcon Icon={UserRound} isActive={isActive} />
+      ),
+    },
+    {
+      to: "/create",
+      label: "Create",
+      children: () => (
+        <div className={cn("rounded-full!", buttonVariants({ size: "icon" }))}>
+          <PlusIcon size={16} />
+        </div>
+      ),
+    },
+  ]);
 
   return (
-    <Link ref={ref} to={href} aria-label={label} preload="intent" {...props}>
-      {children}
-    </Link>
+    <div
+      className={cn(
+        "flex items-center gap-1",
+        "fixed bottom-6 left-1/2 z-50 -translate-x-1/2",
+        "bg-sidebar/80 border-sidebar-border border",
+        "rounded-full px-3 py-2",
+        "shadow-lg backdrop-blur-sm",
+      )}
+    >
+      {tabs.map((tab) => {
+        if (tab.to === "/create") {
+          return (
+            <Link to={tab.to} aria-label={tab.label}>
+              <TabBarSlot>
+                <tab.children />
+              </TabBarSlot>
+            </Link>
+          );
+        }
+
+        if (tab.to === "/$username") {
+          if (imSignedIn) {
+            return (
+              <HoverCard.Container openDelay={0} closeDelay={200}>
+                <HoverCard.Trigger asChild>
+                  <Link to={tab.to} params={tab.params} aria-label={tab.label}>
+                    <TabBarSlot>
+                      <tab.children
+                        isActive={
+                          myUsername !== undefined &&
+                          pathname === `/${tab.params.username}`
+                        }
+                      />
+                    </TabBarSlot>
+                  </Link>
+                </HoverCard.Trigger>
+                <HoverCard.Content className="flex flex-col items-start px-6! pt-5 pb-3!">
+                  <SmallProfilePreview />
+                  <Theme.Toggle />
+                </HoverCard.Content>
+              </HoverCard.Container>
+            );
+          }
+          return (
+            <Link to={tab.to} params={tab.params} aria-label={tab.label}>
+              <TabBarSlot>
+                <tab.children isActive={false} />
+              </TabBarSlot>
+            </Link>
+          );
+        }
+
+        return (
+          <Link to={tab.to} aria-label={tab.label}>
+            <TabBarSlot>
+              <tab.children isActive={pathname === tab.to} />
+            </TabBarSlot>
+          </Link>
+        );
+      })}
+    </div>
   );
 }

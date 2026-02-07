@@ -7,7 +7,7 @@ import { GoogleIcon } from "~/features/auth/icons";
 import { cn } from "~/utils/style-utils";
 import { useStore as useAuthStore } from "./auth-store";
 
-function GoogleSignInButton({ className }: { className?: string }) {
+export function GoogleSignInButton({ className }: { className?: string }) {
   const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);
   const disabled = useAuthStore((s) => s.isLoading || s.imSignedIn);
   return (
@@ -33,17 +33,7 @@ function GoogleSignInButton({ className }: { className?: string }) {
   );
 }
 
-function TakeMeToLoginButton() {
-  const setIsLoginModalOpen = useAuthStore((s) => s.setIsLoginModalOpen);
-  return (
-    <Button className="w-full" onClick={() => setIsLoginModalOpen(true)}>
-      <LogIn size={16} />
-      <span>Take me to login</span>
-    </Button>
-  );
-}
-
-function TakeMeToLoginLink() {
+export function TakeMeToLoginLink() {
   const navigate = useNavigate();
   function handleClick() {
     void navigate({
@@ -59,7 +49,7 @@ function TakeMeToLoginLink() {
   );
 }
 
-function SignOutButton() {
+export function SignOutButton() {
   const signOut = useAuthStore((s) => s.signOut);
   const disabled = useAuthStore((s) => s.isLoading || !s.imSignedIn);
   return (
@@ -70,7 +60,7 @@ function SignOutButton() {
   );
 }
 
-function SignOutLink() {
+export function SignOutLink() {
   const signOut = useAuthStore((s) => s.signOut);
   const disabled = useAuthStore((s) => s.isLoading || !s.imSignedIn);
   return (
@@ -85,11 +75,3 @@ function SignOutLink() {
     </Button>
   );
 }
-
-export {
-  GoogleSignInButton,
-  TakeMeToLoginButton,
-  TakeMeToLoginLink,
-  SignOutButton,
-  SignOutLink,
-};
