@@ -10,6 +10,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { convert } from "great-time";
 import { z } from "zod/v4";
 
 import { cn } from "@acme/ui";
@@ -65,7 +66,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const token = await context.queryClient.fetchQuery({
       queryKey: ["auth-token"],
       queryFn: async () => (await getAuth()) ?? null,
-      staleTime: 5 * 60 * 1000,
+      staleTime: convert(50, "minutes", "to ms"),
       gcTime: Infinity,
     });
     // all queries, mutations and actions through TanStack Query will be
