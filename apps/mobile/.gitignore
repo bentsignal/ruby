@@ -8,6 +8,5 @@ Ruby.app
 *.ipa
 ios/
 android/
-testing
 
 # @end expo-cli
