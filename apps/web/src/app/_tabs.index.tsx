@@ -26,7 +26,7 @@ function HomePage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-2">
         <p className="text-foreground text-2xl font-bold">
-          You must be signed in to view this page.
+          You must be logged into view this page.
         </p>
         <Button asChild>
           <Link to="/" search={{ showLogin: true }}>
