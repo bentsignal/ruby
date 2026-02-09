@@ -10,8 +10,8 @@ import { useColor } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
 
 export function IncomingRequestButton({ className }: { className?: string }) {
-  const acceptFriendRequest = useMutation(api.friends.acceptFriendRequest);
-  const ignoreFriendRequest = useMutation(api.friends.ignoreFriendRequest);
+  const acceptFriendRequest = useMutation(api.friends.acceptRequest);
+  const ignoreFriendRequest = useMutation(api.friends.ignoreRequest);
   const username = useProfileStore((s) => s.username);
   const foreground = useColor("foreground");
   return (

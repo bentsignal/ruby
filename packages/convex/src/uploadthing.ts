@@ -1,6 +1,6 @@
 "use node";
 
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { UTApi, UTFile } from "uploadthing/server";
 
 import { internal } from "./_generated/api";
@@ -45,7 +45,7 @@ export const uploadImage = async (
   const file = new UTFile([image], fileName, { type: "image/png" });
   const uploadedFile = await utapi.uploadFiles(file);
   if (uploadedFile.error) {
-    throw new Error(
+    throw new ConvexError(
       `Error uploading image to uploadthing: ${JSON.stringify(uploadedFile.error)}`,
     );
   }

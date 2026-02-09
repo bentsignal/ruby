@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
 import type { Relationship } from "./types";
@@ -24,7 +24,7 @@ async function getFriendshipStatusHelper(
   if (!profileOne || !profileTwo) return null;
   const [profileIdA, profileIdB] = getOrderedProfileIds(profileOne, profileTwo);
   if (profileIdA === profileIdB)
-    throw new Error("Cannot get friendship status to yourself");
+    throw new ConvexError("Cannot get friendship status to yourself");
   return await ctx.db
     .query("friends")
     .withIndex("by_profileA", (q) => q.eq("profileIdA", profileIdA))
@@ -67,7 +67,7 @@ export const getRelationship = authedQuery({
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) throw new ConvexError("Profile not found");
     return await getRelationshipHelper({
       ctx,
       profileRequestingInfo: ctx.myProfile._id,
@@ -76,7 +76,7 @@ export const getRelationship = authedQuery({
   },
 });
 
-export const sendFriendRequest = authedMutation({
+export const sendRequest = authedMutation({
   args: {
     username: v.string(),
   },
@@ -85,20 +85,20 @@ export const sendFriendRequest = authedMutation({
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) throw new ConvexError("Profile not found");
     const { relationship, friendship } = await getRelationshipHelper({
       ctx,
       profileRequestingInfo: ctx.myProfile._id,
       otherProfile: profile._id,
     });
     if (relationship === "my-profile") {
-      throw new Error("Cannot send friend request to yourself");
+      throw new ConvexError("Cannot send friend request to yourself");
     }
     if (relationship === "friends") {
-      throw new Error("Already friends");
+      throw new ConvexError("Already friends");
     }
     if (relationship === "pending-outgoing") {
-      throw new Error("Friend request already sent");
+      throw new ConvexError("Friend request already sent");
     }
     const [profileIdA, profileIdB] = getOrderedProfileIds(
       ctx.myProfile._id,
@@ -119,7 +119,7 @@ export const sendFriendRequest = authedMutation({
   },
 });
 
-export const acceptFriendRequest = authedMutation({
+export const acceptRequest = authedMutation({
   args: {
     username: v.string(),
   },
@@ -128,17 +128,17 @@ export const acceptFriendRequest = authedMutation({
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) throw new ConvexError("Profile not found");
     const { relationship, friendship } = await getRelationshipHelper({
       ctx,
       profileRequestingInfo: ctx.myProfile._id,
       otherProfile: profile._id,
     });
     if (relationship !== "pending-incoming") {
-      throw new Error("Not a pending incoming friend request");
+      throw new ConvexError("Not a pending incoming friend request");
     }
     if (friendship === null) {
-      throw new Error("Friend request not found");
+      throw new ConvexError("Friend request not found");
     }
     await ctx.db.patch("friends", friendship._id, {
       status: "friends",
@@ -146,7 +146,7 @@ export const acceptFriendRequest = authedMutation({
   },
 });
 
-export const ignoreFriendRequest = authedMutation({
+export const ignoreRequest = authedMutation({
   args: {
     username: v.string(),
   },
@@ -155,23 +155,23 @@ export const ignoreFriendRequest = authedMutation({
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) throw new ConvexError("Profile not found");
     const { relationship, friendship } = await getRelationshipHelper({
       ctx,
       profileRequestingInfo: ctx.myProfile._id,
       otherProfile: profile._id,
     });
     if (relationship !== "pending-incoming") {
-      throw new Error("Not a pending incoming friend request");
+      throw new ConvexError("Not a pending incoming friend request");
     }
     if (friendship === null) {
-      throw new Error("Friend request not found");
+      throw new ConvexError("Friend request not found");
     }
     await ctx.db.delete("friends", friendship._id);
   },
 });
 
-export const cancelFriendRequest = authedMutation({
+export const cancelRequest = authedMutation({
   args: {
     username: v.string(),
   },
@@ -180,23 +180,23 @@ export const cancelFriendRequest = authedMutation({
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) throw new ConvexError("Profile not found");
     const { relationship, friendship } = await getRelationshipHelper({
       ctx,
       profileRequestingInfo: ctx.myProfile._id,
       otherProfile: profile._id,
     });
     if (relationship !== "pending-outgoing") {
-      throw new Error("Not a pending outgoing friend request");
+      throw new ConvexError("Not a pending outgoing friend request");
     }
     if (friendship === null) {
-      throw new Error("Friend request not found");
+      throw new ConvexError("Friend request not found");
     }
     await ctx.db.delete("friends", friendship._id);
   },
 });
 
-export const removeFriend = authedMutation({
+export const remove = authedMutation({
   args: {
     username: v.string(),
   },
@@ -205,17 +205,17 @@ export const removeFriend = authedMutation({
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) throw new ConvexError("Profile not found");
     const { relationship, friendship } = await getRelationshipHelper({
       ctx,
       profileRequestingInfo: ctx.myProfile._id,
       otherProfile: profile._id,
     });
     if (relationship !== "friends") {
-      throw new Error("Not friends");
+      throw new ConvexError("Not friends");
     }
     if (friendship === null) {
-      throw new Error("Friendship not found");
+      throw new ConvexError("Friendship not found");
     }
     await ctx.db.delete("friends", friendship._id);
   },

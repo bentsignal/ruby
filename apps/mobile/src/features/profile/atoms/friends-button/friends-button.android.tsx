@@ -11,7 +11,7 @@ import { useColor } from "~/hooks/use-color";
 
 export function FriendsButton() {
   const [modalVisible, setModalVisible] = useState(false);
-  const removeFriend = useMutation(api.friends.removeFriend);
+  const removeFriend = useMutation(api.friends.remove);
   const name = useProfileStore((s) => s.name);
   const username = useProfileStore((s) => s.username);
   const foreground = useColor("foreground");

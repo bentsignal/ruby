@@ -9,7 +9,7 @@ import { useColor } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
 
 export function AddFriendButton({ className }: { className?: string }) {
-  const sendFriendRequest = useMutation(api.friends.sendFriendRequest);
+  const sendFriendRequest = useMutation(api.friends.sendRequest);
   const username = useProfileStore((s) => s.username);
   const primaryForeground = useColor("primary-foreground");
   return (

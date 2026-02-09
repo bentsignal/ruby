@@ -16,6 +16,7 @@ import {
 import { api } from "@acme/convex/api";
 import { Button } from "@acme/ui/button";
 import * as Dropdown from "@acme/ui/dropdown-menu";
+import { toast } from "@acme/ui/toast";
 import * as Tooltip from "@acme/ui/tooltip";
 
 import type { PFPVariant } from "../types";
@@ -144,8 +145,8 @@ function EditProfileButton({ className }: { className?: string }) {
 }
 
 function IncomingRequestButton({ className }: { className?: string }) {
-  const acceptFriendRequest = useMutation(api.friends.acceptFriendRequest);
-  const ignoreFriendRequest = useMutation(api.friends.ignoreFriendRequest);
+  const acceptFriendRequest = useMutation(api.friends.acceptRequest);
+  const ignoreFriendRequest = useMutation(api.friends.ignoreRequest);
   const username = useProfileStore((s) => s.username);
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
@@ -156,7 +157,12 @@ function IncomingRequestButton({ className }: { className?: string }) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => ignoreFriendRequest({ username })}
+              onClick={() =>
+                ignoreFriendRequest({ username }).catch((error) => {
+                  toast.error("Failed to ignore friend request");
+                  throw error;
+                })
+              }
             >
               <X className="size-4" />
             </Button>
@@ -170,7 +176,12 @@ function IncomingRequestButton({ className }: { className?: string }) {
             <Button
               size="icon"
               className="bg-green-300 hover:bg-green-300/90 dark:bg-green-600 dark:hover:bg-green-600/90"
-              onClick={() => acceptFriendRequest({ username })}
+              onClick={() =>
+                acceptFriendRequest({ username }).catch((error) => {
+                  toast.error("Failed to accept friend request");
+                  throw error;
+                })
+              }
             >
               <Check className="text-foreground size-4" />
             </Button>
@@ -185,7 +196,7 @@ function IncomingRequestButton({ className }: { className?: string }) {
 }
 
 function OutgoingRequestButton({ className }: { className?: string }) {
-  const cancelFriendRequest = useMutation(api.friends.cancelFriendRequest);
+  const cancelFriendRequest = useMutation(api.friends.cancelRequest);
   const username = useProfileStore((s) => s.username);
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
@@ -196,7 +207,12 @@ function OutgoingRequestButton({ className }: { className?: string }) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => cancelFriendRequest({ username })}
+              onClick={() =>
+                cancelFriendRequest({ username }).catch((error) => {
+                  toast.error("Failed to cancel friend request");
+                  throw error;
+                })
+              }
             >
               <X className="size-4" />
             </Button>
@@ -238,7 +254,7 @@ function FriendsButton({ className }: { className?: string }) {
 }
 
 function RemoveFriendButton() {
-  const removeFriend = useMutation(api.friends.removeFriend);
+  const removeFriend = useMutation(api.friends.remove);
   const username = useProfileStore((s) => s.username);
   const [showConfirmation, setShowConfirmation] = useState(false);
   if (showConfirmation) {
@@ -265,7 +281,12 @@ function RemoveFriendButton() {
               <Button
                 size="icon"
                 className="bg-red-300 hover:bg-red-300/90 dark:bg-red-600 dark:hover:bg-red-600/90"
-                onClick={() => removeFriend({ username })}
+                onClick={() =>
+                  removeFriend({ username }).catch((error) => {
+                    toast.error("Failed to remove friend");
+                    throw error;
+                  })
+                }
               >
                 <UserRoundMinus className="text-foreground size-4" />
               </Button>
@@ -287,12 +308,17 @@ function RemoveFriendButton() {
 }
 
 function AddFriendButton({ className }: { className?: string }) {
-  const sendFriendRequest = useMutation(api.friends.sendFriendRequest);
+  const sendFriendRequest = useMutation(api.friends.sendRequest);
   const username = useProfileStore((s) => s.username);
   return (
     <Button
       className={cn("rounded-full", className)}
-      onClick={() => sendFriendRequest({ username })}
+      onClick={() =>
+        sendFriendRequest({ username }).catch((error) => {
+          toast.error("Failed to send friend request");
+          throw error;
+        })
+      }
     >
       <UserRoundPlus className="size-4" />
       Add friend

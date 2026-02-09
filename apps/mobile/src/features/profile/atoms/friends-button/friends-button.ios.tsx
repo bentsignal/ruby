@@ -15,7 +15,7 @@ import { SettingsButton } from "../settings-button";
 const UniwindHost = withUniwind(Host);
 
 export function FriendsButton() {
-  const removeFriend = useMutation(api.friends.removeFriend);
+  const removeFriend = useMutation(api.friends.remove);
   const name = useProfileStore((s) => s.name);
   const username = useProfileStore((s) => s.username);
   const foreground = useColor("foreground");
