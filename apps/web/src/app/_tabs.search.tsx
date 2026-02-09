@@ -9,11 +9,11 @@ export const Route = createFileRoute("/_tabs/search")({
   validateSearch: z.object({
     q: z.string().optional(),
   }),
-  beforeLoad: ({ context, search }) => {
-    if (!context.isAuthenticated || search.signedOut) {
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
       throw redirect({
-        to: "/",
-        search: { showLogin: true, redirectTo: "/search" },
+        to: "/login",
+        search: { redirect_uri: "/search" },
       });
     }
   },

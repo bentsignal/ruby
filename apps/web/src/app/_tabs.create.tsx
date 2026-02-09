@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_tabs/create")({
-  beforeLoad: ({ context, search }) => {
-    if (!context.isAuthenticated || search.signedOut) {
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
       throw redirect({
-        to: "/",
-        search: { showLogin: true, redirectTo: "/create" },
+        to: "/login",
+        search: { redirect_uri: "/create" },
       });
     }
   },

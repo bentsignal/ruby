@@ -125,39 +125,31 @@ function TabBar() {
         }
 
         if (tab.to === "/$username") {
-          if (imSignedIn) {
-            return (
-              <HoverCard.Container openDelay={0} closeDelay={200} key={tab.to}>
-                <HoverCard.Trigger asChild>
-                  <Link to={tab.to} params={tab.params} aria-label={tab.label}>
-                    <TabBarSlot>
-                      <tab.children
-                        isActive={
-                          myUsername !== undefined &&
-                          pathname === `/${tab.params.username}`
-                        }
-                      />
-                    </TabBarSlot>
-                  </Link>
-                </HoverCard.Trigger>
-                <HoverCard.Content className="flex flex-col items-start px-6! pt-5 pb-3!">
-                  <SmallProfilePreview />
-                  <Theme.Toggle />
-                </HoverCard.Content>
-              </HoverCard.Container>
-            );
-          }
           return (
-            <Link
-              to={tab.to}
-              params={tab.params}
-              aria-label={tab.label}
-              key={tab.to}
-            >
-              <TabBarSlot>
-                <tab.children isActive={false} />
-              </TabBarSlot>
-            </Link>
+            <HoverCard.Container openDelay={0} closeDelay={200} key={tab.to}>
+              <HoverCard.Trigger asChild>
+                <Link to={tab.to} params={tab.params} aria-label={tab.label}>
+                  <TabBarSlot>
+                    <tab.children
+                      isActive={
+                        myUsername !== undefined &&
+                        pathname === `/${tab.params.username}`
+                      }
+                    />
+                  </TabBarSlot>
+                </Link>
+              </HoverCard.Trigger>
+              <HoverCard.Content
+                className={cn(
+                  "flex flex-col items-start",
+                  imSignedIn && "px-6! pt-5 pb-3!",
+                  !imSignedIn && "px-4 py-2 pt-3",
+                )}
+              >
+                <SmallProfilePreview />
+                <Theme.Toggle />
+              </HoverCard.Content>
+            </HoverCard.Container>
           );
         }
 

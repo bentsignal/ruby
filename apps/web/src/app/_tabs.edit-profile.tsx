@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_tabs/edit-profile")({
-  beforeLoad: ({ context, search }) => {
-    if (!context.isAuthenticated || search.signedOut) {
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
       throw redirect({
-        to: "/",
-        search: { showLogin: true, redirectTo: "/edit-profile" },
+        to: "/login",
+        search: { redirect_uri: "/edit-profile" },
       });
     }
   },

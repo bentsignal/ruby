@@ -1,4 +1,4 @@
-const GoogleIcon = () => {
+export function GoogleIcon() {
   return (
     <svg width="44" height="44" viewBox="0 0 44 44">
       <path
@@ -19,6 +19,4 @@ const GoogleIcon = () => {
       />
     </svg>
   );
-};
-
-export { GoogleIcon };
+}

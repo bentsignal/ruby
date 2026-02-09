@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { LogIn, LogOut } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
@@ -10,9 +10,13 @@ import { useStore as useAuthStore } from "./auth-store";
 export function GoogleSignInButton({ className }: { className?: string }) {
   const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);
   const disabled = useAuthStore((s) => s.isLoading || s.imSignedIn);
+  const redirectUri = useSearch({
+    from: "/_tabs/login",
+    select: (s) => s.redirect_uri,
+  });
   return (
     <button
-      onClick={signInWithGoogle}
+      onClick={() => signInWithGoogle(redirectUri)}
       disabled={disabled}
       className={cn(
         className,
@@ -37,25 +41,14 @@ export function TakeMeToLoginLink() {
   const navigate = useNavigate();
   function handleClick() {
     void navigate({
-      to: "/",
-      search: (prev) => ({ ...prev, showLogin: true }),
+      to: "/login",
+      search: (prev) => ({ ...prev }),
     });
   }
   return (
     <Button variant="link" onClick={handleClick} className="px-0!">
       <LogIn size={16} />
       <span>Take me to login</span>
-    </Button>
-  );
-}
-
-export function SignOutButton() {
-  const signOut = useAuthStore((s) => s.signOut);
-  const disabled = useAuthStore((s) => s.isLoading || !s.imSignedIn);
-  return (
-    <Button onClick={signOut} disabled={disabled}>
-      <LogOut size={16} />
-      <span>Sign out</span>
     </Button>
   );
 }

@@ -1,5 +1,7 @@
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader } from "lucide-react";
+import { z } from "zod";
 
 import * as Dialog from "@acme/ui/dialog";
 import * as Drawer from "@acme/ui/drawer";
@@ -7,28 +9,35 @@ import * as Drawer from "@acme/ui/drawer";
 import * as Auth from "~/features/auth/atom";
 import { useIsMobile } from "~/hooks/use-is-mobile";
 
-export function LoginModal() {
+export const Route = createFileRoute("/_tabs/login")({
+  component: Login,
+  validateSearch: z.object({
+    redirect_uri: z.string().optional(),
+  }),
+});
+
+function Login() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const urlSaysShowLogin = useSearch({
-    from: "__root__",
-    select: (s) => s.showLogin ?? false,
-  });
-  const imNotloggedIn = Auth.useStore((s) => s.imSignedOut);
+  const [isOpen, _setIsOpen] = useState(true);
 
-  const shouldShowLogin = imNotloggedIn && urlSaysShowLogin;
+  const imLoggedIn = Auth.useStore((s) => s.imSignedIn);
+  if (imLoggedIn) {
+    return null;
+  }
 
   function handleOpenChange(open: boolean) {
-    void navigate({
-      to: "/",
-      search: (prev) => ({ ...prev, showLogin: open ? true : undefined }),
-    });
+    if (!open) {
+      void navigate({
+        to: "/",
+      });
+    }
   }
 
   if (isMobile) {
     return (
-      <Drawer.Container open={shouldShowLogin} onOpenChange={handleOpenChange}>
+      <Drawer.Container open={isOpen} onOpenChange={handleOpenChange}>
         <Drawer.Content className="my-4">
           <LoadingOverlay />
           <Drawer.Header className="text-left">
@@ -54,7 +63,7 @@ export function LoginModal() {
   }
 
   return (
-    <Dialog.Container open={shouldShowLogin} onOpenChange={handleOpenChange}>
+    <Dialog.Container open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Content className="sm:max-w-[425px]">
         <LoadingOverlay />
         <Dialog.Header>

@@ -28,13 +28,13 @@ const getProfileData = createServerFn({ method: "GET" })
   );
 
 export const Route = createFileRoute("/_tabs/$username")({
-  beforeLoad: ({ params, context, search }) => {
+  beforeLoad: ({ params, context }) => {
     const redirectTo =
       params.username === "my-profile" ? "/" : `/${params.username}`;
-    if (!context.isAuthenticated || search.signedOut) {
+    if (!context.isAuthenticated) {
       throw redirect({
-        to: "/",
-        search: { showLogin: true, redirectTo },
+        to: "/login",
+        search: { redirect_uri: redirectTo },
       });
     }
   },

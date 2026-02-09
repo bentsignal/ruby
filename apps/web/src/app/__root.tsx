@@ -11,7 +11,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { convert } from "great-time";
-import { z } from "zod/v4";
 
 import { cn } from "@acme/ui";
 import { Toaster } from "@acme/ui/toast";
@@ -22,7 +21,6 @@ import { env } from "~/env";
 import * as Auth from "~/features/auth/atom";
 import { authClient } from "~/features/auth/lib/client";
 import { getToken } from "~/features/auth/lib/server";
-import { LoginModal } from "~/features/auth/molecules/login-modal";
 import * as Theme from "~/features/theme/atom";
 import { getTheme } from "~/features/theme/utils";
 
@@ -38,11 +36,6 @@ const getAuth = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  validateSearch: z.object({
-    showLogin: z.boolean().optional(),
-    redirectTo: z.string().optional(),
-    signedOut: z.boolean().optional(),
-  }),
   head: () => ({
     links: [{ rel: "stylesheet", href: appStyles }],
     meta: [
@@ -132,7 +125,6 @@ function RootComponent() {
                     },
                   ]}
                 />
-                <LoginModal />
               </Auth.Store>
               <Toaster />
             </Theme.Store>

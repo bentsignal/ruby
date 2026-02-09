@@ -13,6 +13,7 @@ import { Route as TabsRouteImport } from './app/_tabs'
 import { Route as TabsIndexRouteImport } from './app/_tabs.index'
 import { Route as TabsSearchRouteImport } from './app/_tabs.search'
 import { Route as TabsNotificationsRouteImport } from './app/_tabs.notifications'
+import { Route as TabsLoginRouteImport } from './app/_tabs.login'
 import { Route as TabsEditProfileRouteImport } from './app/_tabs.edit-profile'
 import { Route as TabsCreateRouteImport } from './app/_tabs.create'
 import { Route as TabsUsernameRouteImport } from './app/_tabs.$username'
@@ -35,6 +36,11 @@ const TabsSearchRoute = TabsSearchRouteImport.update({
 const TabsNotificationsRoute = TabsNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => TabsRoute,
+} as any)
+const TabsLoginRoute = TabsLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => TabsRoute,
 } as any)
 const TabsEditProfileRoute = TabsEditProfileRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/$username': typeof TabsUsernameRoute
   '/create': typeof TabsCreateRoute
   '/edit-profile': typeof TabsEditProfileRoute
+  '/login': typeof TabsLoginRoute
   '/notifications': typeof TabsNotificationsRoute
   '/search': typeof TabsSearchRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/$username': typeof TabsUsernameRoute
   '/create': typeof TabsCreateRoute
   '/edit-profile': typeof TabsEditProfileRoute
+  '/login': typeof TabsLoginRoute
   '/notifications': typeof TabsNotificationsRoute
   '/search': typeof TabsSearchRoute
   '/': typeof TabsIndexRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/_tabs/$username': typeof TabsUsernameRoute
   '/_tabs/create': typeof TabsCreateRoute
   '/_tabs/edit-profile': typeof TabsEditProfileRoute
+  '/_tabs/login': typeof TabsLoginRoute
   '/_tabs/notifications': typeof TabsNotificationsRoute
   '/_tabs/search': typeof TabsSearchRoute
   '/_tabs/': typeof TabsIndexRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/$username'
     | '/create'
     | '/edit-profile'
+    | '/login'
     | '/notifications'
     | '/search'
     | '/api/auth/$'
@@ -102,6 +112,7 @@ export interface FileRouteTypes {
     | '/$username'
     | '/create'
     | '/edit-profile'
+    | '/login'
     | '/notifications'
     | '/search'
     | '/'
@@ -112,6 +123,7 @@ export interface FileRouteTypes {
     | '/_tabs/$username'
     | '/_tabs/create'
     | '/_tabs/edit-profile'
+    | '/_tabs/login'
     | '/_tabs/notifications'
     | '/_tabs/search'
     | '/_tabs/'
@@ -153,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TabsNotificationsRouteImport
       parentRoute: typeof TabsRoute
     }
+    '/_tabs/login': {
+      id: '/_tabs/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof TabsLoginRouteImport
+      parentRoute: typeof TabsRoute
+    }
     '/_tabs/edit-profile': {
       id: '/_tabs/edit-profile'
       path: '/edit-profile'
@@ -188,6 +207,7 @@ interface TabsRouteChildren {
   TabsUsernameRoute: typeof TabsUsernameRoute
   TabsCreateRoute: typeof TabsCreateRoute
   TabsEditProfileRoute: typeof TabsEditProfileRoute
+  TabsLoginRoute: typeof TabsLoginRoute
   TabsNotificationsRoute: typeof TabsNotificationsRoute
   TabsSearchRoute: typeof TabsSearchRoute
   TabsIndexRoute: typeof TabsIndexRoute
@@ -197,6 +217,7 @@ const TabsRouteChildren: TabsRouteChildren = {
   TabsUsernameRoute: TabsUsernameRoute,
   TabsCreateRoute: TabsCreateRoute,
   TabsEditProfileRoute: TabsEditProfileRoute,
+  TabsLoginRoute: TabsLoginRoute,
   TabsNotificationsRoute: TabsNotificationsRoute,
   TabsSearchRoute: TabsSearchRoute,
   TabsIndexRoute: TabsIndexRoute,

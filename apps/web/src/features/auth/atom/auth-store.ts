@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
 
@@ -19,11 +19,6 @@ function useInternalStore({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const redirectTo = useSearch({
-    from: "__root__",
-    select: (s) => s.redirectTo ?? null,
-  });
-
   // use serverside auth value until client is mounted
   const { isAuthenticated: isAuthenticatedClientSide } = useConvexAuth();
   const [mounted, setMounted] = useState(false);
@@ -38,14 +33,14 @@ function useInternalStore({
     : isAuthenticatedServerSide;
   const imSignedOut = !imSignedIn;
 
-  const myProfile = useQuery(api.profile.getMine, imSignedIn ? {} : "skip");
+  const myProfile = useQuery(api.profile.getMine);
 
-  const signInWithGoogle = () => {
+  const signInWithGoogle = (redirectUri?: string) => {
     if (imSignedIn) return;
     start(async () => {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: redirectTo ?? "/",
+        callbackURL: redirectUri ?? "/",
       });
     });
   };
@@ -58,19 +53,13 @@ function useInternalStore({
         fetchOptions: {
           onSuccess: () => {
             queryClient.removeQueries({ queryKey: ["auth-token"] });
+            const url = new URL(window.location.href);
+            url.searchParams.delete("signedOut");
+            window.location.replace(url.toString());
           },
           onError: (error) => {
             console.error(error);
             toast.error("Failed to sign out");
-          },
-          onResponse: () => {
-            setTimeout(() => {
-              void navigate({
-                to: ".",
-                replace: true,
-                search: (prev) => ({ ...prev, signedOut: undefined }),
-              });
-            }, 2000);
           },
         },
       });
