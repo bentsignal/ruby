@@ -24,6 +24,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: "com.ruby.rubyapp",
     edgeToEdgeEnabled: true,
+    icon: "./assets/rounded-icon.png",
   },
   extra: {
     eas: {
@@ -45,10 +46,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-splash-screen",
       {
         backgroundColor: "#ffe3e0",
-        image: "./assets/light-mode-logo.png",
+        image: "./assets/rounded-icon.png",
         dark: {
           backgroundColor: "#1e1616",
-          image: "./assets/dark-mode-logo.png",
+          image: "./assets/rounded-icon.png",
         },
       },
     ],
