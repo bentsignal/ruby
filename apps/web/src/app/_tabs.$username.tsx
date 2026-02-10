@@ -5,7 +5,13 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui/separator";
 
-import * as Profile from "~/features/profile/atom";
+import { Bio } from "~/features/profile/atoms/bio";
+import { Name } from "~/features/profile/atoms/name";
+import { PFP } from "~/features/profile/atoms/pfp";
+import { PrimaryButton } from "~/features/profile/atoms/primary-button";
+import { UserProvidedLink } from "~/features/profile/atoms/user-provided-link";
+import { Username } from "~/features/profile/atoms/username";
+import { ProfileStore } from "~/features/profile/store";
 import { MainLayout } from "~/layouts/main";
 
 export const Route = createFileRoute("/_tabs/$username")({
@@ -44,20 +50,20 @@ function ProfilePage() {
   const { info: profile, relationship } = result.data;
   return (
     <MainLayout className="flex flex-col gap-4">
-      <Profile.Store profile={profile} relationship={relationship}>
+      <ProfileStore profile={profile} relationship={relationship}>
         <div className="flex items-center gap-4">
-          <Profile.PFP variant="md" />
+          <PFP variant="md" />
           <div className="flex flex-col">
-            <Profile.Name className="font-bold" />
-            <Profile.Username />
+            <Name className="font-bold" />
+            <Username />
           </div>
-          <Profile.PrimaryButton className="ml-auto hidden lg:flex" />
+          <PrimaryButton className="ml-auto hidden lg:flex" />
         </div>
-        <Profile.Bio />
-        <Profile.UserProvidedLink className="mb-1" />
-        <Profile.PrimaryButton className="flex lg:hidden" />
+        <Bio />
+        <UserProvidedLink className="mb-1" />
+        <PrimaryButton className="flex lg:hidden" />
         <Separator />
-      </Profile.Store>
+      </ProfileStore>
     </MainLayout>
   );
 }

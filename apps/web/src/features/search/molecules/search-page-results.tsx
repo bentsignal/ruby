@@ -5,7 +5,10 @@ import { Loader } from "lucide-react";
 
 import type { UIProfile } from "@acme/convex/types";
 
-import * as Profile from "~/features/profile/atom";
+import { Name } from "~/features/profile/atoms/name";
+import { PFP } from "~/features/profile/atoms/pfp";
+import { Username } from "~/features/profile/atoms/username";
+import { ProfileStore } from "~/features/profile/store";
 import { useSearchResults } from "../hooks/use-search-results";
 import { SearchBar } from "./search-bar";
 
@@ -73,19 +76,19 @@ function keyExtractor(profile: UIProfile) {
 
 function ProfileSearchItem({ item }: LegendListRenderItemProps<UIProfile>) {
   return (
-    <Profile.Store profile={item}>
+    <ProfileStore profile={item}>
       <Link
         to="/$username"
         params={{ username: item.username }}
         preload="intent"
         className="hover:bg-muted/50 flex items-center gap-3 rounded-full px-4 py-3"
       >
-        <Profile.PFP variant="sm" />
+        <PFP variant="sm" />
         <div className="flex flex-col">
-          <Profile.Name className="text-base font-medium" />
-          <Profile.Username className="text-sm" />
+          <Name className="text-base font-medium" />
+          <Username className="text-sm" />
         </div>
       </Link>
-    </Profile.Store>
+    </ProfileStore>
   );
 }

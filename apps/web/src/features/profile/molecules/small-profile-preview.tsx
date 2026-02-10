@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 
 import * as Auth from "~/features/auth/atom";
-import * as Profile from "~/features/profile/atom";
+import { Name } from "../atoms/name";
+import { PFP } from "../atoms/pfp";
+import { Username } from "../atoms/username";
+import { ProfileStore } from "../store";
 
 function SmallProfilePreview() {
   const myProfile = Auth.useStore((s) => s.myProfile);
@@ -11,7 +14,7 @@ function SmallProfilePreview() {
   }
   return (
     <div className="flex flex-col items-start gap-2">
-      <Profile.Store profile={myProfile}>
+      <ProfileStore profile={myProfile}>
         <Link
           to="/$username"
           params={{ username: myProfile.username }}
@@ -19,14 +22,14 @@ function SmallProfilePreview() {
           className="cursor-pointer"
         >
           <div className="flex items-center gap-2">
-            <Profile.PFP variant="sm" className="cursor-pointer" />
+            <PFP variant="sm" className="cursor-pointer" />
             <div className="flex flex-col">
-              <Profile.Name className="text-sm font-bold" />
-              <Profile.Username className="text-muted-foreground text-sm font-semibold" />
+              <Name className="text-sm font-bold" />
+              <Username className="text-muted-foreground text-sm font-semibold" />
             </div>
           </div>
         </Link>
-      </Profile.Store>
+      </ProfileStore>
       <Auth.SignOutLink />
     </div>
   );

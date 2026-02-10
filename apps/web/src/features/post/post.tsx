@@ -3,23 +3,26 @@ import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
 
 import type { UIPost } from "@acme/convex/types";
 
-import * as Profile from "~/features/profile/atom";
+import { Name } from "~/features/profile/atoms/name";
+import { PFP } from "~/features/profile/atoms/pfp";
+import { Username } from "~/features/profile/atoms/username";
+import { ProfileStore } from "~/features/profile/store";
 
 export const Post = ({ post }: { post: UIPost }) => {
   return (
     <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
-      <Profile.Store profile={post.creator}>
+      <ProfileStore profile={post.creator}>
         <div className="flex items-center gap-3">
-          <Profile.PFP variant="sm" />
+          <PFP variant="sm" />
           <div className="flex flex-col">
-            <Profile.Name className="text-sm font-bold" />
-            <Profile.Username className="text-muted-foreground text-xs font-semibold" />
+            <Name className="text-sm font-bold" />
+            <Username className="text-muted-foreground text-xs font-semibold" />
           </div>
           <span className="text-muted-foreground ml-auto text-xs">
             {new Date(post._creationTime).toLocaleDateString()}
           </span>
         </div>
-      </Profile.Store>
+      </ProfileStore>
 
       {post.images.length > 0 && post.images[0] && (
         <div className="bg-muted relative w-full overflow-hidden rounded-lg">
