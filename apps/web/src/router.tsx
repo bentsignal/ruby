@@ -6,6 +6,7 @@ import { ConvexReactClient } from "convex/react";
 
 import { Error } from "~/components/error";
 import { NotFound } from "~/components/not-found";
+import { Pending } from "~/components/pending";
 import { env } from "~/env";
 import { routeTree } from "./routeTree.gen";
 
@@ -40,6 +41,7 @@ export function getRouter() {
     },
     defaultNotFoundComponent: NotFound,
     defaultErrorComponent: Error,
+    defaultPendingComponent: Pending,
   });
 
   setupRouterSsrQueryIntegration({
