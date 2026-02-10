@@ -7,7 +7,6 @@ import {
 import { createServerFn } from "@tanstack/react-start";
 import { Loader } from "lucide-react";
 
-import type { Relationship, UIProfile } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui/separator";
 
@@ -17,24 +16,21 @@ import { MainLayout } from "~/layouts/main";
 
 const getProfileData = createServerFn({ method: "GET" })
   .inputValidator((username: string) => username)
-  .handler(
-    async ({
-      data: username,
-    }): Promise<{ info: UIProfile; relationship: Relationship } | null> => {
-      return await fetchAuthQuery(api.profile.getByUsername, {
-        username,
-      });
-    },
-  );
+  .handler(async ({ data: username }) => {
+    return await fetchAuthQuery(api.profile.getByUsername, {
+      username,
+    });
+  });
 
 export const Route = createFileRoute("/_tabs/$username")({
   beforeLoad: ({ params, context }) => {
-    const redirectTo =
-      params.username === "my-profile" ? "/" : `/${params.username}`;
     if (!context.isAuthenticated) {
       throw redirect({
         to: "/login",
-        search: { redirect_uri: redirectTo },
+        search: {
+          redirect_uri:
+            params.username === "my-profile" ? "/" : `/${params.username}`,
+        },
       });
     }
   },
