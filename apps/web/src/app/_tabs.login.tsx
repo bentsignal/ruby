@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Loader } from "lucide-react";
 import { z } from "zod";
 
@@ -14,6 +14,13 @@ export const Route = createFileRoute("/_tabs/login")({
   validateSearch: z.object({
     redirect_uri: z.string().optional(),
   }),
+  beforeLoad: ({ context }) => {
+    if (context.isAuthenticated) {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
 });
 
 function Login() {
