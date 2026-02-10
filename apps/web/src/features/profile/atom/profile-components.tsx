@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import {
   Check,
   ChevronDown,
@@ -110,13 +110,7 @@ function UserProvidedLink({ className }: { className?: string }) {
 }
 
 function PrimaryButton({ className }: { className?: string }) {
-  const initialStatus = useProfileStore((s) => s.relationship);
-  const username = useProfileStore((s) => s.username);
-  const reactiveStatus = useQuery(api.friends.getRelationship, { username });
-  const relationship =
-    reactiveStatus?.relationship === undefined
-      ? initialStatus
-      : reactiveStatus.relationship;
+  const relationship = useProfileStore((s) => s.relationship);
   if (relationship === undefined) return null;
   if (relationship === "my-profile") {
     return <EditProfileButton className={className} />;

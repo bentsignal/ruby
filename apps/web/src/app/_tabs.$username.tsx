@@ -1,26 +1,12 @@
-import {
-  createFileRoute,
-  notFound,
-  redirect,
-  useLoaderData,
-} from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { Loader } from "lucide-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
 
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui/separator";
 
-import { fetchAuthQuery } from "~/features/auth/lib/server";
 import * as Profile from "~/features/profile/atom";
 import { MainLayout } from "~/layouts/main";
-
-const getProfileData = createServerFn({ method: "GET" })
-  .inputValidator((username: string) => username)
-  .handler(async ({ data: username }) => {
-    return await fetchAuthQuery(api.profile.getByUsername, {
-      username,
-    });
-  });
 
 export const Route = createFileRoute("/_tabs/$username")({
   beforeLoad: ({ params, context }) => {
@@ -34,22 +20,28 @@ export const Route = createFileRoute("/_tabs/$username")({
       });
     }
   },
-  loader: async ({ params }) => {
-    const result = await getProfileData({ data: params.username });
-    if (result === null) {
-      throw notFound();
-    }
-    return result;
+  loader: async ({ context, params }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(
+        convexQuery(api.profile.getByUsername, { username: params.username }),
+      ),
+      // TODO use ensureInfiniteQueryData for post
+    ]);
   },
   component: ProfilePage,
-  pendingComponent: LoadingProfile,
 });
 
 function ProfilePage() {
-  const { info: profile, relationship } = useLoaderData({
-    from: "/_tabs/$username",
-  });
-
+  const params = Route.useParams();
+  const result = useSuspenseQuery(
+    convexQuery(api.profile.getByUsername, {
+      username: params.username,
+    }),
+  );
+  if (result.data === null) {
+    throw notFound();
+  }
+  const { info: profile, relationship } = result.data;
   return (
     <MainLayout className="flex flex-col gap-4">
       <Profile.Store profile={profile} relationship={relationship}>
@@ -66,14 +58,6 @@ function ProfilePage() {
         <Profile.PrimaryButton className="flex lg:hidden" />
         <Separator />
       </Profile.Store>
-    </MainLayout>
-  );
-}
-
-function LoadingProfile() {
-  return (
-    <MainLayout className="animate-in fade-in my-0 flex h-screen flex-col items-center justify-center gap-4 py-0 pb-8 duration-1000">
-      <Loader className="size-6 animate-spin" />
     </MainLayout>
   );
 }
