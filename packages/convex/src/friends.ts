@@ -3,6 +3,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { Relationship } from "./types";
 import type { AuthedMutationCtx, AuthedQueryCtx } from "./utils";
+import { rateLimiter } from "./limiter";
 import { authedMutation, authedQuery } from "./utils";
 
 function getOrderedProfileIds(
@@ -81,6 +82,16 @@ export const sendRequest = authedMutation({
     username: v.string(),
   },
   handler: async (ctx, args) => {
+    const { ok, retryAfter } = await rateLimiter.limit(
+      ctx,
+      "updateFriendStatus",
+      { key: ctx.myProfile._id },
+    );
+    if (!ok) {
+      throw new ConvexError(
+        "Rate limit exceeded, retry after " + retryAfter + " seconds",
+      );
+    }
     const profile = await ctx.db
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
@@ -201,6 +212,16 @@ export const remove = authedMutation({
     username: v.string(),
   },
   handler: async (ctx, args) => {
+    const { ok, retryAfter } = await rateLimiter.limit(
+      ctx,
+      "updateFriendStatus",
+      { key: ctx.myProfile._id },
+    );
+    if (!ok) {
+      throw new ConvexError(
+        "Rate limit exceeded, retry after " + retryAfter + " seconds",
+      );
+    }
     const profile = await ctx.db
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
