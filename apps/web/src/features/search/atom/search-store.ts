@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { createStore } from "rostra";
 
@@ -13,6 +13,8 @@ function useInternalStore({
   initialSearchTerm?: string;
   storeSearchTermInURL?: boolean;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const {
     value: searchTerm,
     setValue: setSearchTerm,
@@ -40,10 +42,20 @@ function useInternalStore({
     });
   }, [debouncedSearchTerm, storeSearchTermInURL, navigate, urlSearchTerm]);
 
+  function focusInput() {
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const length = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(length, length);
+    }
+  }
+
   return {
     searchTerm,
     setSearchTerm,
     debouncedSearchTerm,
+    focusInput,
+    inputRef,
   };
 }
 

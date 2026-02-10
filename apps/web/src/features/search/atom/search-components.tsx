@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Search, X } from "lucide-react";
 
 import { cn } from "~/utils/style-utils";
@@ -32,21 +32,14 @@ function Input({
   className,
   ...props
 }: Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const focusInput = useSearchStore((s) => s.focusInput);
   const searchTerm = useSearchStore((s) => s.searchTerm);
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
-
-  const focusInput = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-      const length = inputRef.current.value.length;
-      inputRef.current.setSelectionRange(length, length);
-    }
-  };
+  const inputRef = useSearchStore((s) => s.inputRef);
 
   useEffect(() => {
     focusInput();
-  }, []);
+  }, [focusInput]);
 
   return (
     <input
@@ -69,7 +62,15 @@ function Input({
 function ClearButton({ className }: { className?: string }) {
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
   const hideButton = useSearchStore((s) => s.searchTerm.length === 0);
+  const focusInput = useSearchStore((s) => s.focusInput);
+
   if (hideButton) return null;
+
+  function handleClick() {
+    setSearchTerm("");
+    focusInput();
+  }
+
   return (
     <button
       type="button"
@@ -77,7 +78,7 @@ function ClearButton({ className }: { className?: string }) {
         "text-sidebar-foreground cursor-pointer py-2 pl-2",
         className,
       )}
-      onClick={() => setSearchTerm("")}
+      onClick={handleClick}
     >
       <X className="size-4" />
     </button>
