@@ -10,7 +10,8 @@
     "./model": {
       "types": "./src/_generated/dataModel.d.ts"
     },
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./react": "./react/index.ts"
   },
   "scripts": {
     "build": "convex deploy",
@@ -42,5 +43,8 @@
     "convex-env": "^2.3.0",
     "convex-helpers": "^0.1.108",
     "uploadthing": "^7.7.4"
+  },
+  "peerDependencies": {
+    "react": "catalog:react19"
   }
 }

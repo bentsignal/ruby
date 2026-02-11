@@ -1,7 +1,6 @@
-import { useMutation } from "convex/react";
 import { X } from "lucide-react";
 
-import { api } from "@acme/convex/api";
+import { useCancelFriendRequest } from "@acme/convex/react";
 import { Button } from "@acme/ui/button";
 import { toast } from "@acme/ui/toast";
 import * as Tooltip from "@acme/ui/tooltip";
@@ -10,8 +9,8 @@ import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../store";
 
 function OutgoingRequestButton({ className }: { className?: string }) {
-  const cancelFriendRequest = useMutation(api.friends.cancelRequest);
   const username = useProfileStore((s) => s.username);
+  const cancelFriendRequest = useCancelFriendRequest({ username });
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
       <span className="text-muted-foreground">Friend request sent</span>

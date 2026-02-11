@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useMutation } from "convex/react";
 import { UserRoundMinus, X } from "lucide-react";
 
-import { api } from "@acme/convex/api";
+import { useRemoveFriend } from "@acme/convex/react";
 import { Button } from "@acme/ui/button";
 import { toast } from "@acme/ui/toast";
 import * as Tooltip from "@acme/ui/tooltip";
@@ -10,8 +9,8 @@ import * as Tooltip from "@acme/ui/tooltip";
 import { useProfileStore } from "../store";
 
 function RemoveFriendButton() {
-  const removeFriend = useMutation(api.friends.remove);
   const username = useProfileStore((s) => s.username);
+  const removeFriend = useRemoveFriend({ username });
   const [showConfirmation, setShowConfirmation] = useState(false);
   if (showConfirmation) {
     return (

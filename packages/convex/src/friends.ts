@@ -4,7 +4,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import type { Relationship } from "./types";
 import type { AuthedMutationCtx, AuthedQueryCtx } from "./utils";
 import { rateLimiter } from "./limiter";
-import { authedMutation, authedQuery } from "./utils";
+import { authedMutation } from "./utils";
 
 function getOrderedProfileIds(
   profileOne: Id<"profiles">,
@@ -58,24 +58,6 @@ export async function getRelationshipHelper({
     return { relationship: "pending-incoming", friendship };
   return { relationship: null, friendship: null };
 }
-
-export const getRelationship = authedQuery({
-  args: {
-    username: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_username", (q) => q.eq("username", args.username))
-      .first();
-    if (!profile) throw new ConvexError("Profile not found");
-    return await getRelationshipHelper({
-      ctx,
-      profileRequestingInfo: ctx.myProfile._id,
-      otherProfile: profile._id,
-    });
-  },
-});
 
 export const sendRequest = authedMutation({
   args: {

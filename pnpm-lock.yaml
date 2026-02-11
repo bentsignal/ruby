@@ -444,6 +444,9 @@ importers:
       convex-helpers:
         specifier: ^0.1.108
         version: 0.1.108(@standard-schema/spec@1.1.0)(convex@1.31.6(react@19.1.4))(react@19.1.4)(typescript@5.9.3)(zod@4.1.12)
+      react:
+        specifier: catalog:react19
+        version: 19.1.4
       uploadthing:
         specifier: ^7.7.4
         version: 7.7.4(h3@1.15.5)(next@16.1.4(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.1.4(react@19.1.4))(react@19.1.4))(tailwindcss@4.1.18)

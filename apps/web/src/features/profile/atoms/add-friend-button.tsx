@@ -1,7 +1,6 @@
-import { useMutation } from "convex/react";
 import { UserRoundPlus } from "lucide-react";
 
-import { api } from "@acme/convex/api";
+import { useSendFriendRequest } from "@acme/convex/react";
 import { Button } from "@acme/ui/button";
 import { toast } from "@acme/ui/toast";
 
@@ -9,8 +8,8 @@ import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../store";
 
 function AddFriendButton({ className }: { className?: string }) {
-  const sendFriendRequest = useMutation(api.friends.sendRequest);
   const username = useProfileStore((s) => s.username);
+  const sendFriendRequest = useSendFriendRequest({ username });
   return (
     <Button
       className={cn("rounded-full", className)}
