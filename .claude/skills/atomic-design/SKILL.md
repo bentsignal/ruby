@@ -1,9 +1,9 @@
 ---
 name: atomic-design
-description: Build UI using a modified Atomic Design system (atoms + molecules) with feature-first folders and composition. Use when creating or refactoring React/React Native components (Expo, Next.js), or when the user mentions atomic design, atoms, molecules, feature folders, barrels, or composition.
+description: Build UI using a modified Atomic Design system (atoms + molecules) with feature-first folders and direct composition. Use when creating or refactoring React/React Native components, or when the user mentions atomic design, atoms, molecules, feature folders, or composition.
 ---
 
-# Atomic Design (Modified)
+# Atomic Design
 
 ## Core model
 
@@ -16,7 +16,7 @@ Keep code for a feature close together. Prefer placing UI, hooks, and stores und
 Atoms are the smallest reusable building blocks.
 
 - Can contain any kind of code: components, store, hooks, types, constants.
-- Multiple exports per file is encouraged.
+- Keep atom components in separate files whenever practical.
 - Can be built from other atoms.
 - Must not depend on molecules.
 
@@ -30,28 +30,30 @@ Molecules compose atoms to solve a specific use-case.
 
 ## Folder conventions (match this repo)
 
-Inside a feature directory (example: `apps/expo/src/features/search/`):
+Inside a feature directory (example: `apps/web/src/features/search/`):
 
 ```text
-features/<feature>/
-  atom/
-    index.tsx
-    <feature>-store.ts
-    <feature>-components.tsx
+features/search/
+  store.ts (or store.tsx when required)
+  atoms/
+    input.tsx
+    clear-button.tsx
+    ...
   molecules/
-    <use-case>.tsx
+    search-bar.tsx
 ```
 
-### `atom/index.tsx` is the atom boundary
+### Public boundaries
 
-- Export the atom’s public surface from `atom/index.tsx`.
-- Prefer namespace imports from this barrel in molecules and screens.
+- Do not create atom barrel files that mix store and components.
+- Import atom components directly from their file paths.
+- Keep feature store exports in `store.ts` or `store.tsx`.
 
 ## Composition rules
 
-- Build molecules by importing the feature atom as a namespace: `import * as Feature from "../atom"`.
-- If a feature needs scoped state/data, keep it in the atom store and pass it via `Feature.Store`.
-- Atom components should read state via `useStore` selectors.
+- Build molecules by importing atom components directly from `../atoms/<name>` or `~/features/<feature>/atoms/<name>`.
+- If a feature needs scoped state/data, keep it in the feature store and provide it once at the screen/layout boundary.
+- Atom components should read state via typed store selectors.
 - Only promote something to a global atom (example: `~/atoms/button`) when it is genuinely cross-feature.
 
 ## Workflow
@@ -61,22 +63,17 @@ features/<feature>/
    - an atom (reusable building block, used in multiple places), or
    - a molecule (a composed widget for a specific use-case).
 3. If you need shared state across multiple atom components:
-   - create or extend the feature store in `atom/<feature>-store.ts`
-   - export `{ Store, useStore }` from the atom barrel
-4. Put small reusable UI parts in `atom/<feature>-components.tsx` and export them from the barrel.
-5. Compose molecules from the atom barrel; screens compose molecules and wrap the atom `Store` once.
+   - create or extend the feature store in `features/<feature>/store.ts` (or `store.tsx`)
+   - export named store symbols from that file (for example `SearchStore`, `useSearchStore`)
+4. Put each atom component in its own file under `atoms/`.
+5. Compose molecules by importing atom components directly; screens compose molecules and wrap the feature `Store` once.
 6. Enforce one-way dependency flow: atoms → atoms, molecules → atoms/molecules, screens → everything below.
 
-## Example pattern (Expo / React Native)
+## Example pattern
 
-### Atom barrel
+The following is an example for implementing a search feature.
 
-```tsx
-export * from "./search-components";
-export * from "./search-store";
-```
-
-### Atom store
+### Feature store (`store.ts`)
 
 ```tsx
 import { createStore } from "rostra";
@@ -97,74 +94,90 @@ function useInternalStore({ debounceTime = 500 }: { debounceTime?: number }) {
   };
 }
 
-export const { Store, useStore } = createStore(useInternalStore);
+export const { Store: SearchStore, useStore: useSearchStore } =
+  createStore(useInternalStore);
 ```
 
-### Atom components (pull from store, expose small pieces)
+### Atom files (`atoms/container.tsx`, `atoms/input.tsx`, `atoms/clear-button.tsx`)
 
 ```tsx
 import type { ReactNode } from "react";
-import type { PressableProps, TextInputProps } from "react-native";
-import { Pressable, TextInput, View } from "react-native";
+import { View } from "react-native";
 
-import { useStore } from "./search-store";
-
-function Container({ children }: { children: ReactNode }) {
+export function Container({ children }: { children: ReactNode }) {
   return <View>{children}</View>;
 }
+```
 
-function Input(props: TextInputProps) {
-  const searchTerm = useStore((s) => s.searchTerm);
-  const setSearchTerm = useStore((s) => s.setSearchTerm);
+```tsx
+import type { TextInputProps } from "react-native";
+import { TextInput } from "react-native";
+
+import { useSearchStore } from "../store";
+
+export function Input(props: TextInputProps) {
+  const searchTerm = useSearchStore((s) => s.searchTerm);
+  const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
   return (
     <TextInput value={searchTerm} onChangeText={setSearchTerm} {...props} />
   );
 }
-
-function ClearButton(props: PressableProps) {
-  const setSearchTerm = useStore((s) => s.setSearchTerm);
-  const hideButton = useStore((s) => s.searchTerm.length === 0);
-  if (hideButton) return null;
-  return <Pressable onPress={() => setSearchTerm("")} {...props} />;
-}
-
-export { Container, Input, ClearButton };
 ```
 
-### Molecule (compose atom via namespace import)
+```tsx
+import type { PressableProps } from "react-native";
+import { Pressable } from "react-native";
+
+import { useSearchStore } from "../store";
+
+export function ClearButton(props: PressableProps) {
+  const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
+  const hideButton = useSearchStore((s) => s.searchTerm.length === 0);
+  if (hideButton) return null;
+  function clearInput {
+    setSearchTerm("");
+  }
+  return <Pressable onPress={clearInput} {...props} />;
+}
+
+```
+
+### Molecule (compose atoms via direct imports)
 
 ```tsx
-import * as Search from "../atom";
+import { ClearButton } from "../atoms/clear-button";
+import { Container } from "../atoms/container";
+import { Input } from "../atoms/input";
 
 function SearchBar() {
   return (
-    <Search.Container>
-      <Search.Input />
-      <Search.ClearButton />
-    </Search.Container>
+    <Container>
+      <Input />
+      <ClearButton />
+    </Container>
   );
 }
 
 export { SearchBar };
 ```
 
-### Screen boundary (wrap the atom `Store` once)
+### Screen boundary (wrap the feature `Store` once)
 
 ```tsx
 import { View } from "react-native";
 
-import * as Search from "~/features/search/atom";
 import { SearchBar } from "~/features/search/molecules/search-bar";
 import { SearchPageResults } from "~/features/search/molecules/search-page-results";
+import { SearchStore } from "~/features/search/store";
 
 export default function SearchPage() {
   return (
-    <Search.Store>
+    <SearchStore>
       <View className="flex-1">
         <SearchPageResults />
         <SearchBar />
       </View>
-    </Search.Store>
+    </SearchStore>
   );
 }
 ```
