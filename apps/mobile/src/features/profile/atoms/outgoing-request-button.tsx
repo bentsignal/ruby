@@ -1,8 +1,7 @@
 import { Text, View } from "react-native";
-import { useMutation } from "convex/react";
 import { X } from "lucide-react-native";
 
-import { api } from "@acme/convex/api";
+import { useCancelFriendRequest } from "@acme/convex/react";
 
 import { Button } from "~/atoms/button";
 import { useProfileStore } from "~/features/profile/store";
@@ -10,8 +9,8 @@ import { useColor } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
 
 export function OutgoingRequestButton({ className }: { className?: string }) {
-  const cancelFriendRequest = useMutation(api.friends.cancelRequest);
   const username = useProfileStore((s) => s.username);
+  const cancelFriendRequest = useCancelFriendRequest({ username });
   const foreground = useColor("foreground");
   return (
     <View className={cn("flex-row items-center gap-2", className)}>

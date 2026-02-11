@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Alert, Modal, Pressable, View } from "react-native";
-import { useMutation } from "convex/react";
 import { UserRound } from "lucide-react-native";
 
-import { api } from "@acme/convex/api";
+import { useRemoveFriend } from "@acme/convex/react";
 
 import { Button, ButtonText } from "~/atoms/button";
 import { useProfileStore } from "~/features/profile/store";
@@ -11,9 +10,9 @@ import { useColor } from "~/hooks/use-color";
 
 export function FriendsButton() {
   const [modalVisible, setModalVisible] = useState(false);
-  const removeFriend = useMutation(api.friends.remove);
   const name = useProfileStore((s) => s.name);
   const username = useProfileStore((s) => s.username);
+  const removeFriend = useRemoveFriend({ username });
   const foreground = useColor("foreground");
 
   const handleRemoveFriend = () => {
