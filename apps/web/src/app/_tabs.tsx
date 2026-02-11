@@ -12,9 +12,9 @@ import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
 
-import * as Auth from "~/features/auth/atom";
+import { useAuthStore } from "~/features/auth/store";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
-import * as Theme from "~/features/theme/atom";
+import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
 
 export const Route = createFileRoute("/_tabs")({
   component: TabsLayout,
@@ -59,8 +59,8 @@ function TabBarSlot({ children }: { children: React.ReactNode }) {
 function TabBar() {
   const location = useLocation();
   const pathname = location.pathname;
-  const myUsername = Auth.useStore((s) => s.myProfile?.username);
-  const imSignedIn = Auth.useStore((s) => s.imSignedIn);
+  const myUsername = useAuthStore((s) => s.myProfile?.username);
+  const imSignedIn = useAuthStore((s) => s.imSignedIn);
 
   const tabs = linkOptions([
     {
@@ -147,7 +147,7 @@ function TabBar() {
                 )}
               >
                 <SmallProfilePreview />
-                <Theme.Toggle />
+                <ThemeToggle />
               </HoverCard.Content>
             </HoverCard.Container>
           );

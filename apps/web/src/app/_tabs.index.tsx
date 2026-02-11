@@ -4,8 +4,8 @@ import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
 
-import * as Auth from "~/features/auth/atom";
-import { PostList } from "~/features/post/post-list";
+import { useAuthStore } from "~/features/auth/store";
+import { PostList } from "~/features/post/molecules/post-list";
 
 export const Route = createFileRoute("/_tabs/")({
   component: HomePage,
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_tabs/")({
 });
 
 function HomePage() {
-  const imNotSignedIn = Auth.useStore((s) => s.imSignedOut);
+  const imNotSignedIn = useAuthStore((s) => s.imSignedOut);
   const urlSaysSignedOut = Route.useSearch({
     select: (s) => s.signedOut ?? false,
   });

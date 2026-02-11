@@ -8,7 +8,7 @@ import { api } from "@acme/convex/api";
 import { toast } from "@acme/ui/toast";
 
 import { useLoading } from "~/hooks/use-loading";
-import { authClient } from "../lib/client";
+import { authClient } from "./lib/client";
 
 function useInternalStore({
   isAuthenticatedServerSide,
@@ -19,7 +19,6 @@ function useInternalStore({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // use serverside auth value until client is mounted
   const { isAuthenticated: isAuthenticatedClientSide } = useConvexAuth();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -57,7 +56,7 @@ function useInternalStore({
             url.searchParams.delete("signedOut");
             window.location.replace(url.toString());
           },
-          onError: (error) => {
+          onError: (error: unknown) => {
             console.error(error);
             toast.error("Failed to sign out");
           },
@@ -76,4 +75,5 @@ function useInternalStore({
   };
 }
 
-export const { Store, useStore } = createStore(useInternalStore);
+export const { Store: AuthStore, useStore: useAuthStore } =
+  createStore(useInternalStore);

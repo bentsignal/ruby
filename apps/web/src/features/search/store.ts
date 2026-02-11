@@ -59,4 +59,5 @@ function useInternalStore({
   };
 }
 
-export const { Store, useStore } = createStore(useInternalStore);
+export const { Store: SearchStore, useStore: useSearchStore } =
+  createStore(useInternalStore);

@@ -6,7 +6,7 @@ import {
 } from "next-themes";
 import { createStore } from "rostra";
 
-import type { Theme } from "../types";
+import type { Theme } from "./types";
 
 function useInternalStore({ initialTheme }: { initialTheme: Theme }) {
   const queryClient = useQueryClient();
@@ -26,18 +26,21 @@ function useInternalStore({ initialTheme }: { initialTheme: Theme }) {
   return { theme, changeTheme };
 }
 
-const { Store: InternalStore, useStore } = createStore(useInternalStore);
+const { Store: InternalThemeStore, useStore } = createStore(useInternalStore);
 
-function Store({
+function ThemeStore({
   children,
   initialTheme,
   ...props
 }: React.ComponentProps<typeof NextThemeProvider> & { initialTheme: Theme }) {
   return (
     <NextThemeProvider {...props}>
-      <InternalStore initialTheme={initialTheme}>{children}</InternalStore>
+      <InternalThemeStore initialTheme={initialTheme}>
+        {children}
+      </InternalThemeStore>
     </NextThemeProvider>
   );
 }
 
-export { Store, useStore };
+export const useThemeStore = useStore;
+export { ThemeStore };

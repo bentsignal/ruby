@@ -1,17 +1,21 @@
 import { Link } from "@tanstack/react-router";
 
-import * as Auth from "~/features/auth/atom";
+import { SignOutLink } from "~/features/auth/atoms/sign-out-link";
+import { TakeMeToLoginLink } from "~/features/auth/atoms/take-me-to-login-link";
+import { useAuthStore } from "~/features/auth/store";
 import { Name } from "../atoms/name";
 import { PFP } from "../atoms/pfp";
 import { Username } from "../atoms/username";
 import { ProfileStore } from "../store";
 
 function SmallProfilePreview() {
-  const myProfile = Auth.useStore((s) => s.myProfile);
-  const imNotSignedIn = Auth.useStore((s) => s.imSignedIn === false);
+  const myProfile = useAuthStore((s) => s.myProfile);
+  const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
+
   if (imNotSignedIn || !myProfile) {
-    return <Auth.TakeMeToLoginLink />;
+    return <TakeMeToLoginLink />;
   }
+
   return (
     <div className="flex flex-col items-start gap-2">
       <ProfileStore profile={myProfile}>
@@ -30,7 +34,7 @@ function SmallProfilePreview() {
           </div>
         </Link>
       </ProfileStore>
-      <Auth.SignOutLink />
+      <SignOutLink />
     </div>
   );
 }

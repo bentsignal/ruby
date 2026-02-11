@@ -1,12 +1,15 @@
-import * as Search from "../atom";
+import { ClearButton } from "../atoms/clear-button";
+import { Container } from "../atoms/container";
+import { Icon } from "../atoms/icon";
+import { Input } from "../atoms/input";
 
 function SearchBar() {
   return (
-    <Search.Container>
-      <Search.Icon />
-      <Search.Input />
-      <Search.ClearButton />
-    </Search.Container>
+    <Container>
+      <Icon />
+      <Input />
+      <ClearButton />
+    </Container>
   );
 }
 

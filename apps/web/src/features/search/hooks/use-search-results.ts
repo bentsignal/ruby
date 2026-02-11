@@ -4,7 +4,7 @@ import { usePaginatedQuery } from "convex/react";
 import type { UIProfile } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
 
-import * as Search from "../atom";
+import { useSearchStore } from "../store";
 
 const PAGE_SIZE = 25;
 
@@ -14,8 +14,8 @@ type SearchResultsStatus =
   | "results-found";
 
 function useSearchResults() {
-  const searchTerm = Search.useStore((s) => s.searchTerm.trim());
-  const debouncedSearchTerm = Search.useStore((s) =>
+  const searchTerm = useSearchStore((s) => s.searchTerm.trim());
+  const debouncedSearchTerm = useSearchStore((s) =>
     s.debouncedSearchTerm.trim(),
   );
 

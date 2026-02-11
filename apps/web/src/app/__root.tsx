@@ -18,10 +18,10 @@ import { Toaster } from "@acme/ui/toast";
 import type { RouterContext } from "~/router";
 import appStyles from "~/app/styles.css?url";
 import { env } from "~/env";
-import * as Auth from "~/features/auth/atom";
 import { authClient } from "~/features/auth/lib/client";
 import { getToken } from "~/features/auth/lib/server";
-import * as Theme from "~/features/theme/atom";
+import { AuthStore } from "~/features/auth/store";
+import { ThemeStore } from "~/features/theme/store";
 import { getTheme } from "~/features/theme/utils";
 
 const getThemeFromCookie = createServerFn({ method: "GET" }).handler(() => {
@@ -106,13 +106,13 @@ function RootComponent() {
           initialToken={context.token}
         >
           <QueryClientProvider client={context.queryClient}>
-            <Theme.Store
+            <ThemeStore
               attribute="class"
               defaultTheme="dark"
               disableTransitionOnChange
               initialTheme={context.theme}
             >
-              <Auth.Store isAuthenticatedServerSide={context.isAuthenticated}>
+              <AuthStore isAuthenticatedServerSide={context.isAuthenticated}>
                 <Outlet />
                 <TanStackDevtools
                   config={{
@@ -125,9 +125,9 @@ function RootComponent() {
                     },
                   ]}
                 />
-              </Auth.Store>
+              </AuthStore>
               <Toaster />
-            </Theme.Store>
+            </ThemeStore>
             <Scripts />
           </QueryClientProvider>
         </ConvexBetterAuthProvider>

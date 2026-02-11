@@ -6,7 +6,8 @@ import { z } from "zod";
 import * as Dialog from "@acme/ui/dialog";
 import * as Drawer from "@acme/ui/drawer";
 
-import * as Auth from "~/features/auth/atom";
+import { GoogleSignInButton } from "~/features/auth/atoms/google-sign-in-button";
+import { useAuthStore } from "~/features/auth/store";
 import { useIsMobile } from "~/hooks/use-is-mobile";
 
 export const Route = createFileRoute("/_tabs/login")({
@@ -29,7 +30,7 @@ function Login() {
 
   const [isOpen, _setIsOpen] = useState(true);
 
-  const imLoggedIn = Auth.useStore((s) => s.imSignedIn);
+  const imLoggedIn = useAuthStore((s) => s.imSignedIn);
   if (imLoggedIn) {
     return null;
   }
@@ -56,7 +57,7 @@ function Login() {
             </Drawer.Description>
           </Drawer.Header>
           <div className="mx-4 mt-2 mb-3 flex flex-col gap-4">
-            <Auth.GoogleSignInButton />
+            <GoogleSignInButton />
           </div>
           <Drawer.Footer className="pt-2">
             <span className="text-muted-foreground text-center text-sm">
@@ -79,7 +80,7 @@ function Login() {
             Please choose your preferred sign in method
           </Dialog.Description>
           <div className="mx-4 mt-3 mb-2 flex flex-col gap-4">
-            <Auth.GoogleSignInButton />
+            <GoogleSignInButton />
           </div>
           <span className="text-muted-foreground text-center text-sm">
             By continuing, you agree to our Terms of Service, and acknowledge
@@ -92,7 +93,7 @@ function Login() {
 }
 
 function LoadingOverlay() {
-  const isLoading = Auth.useStore((s) => s.isLoading);
+  const isLoading = useAuthStore((s) => s.isLoading);
   if (!isLoading) return null;
   return (
     <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center">
