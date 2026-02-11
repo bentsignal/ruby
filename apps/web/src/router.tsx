@@ -2,6 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { ConvexQueryClient } from "@convex-dev/react-query";
+import * as Sentry from "@sentry/tanstackstart-react";
 import { ConvexReactClient } from "convex/react";
 
 import { Error } from "~/components/error";
@@ -48,6 +49,13 @@ export function getRouter() {
     router,
     queryClient,
   });
+
+  if (!router.isServer) {
+    Sentry.init({
+      dsn: env.VITE_SENTRY_DSN,
+      sendDefaultPii: true,
+    });
+  }
 
   return router;
 }
