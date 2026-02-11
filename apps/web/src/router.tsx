@@ -53,6 +53,7 @@ export function getRouter() {
   if (!router.isServer) {
     Sentry.init({
       dsn: env.VITE_SENTRY_DSN,
+      environment: env.VITE_NODE_ENV,
       sendDefaultPii: true,
     });
   }
