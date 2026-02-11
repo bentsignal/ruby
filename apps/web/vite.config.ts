@@ -1,6 +1,5 @@
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import { sentryTanstackStart } from "@sentry/tanstackstart-react";
 import tailwindcss from "@tailwindcss/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
@@ -21,11 +20,6 @@ export default defineConfig({
     tanstackStart({
       srcDirectory: "src",
       router: { routesDirectory: "app" },
-    }),
-    sentryTanstackStart({
-      org: "ruby-bsx",
-      project: "web",
-      authToken: process.env.SENTRY_AUTH_TOKEN,
     }),
     viteReact({
       babel: {

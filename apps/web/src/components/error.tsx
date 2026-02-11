@@ -1,16 +1,11 @@
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import * as Sentry from "@sentry/tanstackstart-react";
 import { House } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
 
 export function Error(props: ErrorComponentProps) {
-  useEffect(() => {
-    Sentry.captureException(props.error);
-  }, [props.error]);
-
+  console.log(props);
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-2">
       <h1 className="text-2xl font-bold">Sorry about that</h1>

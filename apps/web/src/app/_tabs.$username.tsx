@@ -33,7 +33,6 @@ export const Route = createFileRoute("/_tabs/$username")({
       ),
       // TODO use ensureInfiniteQueryData for post
     ]);
-    throw new Error("test");
   },
   component: ProfilePage,
 });

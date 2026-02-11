@@ -51,9 +51,7 @@
     "UPLOADTHING_APP_ID",
     "VITE_CONVEX_URL",
     "VITE_CONVEX_SITE_URL",
-    "VITE_SITE_URL",
-    "VITE_SENTRY_DSN",
-    "SENTRY_AUTH_TOKEN"
+    "VITE_SITE_URL"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
