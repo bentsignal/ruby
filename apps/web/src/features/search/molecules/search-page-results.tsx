@@ -1,4 +1,5 @@
 import type { LegendListRenderItemProps } from "@legendapp/list";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { LegendList } from "@legendapp/list";
 import { Loader } from "lucide-react";
@@ -9,6 +10,7 @@ import { Name } from "~/features/profile/atoms/name";
 import { PFP } from "~/features/profile/atoms/pfp";
 import { Username } from "~/features/profile/atoms/username";
 import { ProfileStore } from "~/features/profile/store";
+import { MainLayout } from "~/layouts/main";
 import { useSearchResults } from "../hooks/use-search-results";
 import { SearchBar } from "./search-bar";
 
@@ -20,49 +22,67 @@ export function SearchPageResults() {
     ["CanLoadMore", "LoadingFirstPage"].includes(loadingStatus) &&
     results.length > 15;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const updateHeight = () => {
+      setContainerHeight(container.clientHeight);
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <>
+    <MainLayout className="flex h-screen flex-col overflow-hidden">
       <SearchBar />
-      <LegendList
-        data={results}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        maintainVisibleContentPosition={true}
-        onEndReached={loadMoreItems}
-        onEndReachedThreshold={0.75}
-        recycleItems={true}
-        ListHeaderComponent={<div className="mb-4" />}
-        // @ts-expect-error - Web-only: CSS calc() works on web but RN types don't allow it
-        style={{
-          height: "calc(100dvh - 96px)",
-        }}
-        contentContainerStyle={{
-          flex: 1,
-        }}
-        ListEmptyComponent={
-          resultsStatus === "no-search-term-entered" ? (
-            <div className="flex flex-1 items-center justify-center py-4">
-              <p className="text-muted-foreground">
-                Search for other users on Ruby
-              </p>
-            </div>
-          ) : resultsStatus === "no-results-found" ? (
-            <div className="flex flex-1 items-center justify-center py-4">
-              <p className="text-muted-foreground">No users found</p>
-            </div>
-          ) : null
-        }
-        ListFooterComponent={
-          showLoadingSpinner ? (
-            <div className="my-2 flex h-10 w-full items-center justify-center">
-              <Loader className="h-5 w-5 animate-spin" />
-            </div>
-          ) : (
-            <div className="my-4 mb-36 flex w-full items-center justify-center" />
-          )
-        }
-      />
-    </>
+      <div className="min-h-0 flex-1" ref={containerRef}>
+        <LegendList
+          data={results}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          maintainVisibleContentPosition={true}
+          onEndReached={loadMoreItems}
+          onEndReachedThreshold={0.75}
+          recycleItems={true}
+          style={{
+            height: containerHeight,
+          }}
+          contentContainerStyle={{
+            paddingTop: 16,
+            flex: 1,
+          }}
+          ListEmptyComponent={
+            resultsStatus === "no-search-term-entered" ? (
+              <div className="flex flex-1 items-center justify-center py-4">
+                <p className="text-muted-foreground">
+                  Search for other users on Ruby
+                </p>
+              </div>
+            ) : resultsStatus === "no-results-found" ? (
+              <div className="flex flex-1 items-center justify-center py-4">
+                <p className="text-muted-foreground">No users found</p>
+              </div>
+            ) : null
+          }
+          ListFooterComponent={
+            showLoadingSpinner ? (
+              <div className="my-2 flex h-10 w-full items-center justify-center">
+                <Loader className="h-5 w-5 animate-spin" />
+              </div>
+            ) : (
+              <div className="my-4 mb-36 flex w-full items-center justify-center" />
+            )
+          }
+        />
+      </div>
+    </MainLayout>
   );
 }
 
