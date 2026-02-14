@@ -18,6 +18,7 @@ export const env = createEnv({
     VITE_CONVEX_URL: z.string().url(),
     VITE_CONVEX_SITE_URL: z.string().url(),
     VITE_SITE_URL: z.string().url(),
+    VITE_IMPORTANT_SECRET: z.string(),
   },
   runtimeEnv,
   emptyStringAsUndefined: true,
