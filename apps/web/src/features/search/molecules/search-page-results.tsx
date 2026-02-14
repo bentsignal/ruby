@@ -100,7 +100,6 @@ function ProfileSearchItem({ item }: LegendListRenderItemProps<UIProfile>) {
       <Link
         to="/$username"
         params={{ username: item.username }}
-        preload="intent"
         className="hover:bg-muted/50 flex items-center gap-3 rounded-full px-4 py-3"
       >
         <PFP variant="sm" />

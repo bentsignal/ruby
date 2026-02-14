@@ -6,7 +6,7 @@ import { Button } from "@acme/ui/button";
 export function TakeMeToLoginLink() {
   return (
     <Button variant="link" className="px-0!" asChild>
-      <Link to="/login" search={(prev) => ({ ...prev })} preload="intent">
+      <Link to="/login" search={(prev) => ({ ...prev })}>
         <LogIn size={16} />
         <span>Take me to login</span>
       </Link>

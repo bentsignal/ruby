@@ -22,7 +22,6 @@ function SmallProfilePreview() {
         <Link
           to="/$username"
           params={{ username: myProfile.username }}
-          preload="intent"
           className="cursor-pointer"
         >
           <div className="flex items-center gap-2">
