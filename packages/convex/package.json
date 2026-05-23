@@ -35,6 +35,7 @@
   },
   "prettier": "@acme/prettier-config",
   "dependencies": {
+    "@acme/app-config": "workspace:*",
     "@better-auth/expo": "^1.4.7",
     "@convex-dev/better-auth": "catalog:",
     "@convex-dev/rate-limiter": "^0.3.2",

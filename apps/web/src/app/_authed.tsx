@@ -4,10 +4,12 @@ import {
   Link,
   linkOptions,
   Outlet,
+  redirect,
   useLocation,
 } from "@tanstack/react-router";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
+import { api } from "@acme/convex/api";
 import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
@@ -16,8 +18,27 @@ import { useAuthStore } from "~/features/auth/store";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
 import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
 
-export const Route = createFileRoute("/_tabs")({
+export const Route = createFileRoute("/_authed")({
   component: TabsLayout,
+  beforeLoad: async ({ location, context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/login",
+        search: { redirect_uri: location.pathname },
+      });
+    }
+    const profile = await context.convexQueryClient.serverHttpClient?.mutation(
+      api.profile.ensureProfileExists,
+      {},
+    );
+    if (!profile) {
+      throw new Error("Couldn't get profile");
+    }
+    return {
+      isAuthenticated: true,
+      profile,
+    };
+  },
 });
 
 function TabsLayout() {

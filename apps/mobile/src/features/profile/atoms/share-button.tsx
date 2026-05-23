@@ -2,8 +2,8 @@ import { Share } from "react-native";
 import { ShareIcon } from "lucide-react-native";
 
 import { Button } from "~/atoms/button";
-import { env } from "~/expo.env";
 import { useColor } from "~/hooks/use-color";
+import { urls } from "~/utils/urls";
 import { useProfileStore } from "../store";
 
 export function ShareButton() {
@@ -12,7 +12,7 @@ export function ShareButton() {
   const share = async () => {
     await Share.share({
       message: "Share your adventures on Ruby!",
-      url: `${env("SITE_URL")}/${username}`,
+      url: `${urls.web}/${username}`,
     });
   };
   return (

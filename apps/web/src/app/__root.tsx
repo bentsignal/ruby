@@ -26,9 +26,7 @@ import { getTheme } from "~/features/theme/utils";
 
 const getThemeFromCookie = createServerFn({ method: "GET" }).handler(() => {
   const themeCookie = getCookie("theme");
-  return {
-    theme: getTheme(themeCookie),
-  };
+  return getTheme(themeCookie);
 });
 
 const getAuth = createServerFn({ method: "GET" }).handler(async () => {
@@ -56,26 +54,24 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
   }),
   beforeLoad: async ({ context }) => {
-    const token = await context.queryClient.fetchQuery({
-      queryKey: ["auth-token"],
-      queryFn: async () => (await getAuth()) ?? null,
-      staleTime: convert(50, "minutes", "to ms"),
-      gcTime: Infinity,
-    });
-    // all queries, mutations and actions through TanStack Query will be
-    // authenticated during SSR if we have a valid token
+    const [token, theme] = await Promise.all([
+      context.queryClient.fetchQuery({
+        queryKey: ["auth-token"],
+        queryFn: async () => (await getAuth()) ?? null,
+        staleTime: convert(50, "minutes", "to ms"),
+        gcTime: Infinity,
+      }),
+      context.queryClient.fetchQuery({
+        queryKey: ["theme"],
+        queryFn: async () => await getThemeFromCookie(),
+        staleTime: Infinity,
+        gcTime: Infinity,
+      }),
+    ]);
+
     if (token) {
-      // During SSR only (the only time serverHttpClient exists),
-      // set the auth token to make HTTP queries with.
       context.convexQueryClient.serverHttpClient?.setAuth(token);
     }
-
-    const { theme } = await context.queryClient.fetchQuery({
-      queryKey: ["theme"],
-      queryFn: async () => await getThemeFromCookie(),
-      staleTime: Infinity,
-      gcTime: Infinity,
-    });
 
     return {
       isAuthenticated: !!token,
@@ -93,7 +89,7 @@ function RootComponent() {
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
-        <ReactScan />
+        {/* <ReactScan /> */}
       </head>
       <body
         className={cn(
@@ -112,7 +108,7 @@ function RootComponent() {
               disableTransitionOnChange
               initialTheme={context.theme}
             >
-              <AuthStore isAuthenticatedServerSide={context.isAuthenticated}>
+              <AuthStore>
                 <Outlet />
                 <TanStackDevtools
                   config={{
@@ -136,7 +132,7 @@ function RootComponent() {
   );
 }
 
-function ReactScan() {
+export function ReactScan() {
   if (env.VITE_NODE_ENV !== "development") {
     return null;
   }

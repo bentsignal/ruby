@@ -10,16 +10,14 @@ import { GoogleSignInButton } from "~/features/auth/atoms/google-sign-in-button"
 import { useAuthStore } from "~/features/auth/store";
 import { useIsMobile } from "~/hooks/use-is-mobile";
 
-export const Route = createFileRoute("/_tabs/login")({
+export const Route = createFileRoute("/login")({
   component: Login,
   validateSearch: z.object({
     redirect_uri: z.string().optional(),
   }),
   beforeLoad: ({ context }) => {
     if (context.isAuthenticated) {
-      throw redirect({
-        to: "/",
-      });
+      throw redirect({ to: "/" });
     }
   },
 });

@@ -1,21 +1,13 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod/v4";
 
 import { SearchPageResults } from "~/features/search/molecules/search-page-results";
 import { SearchStore } from "~/features/search/store";
 
-export const Route = createFileRoute("/_tabs/search")({
+export const Route = createFileRoute("/_authed/search")({
   validateSearch: z.object({
     q: z.string().optional(),
   }),
-  beforeLoad: ({ context }) => {
-    if (!context.isAuthenticated) {
-      throw redirect({
-        to: "/login",
-        search: { redirect_uri: "/search" },
-      });
-    }
-  },
   component: SearchPage,
 });
 

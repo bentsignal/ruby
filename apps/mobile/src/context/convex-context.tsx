@@ -6,10 +6,10 @@ import { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexReactClient } from "convex/react";
 import { ConvexError } from "convex/values";
 
-import { env } from "~/expo.env";
 import { authClient } from "~/features/auth/lib/auth-client";
+import { urls } from "~/utils/urls";
 
-const convex = new ConvexReactClient(env("CONVEX_URL"), {
+const convex = new ConvexReactClient(urls.convex.cloud, {
   // expectAuth: true,
 });
 

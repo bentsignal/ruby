@@ -7,7 +7,7 @@ import { ConvexReactClient } from "convex/react";
 import { Error } from "~/components/error";
 import { NotFound } from "~/components/not-found";
 import { Pending } from "~/components/pending";
-import { env } from "~/env";
+import { urls } from "~/urls";
 import { routeTree } from "./routeTree.gen";
 
 export interface RouterContext {
@@ -17,7 +17,7 @@ export interface RouterContext {
 }
 
 export function getRouter() {
-  const convex = new ConvexReactClient(env.VITE_CONVEX_URL, {
+  const convex = new ConvexReactClient(urls.convex.cloud, {
     expectAuth: true,
   });
   const convexQueryClient = new ConvexQueryClient(convex);

@@ -4,7 +4,7 @@ import { expoClient } from "@better-auth/expo/client";
 import { convexClient } from "@convex-dev/better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
-import { env } from "~/expo.env";
+import { urls } from "~/utils/urls";
 
 const scheme = Constants.expoConfig?.scheme;
 if (scheme === undefined || scheme.length === 0) {
@@ -12,7 +12,7 @@ if (scheme === undefined || scheme.length === 0) {
 }
 
 export const authClient = createAuthClient({
-  baseURL: env("SITE_URL"),
+  baseURL: urls.web,
   plugins: [
     expoClient({
       scheme: scheme as string,

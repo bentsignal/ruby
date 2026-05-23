@@ -14,10 +14,10 @@ export const env = createEnv({
   client: {
     VITE_NODE_ENV: z
       .enum(["development", "production", "test"])
-      .default("production"),
-    VITE_CONVEX_URL: z.string().url(),
-    VITE_CONVEX_SITE_URL: z.string().url(),
-    VITE_SITE_URL: z.string().url(),
+      .default(
+        import.meta.env.MODE === "development" ? "development" : "production",
+      ),
+    VITE_WORKTREE_ID: z.string().optional(),
   },
   runtimeEnv,
   emptyStringAsUndefined: true,

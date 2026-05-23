@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { convexQuery } from "@convex-dev/react-query";
 
 import { api } from "@acme/convex/api";
@@ -14,25 +14,11 @@ import { Username } from "~/features/profile/atoms/username";
 import { ProfileStore } from "~/features/profile/store";
 import { MainLayout } from "~/layouts/main";
 
-export const Route = createFileRoute("/_tabs/$username")({
-  beforeLoad: ({ params, context }) => {
-    if (!context.isAuthenticated) {
-      throw redirect({
-        to: "/login",
-        search: {
-          redirect_uri:
-            params.username === "my-profile" ? "/" : `/${params.username}`,
-        },
-      });
-    }
-  },
+export const Route = createFileRoute("/_authed/$username")({
   loader: async ({ context, params }) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData(
-        convexQuery(api.profile.getByUsername, { username: params.username }),
-      ),
-      // TODO use ensureInfiniteQueryData for post
-    ]);
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.profile.getByUsername, { username: params.username }),
+    );
   },
   component: ProfilePage,
 });
