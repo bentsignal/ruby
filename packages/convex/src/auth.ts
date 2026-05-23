@@ -20,6 +20,10 @@ const trustedOrigins =
         "https://*.www.ruby.localhost",
         "ruby://",
       ];
+export const authCorsAllowedOrigins =
+  env.ENVIRONMENT === "production"
+    ? []
+    : ["*.ruby.localhost", "*.www.ruby.localhost"];
 
 export const authComponent = createClient<DataModel>(components.betterAuth, {
   authFunctions,
