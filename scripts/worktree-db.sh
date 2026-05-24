@@ -41,6 +41,9 @@ if [ -s "$TEMP_ENV" ]; then
 fi
 rm -f "$TEMP_ENV"
 
+npx convex dev --once --tail-logs disable < /dev/null
+echo "pushed Convex functions to worktree deployment"
+
 cd "$NEW_WT"
 
 # Generate the app-config overrides with worktree-specific values
