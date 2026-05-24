@@ -58,7 +58,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       context.queryClient.fetchQuery({
         queryKey: ["auth-token"],
         queryFn: async () => (await getAuth()) ?? null,
-        staleTime: convert(50, "minutes", "to ms"),
+        staleTime: convert(10, "minutes", "to ms"),
         gcTime: Infinity,
       }),
       context.queryClient.fetchQuery({

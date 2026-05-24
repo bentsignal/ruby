@@ -44,18 +44,18 @@ These files currently encode pieces of this architecture:
 
 - `packages/app-config/src/urls.ts` centralizes URL construction.
 - `packages/app-config/src/overrides.ts` is intentionally a mutable/generated override file. Do not remove it just because it looks trivial.
-- `scripts/worktree-db.sh` creates a worktree Convex deployment, writes `VITE_WORKTREE_ID` to `.env`, and rewrites `packages/app-config/src/overrides.ts` with the worktree Convex cloud URL and worktree id.
+- `scripts/worktree-db.sh` creates a worktree Convex deployment, writes `VITE_WORKTREE_ID` to `.env`, rewrites `packages/app-config/src/overrides.ts` with the worktree Convex cloud URL and worktree id, and does a one-shot Convex push so the isolated deployment has the current schema/functions before `pnpm run dev`.
 - `scripts/worktree-init.sh` copies env files from the main checkout and runs `pnpm install`.
 - `apps/web/src/features/auth/lib/server.ts` configures TanStack Start auth proxy helpers with `urls.convex.cloud` and `urls.convex.site`.
 - `apps/web/src/app/api.auth.$.ts` proxies `/api/auth/*` through the Better Auth/Convex handler.
 - `apps/web/src/app/auth.callback.tsx` handles the cross-domain one-time token callback and copies auth cookies.
 - `packages/convex/src/auth.ts`, `packages/convex/src/auth.config.ts`, and `packages/convex/src/http.ts` are the Convex-side Better Auth integration.
 
-Portless is not currently installed in this repo. `pnpm ls @vercel/portless portless --depth 4` reports nothing, and there is no `portless.json`. It used to exist during a prior iteration, but it was removed before being committed. Do not infer from its absence that Portless is no longer wanted.
+Portless is installed intentionally. Do not infer from old history, removed config, or a lack of `portless.json` that Portless is no longer wanted.
 
 ## Portless Requirements
 
-Portless is still part of the intended architecture. Reintroduce it deliberately.
+Portless is part of the intended architecture.
 
 The desired web host is `www.ruby.localhost`, with worktree prefixes becoming `<worktree-id>.www.ruby.localhost`. Portless supports named `.localhost` HTTPS URLs and git worktree subdomain prefixes. Its docs describe `portless run --name myapp ...` producing `https://<branch>.myapp.localhost` in linked worktrees, and HTTPS is enabled by default.
 
@@ -92,6 +92,15 @@ Each worktree gets its own Convex deployment for data:
 
 The current `packages/convex/src/auth.config.ts` reflects this idea by adding `https://site.dev.ruby.travel` as a trusted provider for non-main deployments. Be very careful before changing that logic.
 
+That trust must use Convex's `customJwt` provider shape, not the OIDC provider shape:
+
+- `issuer`: `https://site.dev.ruby.travel`
+- `applicationID`: `convex`
+- `algorithm`: `RS256`
+- `jwks`: `https://site.dev.ruby.travel/api/auth/convex/jwks`
+
+This matters because the Better Auth Convex plugin mints a custom JWT whose issuer is the Convex site URL. If a worktree deployment trusts `site.dev.ruby.travel` as `{ domain, applicationID }`, Convex treats it as OIDC and rejects the Better Auth token with `NoAuthProvider`.
+
 ## Source Of Truth
 
 Use `packages/app-config/src/urls.ts` as the source of truth for app URLs.
@@ -117,6 +126,7 @@ Worktree setup may rewrite this file locally. Do not remove it for being generat
 - Do not collapse all Convex URLs into one value. Cloud and site URLs have different jobs.
 - Do not make worktree auth depend on registering a new Google origin/callback.
 - Do not point worktree auth at the worktree Convex site unless the architecture has been intentionally changed.
+- Do not configure shared development auth trust as an OIDC `{ domain, applicationID }` provider. Worktree data deployments must trust the shared development auth deployment as a `customJwt` provider with the shared JWKS URL.
 - Do not remove the cross-domain Better Auth callback/cookie flow because it looks unusual.
 - Do not replace stable local URLs with random ports.
 - Do not assume missing committed setup means the intent was abandoned.
