@@ -30,7 +30,7 @@ function normalizeWorktreeId(worktreeId: string | undefined) {
     return undefined;
   }
 
-  const shortId = /(?:^|-)([a-f0-9]{8})$/.exec(slug);
+  const shortId = /(?:^|-)([a-f0-9]{7,12})$/.exec(slug);
   return shortId?.[1] ?? slug;
 }
 

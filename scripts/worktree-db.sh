@@ -1,8 +1,23 @@
+#!/bin/sh
+set -eu
+
 NEW_WT="$PWD"
 
-WT_NAME="$(basename "$NEW_WT" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/^-*//;s/-*$//')"
-PORTLESS_WORKTREE_ID="$(printf '%s\n' "$WT_NAME" | sed -E 's/^.*-([a-f0-9]{8})$/\1/')"
+BRANCH_NAME="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+HEAD_SHA="$(git rev-parse --short HEAD)"
+PORTLESS_WORKTREE_ID="$("$NEW_WT/scripts/worktree-id.sh")"
+WT_NAME="$(printf '%s\n' "${BRANCH_NAME:-worktree-$PORTLESS_WORKTREE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/^-*//;s/-*$//')"
 
+if [ -z "$WT_NAME" ]; then
+  WT_NAME="worktree-$PORTLESS_WORKTREE_ID"
+fi
+
+echo "branch=${BRANCH_NAME:-HEAD}"
+echo "head=$HEAD_SHA"
+echo "worktree_id=$PORTLESS_WORKTREE_ID"
+echo "web_url=https://$PORTLESS_WORKTREE_ID.www.ruby.localhost"
+
+touch .env
 if grep -q '^VITE_WORKTREE_ID=' .env; then
   sed -i '' "s|^VITE_WORKTREE_ID=.*|VITE_WORKTREE_ID=$PORTLESS_WORKTREE_ID|" .env
 else
