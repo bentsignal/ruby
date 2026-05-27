@@ -17,6 +17,19 @@ echo "head=$HEAD_SHA"
 echo "worktree_id=$PORTLESS_WORKTREE_ID"
 echo "web_url=https://$PORTLESS_WORKTREE_ID.www.ruby.localhost"
 
+set_env_var() {
+  FILE="$1"
+  NAME="$2"
+  VALUE="$3"
+
+  touch "$FILE"
+  if grep -q "^$NAME=" "$FILE"; then
+    sed -i '' "s|^$NAME=.*|$NAME=$VALUE|" "$FILE"
+  else
+    printf '\n%s=%s\n' "$NAME" "$VALUE" >> "$FILE"
+  fi
+}
+
 touch .env
 if grep -q '^VITE_WORKTREE_ID=' .env; then
   sed -i '' "s|^VITE_WORKTREE_ID=.*|VITE_WORKTREE_ID=$PORTLESS_WORKTREE_ID|" .env
@@ -40,6 +53,16 @@ if [ -s "$TEMP_ENV" ]; then
   echo "copied environment variables to new deployment"
 fi
 rm -f "$TEMP_ENV"
+
+AUTH_METADATA="$(curl -fsS "https://site.dev.ruby.travel/api/auth/convex/.well-known/openid-configuration")"
+SHARED_AUTH_JWT_ISSUER="$(printf '%s' "$AUTH_METADATA" | node -e 'let data = ""; process.stdin.on("data", (chunk) => data += chunk); process.stdin.on("end", () => process.stdout.write(JSON.parse(data).issuer));')"
+SHARED_AUTH_JWT_JWKS="$(printf '%s' "$AUTH_METADATA" | node -e 'let data = ""; process.stdin.on("data", (chunk) => data += chunk); process.stdin.on("end", () => process.stdout.write(JSON.parse(data).jwks_uri));')"
+
+set_env_var ".env.local" "SHARED_AUTH_JWT_ISSUER" "$SHARED_AUTH_JWT_ISSUER"
+set_env_var ".env.local" "SHARED_AUTH_JWT_JWKS" "$SHARED_AUTH_JWT_JWKS"
+npx convex env set SHARED_AUTH_JWT_ISSUER "$SHARED_AUTH_JWT_ISSUER" < /dev/null
+npx convex env set SHARED_AUTH_JWT_JWKS "$SHARED_AUTH_JWT_JWKS" < /dev/null
+echo "trusted shared auth issuer ${SHARED_AUTH_JWT_ISSUER}"
 
 npx convex dev --once --tail-logs disable < /dev/null
 echo "pushed Convex functions to worktree deployment"

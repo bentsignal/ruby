@@ -7,13 +7,18 @@ const isMainDeployment =
   env.ENVIRONMENT === "production" ||
   env.CONVEX_CLOUD_URL === "https://api.dev.ruby.travel";
 
-const sharedDevelopmentAuthProvider = {
-  type: "customJwt",
-  issuer: "https://site.dev.ruby.travel",
-  applicationID: "convex",
-  algorithm: "RS256",
-  jwks: "https://site.dev.ruby.travel/api/auth/convex/jwks",
-} as const;
+const sharedDevelopmentAuthProviders =
+  process.env.SHARED_AUTH_JWT_ISSUER && process.env.SHARED_AUTH_JWT_JWKS
+    ? ([
+        {
+          type: "customJwt",
+          issuer: process.env.SHARED_AUTH_JWT_ISSUER,
+          applicationID: "convex",
+          algorithm: "RS256",
+          jwks: process.env.SHARED_AUTH_JWT_JWKS,
+        },
+      ] satisfies AuthConfig["providers"])
+    : [];
 
 // Used by BetterAuth's convex() plugin — only the primary provider
 export const primaryAuthConfig = {
@@ -24,6 +29,6 @@ export const primaryAuthConfig = {
 export default {
   providers: [
     getAuthConfigProvider(),
-    ...(isMainDeployment ? [] : [sharedDevelopmentAuthProvider]),
+    ...(isMainDeployment ? [] : sharedDevelopmentAuthProviders),
   ],
 } satisfies AuthConfig;

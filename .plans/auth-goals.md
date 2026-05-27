@@ -90,16 +90,21 @@ Each worktree gets its own Convex deployment for data:
 - It can safely diverge for schema experiments.
 - It needs to trust tokens issued by the main development auth deployment.
 
-The current `packages/convex/src/auth.config.ts` reflects this idea by adding `https://site.dev.ruby.travel` as a trusted provider for non-main deployments. Be very careful before changing that logic.
+The current `packages/convex/src/auth.config.ts` reflects this idea by adding the shared development auth deployment's real JWT issuer as a trusted provider for non-main deployments. Be very careful before changing that logic.
 
-That trust must use Convex's `customJwt` provider shape, not the OIDC provider shape:
+That trust must use Convex's `customJwt` provider shape, not the OIDC provider shape. The values come from the shared auth metadata endpoint at `https://site.dev.ruby.travel/api/auth/convex/.well-known/openid-configuration`, and `scripts/worktree-db.sh` writes them as:
 
-- `issuer`: `https://site.dev.ruby.travel`
+- `SHARED_AUTH_JWT_ISSUER`: the metadata endpoint's `issuer`
+- `SHARED_AUTH_JWT_JWKS`: the metadata endpoint's `jwks_uri`
+
+The configured provider should effectively be:
+
+- `issuer`: `SHARED_AUTH_JWT_ISSUER`
 - `applicationID`: `convex`
 - `algorithm`: `RS256`
-- `jwks`: `https://site.dev.ruby.travel/api/auth/convex/jwks`
+- `jwks`: `SHARED_AUTH_JWT_JWKS`
 
-This matters because the Better Auth Convex plugin mints a custom JWT whose issuer is the Convex site URL. If a worktree deployment trusts `site.dev.ruby.travel` as `{ domain, applicationID }`, Convex treats it as OIDC and rejects the Better Auth token with `NoAuthProvider`.
+This matters because the Better Auth Convex plugin mints a custom JWT whose issuer is the auth deployment's raw Convex site URL, even when the browser talks to the custom domain `site.dev.ruby.travel`. If a worktree deployment trusts `site.dev.ruby.travel` as the issuer, or trusts it as `{ domain, applicationID }`, Convex rejects the Better Auth token with `NoAuthProvider`.
 
 ## Source Of Truth
 
@@ -126,7 +131,7 @@ Worktree setup may rewrite this file locally. Do not remove it for being generat
 - Do not collapse all Convex URLs into one value. Cloud and site URLs have different jobs.
 - Do not make worktree auth depend on registering a new Google origin/callback.
 - Do not point worktree auth at the worktree Convex site unless the architecture has been intentionally changed.
-- Do not configure shared development auth trust as an OIDC `{ domain, applicationID }` provider. Worktree data deployments must trust the shared development auth deployment as a `customJwt` provider with the shared JWKS URL.
+- Do not configure shared development auth trust as an OIDC `{ domain, applicationID }` provider. Worktree data deployments must trust the shared development auth deployment as a `customJwt` provider using the issuer and JWKS discovered from the shared auth metadata endpoint.
 - Do not remove the cross-domain Better Auth callback/cookie flow because it looks unusual.
 - Do not replace stable local URLs with random ports.
 - Do not assume missing committed setup means the intent was abandoned.
