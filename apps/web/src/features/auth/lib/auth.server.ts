@@ -9,6 +9,7 @@ export async function verifyOneTimeToken(token: string) {
       method: "POST",
       headers: {
         accept: "application/json",
+        "better-auth-cookie": "",
         "content-type": "application/json",
       },
       body: JSON.stringify({ token }),
