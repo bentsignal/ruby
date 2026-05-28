@@ -10,14 +10,14 @@ const trustsSharedDevelopmentAuth =
   env.ENVIRONMENT === "development" && !usesOwnAuthProvider;
 
 const sharedDevelopmentAuthProviders =
-  process.env.SHARED_AUTH_JWT_ISSUER && process.env.SHARED_AUTH_JWT_JWKS
+  process.env.SHARED_AUTH_JWT_ISSUER && process.env.SHARED_AUTH_JWKS_URI
     ? ([
         {
           type: "customJwt",
           issuer: process.env.SHARED_AUTH_JWT_ISSUER,
           applicationID: "convex",
           algorithm: "RS256",
-          jwks: process.env.SHARED_AUTH_JWT_JWKS,
+          jwks: process.env.SHARED_AUTH_JWKS_URI,
         },
       ] satisfies AuthConfig["providers"])
     : [];

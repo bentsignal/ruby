@@ -62,12 +62,12 @@ rm -f "$TEMP_ENV"
 
 AUTH_METADATA="$(curl -fsS "https://site.dev.ruby.travel/api/auth/convex/.well-known/openid-configuration")"
 SHARED_AUTH_JWT_ISSUER="$(printf '%s' "$AUTH_METADATA" | node -e 'let data = ""; process.stdin.on("data", (chunk) => data += chunk); process.stdin.on("end", () => process.stdout.write(JSON.parse(data).issuer));')"
-SHARED_AUTH_JWT_JWKS="$(printf '%s' "$AUTH_METADATA" | node -e 'let data = ""; process.stdin.on("data", (chunk) => data += chunk); process.stdin.on("end", () => process.stdout.write(JSON.parse(data).jwks_uri));')"
+SHARED_AUTH_JWKS_URI="$(printf '%s' "$AUTH_METADATA" | node -e 'let data = ""; process.stdin.on("data", (chunk) => data += chunk); process.stdin.on("end", () => process.stdout.write(JSON.parse(data).jwks_uri));')"
 
 set_env_var ".env.local" "SHARED_AUTH_JWT_ISSUER" "$SHARED_AUTH_JWT_ISSUER"
-set_env_var ".env.local" "SHARED_AUTH_JWT_JWKS" "$SHARED_AUTH_JWT_JWKS"
+set_env_var ".env.local" "SHARED_AUTH_JWKS_URI" "$SHARED_AUTH_JWKS_URI"
 npx convex env set SHARED_AUTH_JWT_ISSUER "$SHARED_AUTH_JWT_ISSUER" < /dev/null
-npx convex env set SHARED_AUTH_JWT_JWKS "$SHARED_AUTH_JWT_JWKS" < /dev/null
+npx convex env set SHARED_AUTH_JWKS_URI "$SHARED_AUTH_JWKS_URI" < /dev/null
 echo "trusted shared auth issuer ${SHARED_AUTH_JWT_ISSUER}"
 
 npx convex dev --once --tail-logs disable < /dev/null
