@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports -- This feed is client-loaded until the home route has a loader.
 import { useQuery } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
 
@@ -5,12 +6,13 @@ import { api } from "@acme/convex/api";
 
 import { Post } from "./post";
 
-export const PostList = () => {
+export function PostList() {
   const convex = useConvex();
 
   const { data: posts } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => await convex.query(api.posts.getAll),
+    select: (data) => data,
   });
 
   return (
@@ -20,4 +22,4 @@ export const PostList = () => {
       ))}
     </div>
   );
-};
+}

@@ -29,7 +29,7 @@ function Login() {
   );
 }
 
-const LoadingOverlay = () => {
+function LoadingOverlay() {
   const isLoading = Auth.useStore((s) => s.isLoading);
 
   if (!isLoading) return null;
@@ -39,6 +39,6 @@ const LoadingOverlay = () => {
       <LoadingSpinner className="h-10 w-10 shadow-xl" />
     </View>
   );
-};
+}
 
 export default Login;

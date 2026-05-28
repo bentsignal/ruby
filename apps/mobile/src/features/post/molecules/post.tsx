@@ -10,7 +10,7 @@ import { Username } from "~/features/profile/atoms/username";
 import { ProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
 
-export const Post = ({ post }: { post: UIPost }) => {
+export function Post({ post }: { post: UIPost }) {
   const foreground = useColor("foreground");
   return (
     <View className="mb-8 flex-col gap-2">
@@ -42,4 +42,4 @@ export const Post = ({ post }: { post: UIPost }) => {
       <Text className="text-card-foreground mx-2 text-sm">{post.caption}</Text>
     </View>
   );
-};
+}

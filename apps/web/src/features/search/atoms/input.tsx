@@ -13,6 +13,7 @@ export function Input({
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
   const inputRef = useSearchStore((s) => s.inputRef);
 
+  // eslint-disable-next-line no-restricted-syntax -- Focus syncs the search input with the mounted DOM node.
   useEffect(() => {
     focusInput();
   }, [focusInput]);

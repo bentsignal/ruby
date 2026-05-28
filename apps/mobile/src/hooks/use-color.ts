@@ -5,5 +5,8 @@ export function useColor(color: string) {
   if (cssVariable === undefined) {
     throw new Error(`Color variable ${color} not found`);
   }
-  return cssVariable as string;
+  if (typeof cssVariable !== "string") {
+    throw new Error(`Color variable ${color} is not a string`);
+  }
+  return cssVariable;
 }

@@ -1,10 +1,5 @@
 import type { PFPVariant } from "./types";
 
-interface NormalizedProfileLink {
-  href: string;
-  display: string;
-}
-
 function getPFPSizeNumber(variant: PFPVariant) {
   switch (variant) {
     case "sm":
@@ -27,7 +22,7 @@ function getPFPClassName(variant: PFPVariant) {
   }
 }
 
-function normalizeProfileLink(link: string): NormalizedProfileLink | null {
+function normalizeProfileLink(link: string) {
   const trimmed = link.trim();
   if (!trimmed) return null;
 

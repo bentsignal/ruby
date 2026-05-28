@@ -11,24 +11,25 @@ import { Loader } from "lucide-react-native";
 
 import { useColor } from "~/hooks/use-color";
 
-const LoadingSpinner = ({
+function LoadingSpinner({
   color = "foreground",
   className,
 }: {
   color?: string;
   className?: string;
-}) => {
+}) {
   const cssColor = useColor(color);
   const rotation = useSharedValue(0);
+  // eslint-disable-next-line no-restricted-syntax -- Starts a native UI-thread animation after the shared value exists.
   useEffect(() => {
-    const spin = () => {
+    function spin() {
       "worklet";
       rotation.value = withRepeat(
         withTiming(360, { duration: 1000, easing: Easing.linear }),
         -1,
         false,
       );
-    };
+    }
     scheduleOnUI(spin);
   }, [rotation]);
   const animatedStyle = useAnimatedStyle(() => ({
@@ -39,6 +40,6 @@ const LoadingSpinner = ({
       <Loader color={cssColor} className={className} />
     </Animated.View>
   );
-};
+}
 
 export { LoadingSpinner };

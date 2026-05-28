@@ -3,7 +3,7 @@ import { ConvexError, v } from "convex/values";
 
 import type { Doc } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import type { Relationship, UIProfile } from "./types";
+import type { UIProfile } from "./types";
 import { internal } from "./_generated/api";
 import { internalMutation, mutation } from "./_generated/server";
 import { getRelationshipHelper } from "./friends";
@@ -15,10 +15,10 @@ export const DeletedProfile = {
   image: undefined,
 } satisfies UIProfile;
 
-export const getPublicProfile = (profile: Doc<"profiles">): UIProfile => {
+export function getPublicProfile(profile: Doc<"profiles">) {
   const { userId: _userId, _creationTime, _id, ...publicProfile } = profile;
   return publicProfile;
-};
+}
 
 async function generateUsername(ctx: MutationCtx, name: string) {
   const base = name
@@ -77,13 +77,7 @@ export const getByUsername = authedQuery({
   args: {
     username: v.string(),
   },
-  handler: async (
-    ctx,
-    args,
-  ): Promise<{
-    info: UIProfile;
-    relationship: Relationship;
-  } | null> => {
+  handler: async (ctx, args) => {
     const profile = await ctx.db
       .query("profiles")
       .withIndex("by_username", (q) => q.eq("username", args.username))
@@ -128,9 +122,13 @@ export const search = authedQuery({
     const trimmedSearchTerm = args.searchTerm.trim();
     if (!trimmedSearchTerm) {
       return {
-        page: [] as UIProfile[],
+        page: [],
         isDone: true,
         continueCursor: "",
+      } satisfies {
+        page: UIProfile[];
+        isDone: boolean;
+        continueCursor: string;
       };
     }
 

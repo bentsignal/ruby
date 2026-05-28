@@ -1,11 +1,11 @@
 import type { LegendListRenderItemProps } from "@legendapp/list";
 import { useLayoutEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { LegendList } from "@legendapp/list";
 import { Loader } from "lucide-react";
 
 import type { UIProfile } from "@acme/convex/types";
 
+import { QuickLink } from "~/components/quick-link";
 import { Name } from "~/features/profile/atoms/name";
 import { PFP } from "~/features/profile/atoms/pfp";
 import { Username } from "~/features/profile/atoms/username";
@@ -28,11 +28,11 @@ export function SearchPageResults() {
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const updateHeight = () => {
-      setContainerHeight(container.clientHeight);
-    };
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
+    function updateHeight(element: HTMLDivElement) {
+      setContainerHeight(element.clientHeight);
+    }
+    updateHeight(container);
+    const observer = new ResizeObserver(() => updateHeight(container));
     observer.observe(container);
     return () => {
       observer.disconnect();
@@ -97,7 +97,7 @@ function keyExtractor(profile: UIProfile) {
 function ProfileSearchItem({ item }: LegendListRenderItemProps<UIProfile>) {
   return (
     <ProfileStore profile={item}>
-      <Link
+      <QuickLink
         to="/$username"
         params={{ username: item.username }}
         className="hover:bg-muted/50 flex items-center gap-3 rounded-full px-4 py-3"
@@ -107,7 +107,7 @@ function ProfileSearchItem({ item }: LegendListRenderItemProps<UIProfile>) {
           <Name className="text-base font-medium" />
           <Username className="text-sm" />
         </div>
-      </Link>
+      </QuickLink>
     </ProfileStore>
   );
 }

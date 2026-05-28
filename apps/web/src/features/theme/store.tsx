@@ -13,15 +13,16 @@ function useInternalStore({ initialTheme }: { initialTheme: Theme }) {
   const { setTheme: setNextTheme } = useNextTheme();
   const [theme, setTheme] = useState<Theme>(initialTheme);
 
+  // eslint-disable-next-line no-restricted-syntax -- Theme changes must be persisted to a browser cookie.
   useEffect(() => {
     document.cookie = `theme=${theme}; path=/; max-age=${60 * 60 * 24 * 30}`;
   }, [theme]);
 
-  const changeTheme = (newTheme: Theme) => {
+  function changeTheme(newTheme: Theme) {
     setNextTheme(newTheme);
     setTheme(newTheme);
     queryClient.setQueryData(["theme"], newTheme);
-  };
+  }
 
   return { theme, changeTheme };
 }

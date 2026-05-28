@@ -8,7 +8,7 @@ import { PFP } from "~/features/profile/atoms/pfp";
 import { Username } from "~/features/profile/atoms/username";
 import { ProfileStore } from "~/features/profile/store";
 
-export const Post = ({ post }: { post: UIPost }) => {
+export function Post({ post }: { post: UIPost }) {
   return (
     <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
       <ProfileStore profile={post.creator}>
@@ -58,4 +58,4 @@ export const Post = ({ post }: { post: UIPost }) => {
       </div>
     </article>
   );
-};
+}

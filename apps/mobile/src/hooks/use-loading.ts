@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-const useLoading = () => {
+function useLoading() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const start = (callback: () => Promise<void>) => {
+  function start(callback: () => Promise<void>) {
     setIsLoading(true);
     callback()
       .catch((error) => {
@@ -12,8 +12,8 @@ const useLoading = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  };
+  }
   return { isLoading, start };
-};
+}
 
 export { useLoading };

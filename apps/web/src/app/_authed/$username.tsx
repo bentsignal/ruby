@@ -25,11 +25,12 @@ export const Route = createFileRoute("/_authed/$username")({
 
 function ProfilePage() {
   const params = Route.useParams();
-  const result = useSuspenseQuery(
-    convexQuery(api.profile.getByUsername, {
+  const result = useSuspenseQuery({
+    ...convexQuery(api.profile.getByUsername, {
       username: params.username,
     }),
-  );
+    select: (data) => data,
+  });
   if (result.data === null) {
     throw notFound();
   }

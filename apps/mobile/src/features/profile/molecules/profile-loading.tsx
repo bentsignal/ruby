@@ -11,6 +11,7 @@ import { SafeAreaView } from "~/components/safe-area-view";
 function ProfileLoading() {
   const opacity = useSharedValue(0);
 
+  // eslint-disable-next-line no-restricted-syntax -- Delays the native loading indicator to avoid flicker on fast profile loads.
   useEffect(() => {
     setTimeout(() => {
       opacity.value = withTiming(1, { duration: 300 });

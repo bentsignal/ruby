@@ -1,8 +1,10 @@
 import type { Theme } from "./types";
 
-function getTheme(theme: string | undefined): Theme {
+const THEMES = ["light", "dark"] as const satisfies readonly Theme[];
+
+function getTheme(theme: string | undefined) {
   if (!theme) return "dark";
-  return theme as Theme;
+  return THEMES.find((candidate) => candidate === theme) ?? "dark";
 }
 
 export { getTheme };

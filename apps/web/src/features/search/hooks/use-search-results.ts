@@ -8,11 +8,6 @@ import { useSearchStore } from "../store";
 
 const PAGE_SIZE = 25;
 
-type SearchResultsStatus =
-  | "no-search-term-entered"
-  | "no-results-found"
-  | "results-found";
-
 function useSearchResults() {
   const searchTerm = useSearchStore((s) => s.searchTerm.trim());
   const debouncedSearchTerm = useSearchStore((s) =>
@@ -33,6 +28,7 @@ function useSearchResults() {
 
   const [results, setResults] = useState<UIProfile[]>([]);
 
+  // eslint-disable-next-line no-restricted-syntax -- Keeps the visible results stable while the paginated query refreshes.
   useEffect(() => {
     if (searchTerm.length === 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -46,18 +42,18 @@ function useSearchResults() {
 
   const idle = loadingStatus === "CanLoadMore" || loadingStatus === "Exhausted";
 
-  const resultsStatus: SearchResultsStatus =
+  const resultsStatus =
     searchTerm.length > 0 && paginatedResults.length === 0 && idle
       ? "no-results-found"
       : searchTerm.length === 0
         ? "no-search-term-entered"
         : "results-found";
 
-  const loadMoreItems = () => {
+  function loadMoreItems() {
     if (loadingStatus === "CanLoadMore") {
       loadMore(PAGE_SIZE);
     }
-  };
+  }
 
   return { results, resultsStatus, loadingStatus, loadMoreItems };
 }

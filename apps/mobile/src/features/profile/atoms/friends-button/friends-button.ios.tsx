@@ -19,7 +19,7 @@ export function FriendsButton() {
   const removeFriend = useRemoveFriend({ username });
   const foreground = useColor("foreground");
 
-  const handleRemoveFriend = () => {
+  function handleRemoveFriend() {
     Alert.alert(
       `Are you sure you want to unfriend ${name}?`,
       "You'll have to send a new friend request if you change your mind.",
@@ -34,7 +34,7 @@ export function FriendsButton() {
         },
       ],
     );
-  };
+  }
 
   return (
     <UniwindHost matchContents className="mx-4">

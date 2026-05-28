@@ -9,12 +9,12 @@ import { useProfileStore } from "../store";
 export function ShareButton() {
   const foreground = useColor("foreground");
   const username = useProfileStore((s) => s.username);
-  const share = async () => {
+  async function share() {
     await Share.share({
       message: "Share your adventures on Ruby!",
       url: `${urls.web}/${username}`,
     });
-  };
+  }
   return (
     <Button onPress={share} variant="outline" size="icon">
       <ShareIcon size={16} color={foreground} />

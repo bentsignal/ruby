@@ -1,4 +1,7 @@
-import { useConvexAuth, useQuery } from "convex/react";
+// eslint-disable-next-line no-restricted-imports -- Auth store is mounted at the root and cannot use a route loader.
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useConvexAuth } from "convex/react";
 import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
@@ -12,12 +15,13 @@ function useInternalStore() {
   const { isLoading, start } = useLoading();
   const { isAuthenticated } = useConvexAuth();
 
-  const myProfile = useQuery(
-    api.profile.getMine,
-    isAuthenticated ? undefined : "skip",
-  );
+  const { data: myProfile } = useQuery({
+    ...convexQuery(api.profile.getMine, {}),
+    enabled: isAuthenticated,
+    select: (profile) => profile,
+  });
 
-  const signInWithGoogle = (redirectUri?: string) => {
+  function signInWithGoogle(redirectUri?: string) {
     if (isAuthenticated) return;
     start(async () => {
       const callbackUrl = new URL("/auth/callback", urls.web);
@@ -28,9 +32,9 @@ function useInternalStore() {
         callbackURL: callbackUrl.toString(),
       });
     });
-  };
+  }
 
-  const signOut = () => {
+  function signOut() {
     if (!isAuthenticated) return;
     start(async () => {
       await authClient.signOut({
@@ -45,7 +49,7 @@ function useInternalStore() {
         },
       });
     });
-  };
+  }
 
   return {
     myProfile,

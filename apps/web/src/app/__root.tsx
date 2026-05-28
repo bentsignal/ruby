@@ -79,7 +79,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
-  const context = Route.useRouteContext();
+  const context = Route.useRouteContext({
+    select: ({ convex, queryClient, theme, token }) => ({
+      convex,
+      queryClient,
+      theme,
+      token,
+    }),
+  });
 
   return (
     <html lang="en" suppressHydrationWarning>
