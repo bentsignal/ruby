@@ -1,6 +1,7 @@
 import type { AuthConfig } from "convex/server";
 import { getAuthConfigProvider } from "@convex-dev/better-auth/auth-config";
 
+import { sharedAuthIssuer, sharedAuthJwksUri } from "./auth.shared";
 import { env } from "./convex.env";
 
 const usesOwnAuthProvider =
@@ -9,18 +10,19 @@ const usesOwnAuthProvider =
 const trustsSharedDevelopmentAuth =
   env.ENVIRONMENT === "development" && !usesOwnAuthProvider;
 
-const sharedDevelopmentAuthProviders =
-  process.env.SHARED_AUTH_JWT_ISSUER && process.env.SHARED_AUTH_JWKS_URI
-    ? ([
+const sharedDevelopmentAuthProviders = (
+  sharedAuthIssuer && sharedAuthJwksUri
+    ? [
         {
           type: "customJwt",
-          issuer: process.env.SHARED_AUTH_JWT_ISSUER,
+          issuer: sharedAuthIssuer,
           applicationID: "convex",
           algorithm: "RS256",
-          jwks: process.env.SHARED_AUTH_JWKS_URI,
+          jwks: sharedAuthJwksUri,
         },
-      ] satisfies AuthConfig["providers"])
-    : [];
+      ]
+    : []
+) satisfies AuthConfig["providers"];
 
 // Used by BetterAuth's convex() plugin — only the primary provider
 export const primaryAuthConfig = {

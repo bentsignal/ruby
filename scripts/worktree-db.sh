@@ -75,6 +75,12 @@ echo "pushed Convex functions to worktree deployment"
 
 cd "$NEW_WT"
 
+cat > packages/convex/src/auth.shared.ts <<EOF
+export const sharedAuthIssuer: string | undefined = "${SHARED_AUTH_JWT_ISSUER}";
+export const sharedAuthJwksUri: string | undefined = "${SHARED_AUTH_JWKS_URI}";
+EOF
+echo "generated auth.shared.ts (sharedAuthIssuer=${SHARED_AUTH_JWT_ISSUER})"
+
 # Generate the app-config overrides with worktree-specific values
 NEW_CONVEX_URL="$(grep '^CONVEX_URL=' packages/convex/.env.local | cut -d= -f2-)"
 
