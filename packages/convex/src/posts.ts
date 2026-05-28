@@ -1,10 +1,10 @@
-import type { UIImage, UIPost } from "./types";
+import type { UIImage } from "./types";
 import { query } from "./_generated/server";
 import { DeletedProfile, getPublicProfile } from "./profile";
 
 export const getAll = query({
   args: {},
-  handler: async (ctx): Promise<UIPost[]> => {
+  handler: async (ctx) => {
     const posts = await ctx.db.query("posts").order("desc").collect();
     const uiPosts = await Promise.all(
       posts.map(async (post) => {

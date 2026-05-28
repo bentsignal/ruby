@@ -30,6 +30,7 @@ function useInternalStore({
     select: (s) => s.q,
   });
 
+  // eslint-disable-next-line no-restricted-syntax -- Search input state is mirrored into the current URL.
   useEffect(() => {
     if (!storeSearchTermInURL) return;
     if (urlSearchTerm === debouncedSearchTerm) return;

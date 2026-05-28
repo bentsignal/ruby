@@ -1,6 +1,8 @@
 import { View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useQuery } from "convex/react";
+// eslint-disable-next-line no-restricted-imports -- Expo Router profile screens fetch after route params are available.
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 
 import { api } from "@acme/convex/api";
 
@@ -23,7 +25,10 @@ export function ProfileByUsername() {
 
   const router = useRouter();
   const imNotSignedIn = Auth.useStore((s) => s.imSignedIn === false);
-  const result = useQuery(api.profile.getByUsername, { username });
+  const { data: result } = useQuery({
+    ...convexQuery(api.profile.getByUsername, { username }),
+    select: (profile) => profile,
+  });
 
   if (imNotSignedIn) {
     router.push("/login");

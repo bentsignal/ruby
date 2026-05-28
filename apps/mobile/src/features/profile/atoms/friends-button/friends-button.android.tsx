@@ -15,7 +15,7 @@ export function FriendsButton() {
   const removeFriend = useRemoveFriend({ username });
   const foreground = useColor("foreground");
 
-  const handleRemoveFriend = () => {
+  function handleRemoveFriend() {
     setModalVisible(false);
     Alert.alert(
       `Are you sure you want to unfriend ${name}?`,
@@ -31,7 +31,7 @@ export function FriendsButton() {
         },
       ],
     );
-  };
+  }
 
   return (
     <View className="mx-4">

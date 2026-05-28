@@ -7,7 +7,7 @@ import { useColor } from "~/hooks/use-color";
 import { cn } from "~/utils/style-utils";
 import { useStore as useAuthStore } from "./auth-store";
 
-const GoogleSignInButton = () => {
+function GoogleSignInButton() {
   const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);
   const disabled = useAuthStore((s) => s.isLoading || s.imSignedIn);
   return (
@@ -32,9 +32,9 @@ const GoogleSignInButton = () => {
       </Text>
     </Pressable>
   );
-};
+}
 
-const SignOutButton = ({ className }: { className?: string }) => {
+function SignOutButton({ className }: { className?: string }) {
   const signOut = useAuthStore((s) => s.signOut);
   const disabled = useAuthStore((s) => s.isLoading || !s.imSignedIn);
   const primaryForeground = useColor("primary-foreground");
@@ -49,6 +49,6 @@ const SignOutButton = ({ className }: { className?: string }) => {
       <LogOut color={primaryForeground} size={16} />
     </Button>
   );
-};
+}
 
 export { GoogleSignInButton, SignOutButton };

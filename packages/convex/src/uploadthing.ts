@@ -27,21 +27,21 @@ export const uploadPFP = internalAction({
   },
 });
 
-export const getFileURL = (key: string) => {
+export function getFileURL(key: string) {
   const appID = env.UPLOADTHING_APP_ID;
   return `https://${appID}.ufs.sh/f/${key}`;
-};
+}
 
-export const downloadImage = async (url: string) => {
+export async function downloadImage(url: string) {
   return await fetch(url)
     .then((res) => res.arrayBuffer())
     .then((buffer) => new Uint8Array(buffer));
-};
+}
 
-export const uploadImage = async (
+export async function uploadImage(
   image: Uint8Array<ArrayBuffer>,
   fileName: string,
-) => {
+) {
   const file = new UTFile([image], fileName, { type: "image/png" });
   const uploadedFile = await utapi.uploadFiles(file);
   if (uploadedFile.error) {
@@ -50,7 +50,7 @@ export const uploadImage = async (
     );
   }
   return uploadedFile.data.key;
-};
+}
 
 export const deleteFile = internalAction({
   args: {

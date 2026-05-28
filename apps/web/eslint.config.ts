@@ -1,18 +1,21 @@
 import { defineConfig } from "eslint/config";
 
-import { baseConfig, restrictEnvAccess } from "@acme/eslint-config/base";
+import { baseConfig, strictConfig } from "@acme/eslint-config/base";
 import { reactConfig } from "@acme/eslint-config/react";
+import { createStrictSyntax } from "@acme/eslint-config/syntax";
 
 export default defineConfig(
   {
-    ignores: [".vinxi/**", "dist/**", "src/routeTree.gen.ts", ".tanstack/**"],
+    ignores: [
+      ".tanstack/**",
+      ".output/**",
+      ".vinxi/**",
+      "dist/**",
+      "src/routeTree.gen.ts",
+    ],
   },
   baseConfig,
   reactConfig,
-  restrictEnvAccess,
-  {
-    rules: {
-      "@typescript-eslint/only-throw-error": "off",
-    },
-  },
+  strictConfig,
+  createStrictSyntax({ ts: true, react: true, env: true }),
 );

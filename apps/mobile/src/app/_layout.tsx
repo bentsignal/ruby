@@ -23,13 +23,12 @@ export default function RootLayout() {
 
   const { percentage: loginDrawerHeightPercentage } = useAuthDrawerSize();
 
-  // once initialization steps have completed, hide the splash screen
   const { backgroundColorsAreLoaded, fontsAreLoaded } = useInitApp();
+  // eslint-disable-next-line no-restricted-syntax -- SplashScreen must be hidden in response to native initialization state.
   useEffect(() => {
     if (fontsAreLoaded && backgroundColorsAreLoaded) {
       void SplashScreen.hideAsync();
     }
-    // if the initialization steps have not completed after 5 seconds, hide the splash screen
     setTimeout(() => {
       void SplashScreen.hideAsync();
     }, 5000);

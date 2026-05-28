@@ -34,8 +34,6 @@ export function SearchPageResults() {
     );
   }
 
-  const _assertResultsFound: "results-found" = resultsStatus;
-
   const showLoadingSpinner =
     ["CanLoadMore", "LoadingFirstPage"].includes(loadingStatus) &&
     results.length > 15;

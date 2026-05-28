@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
 import { House } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
+
+import { QuickLink } from "~/components/quick-link";
 
 export function NotFound() {
   return (
@@ -11,10 +12,10 @@ export function NotFound() {
         We couldn't find the page you're looking for.
       </p>
       <Button asChild className="mt-1">
-        <Link to="/">
+        <QuickLink to="/">
           <House className="size-4" />
           Back to home
-        </Link>
+        </QuickLink>
       </Button>
     </div>
   );

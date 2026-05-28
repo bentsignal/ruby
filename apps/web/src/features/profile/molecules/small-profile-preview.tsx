@@ -1,5 +1,4 @@
-import { Link } from "@tanstack/react-router";
-
+import { QuickLink } from "~/components/quick-link";
 import { SignOutLink } from "~/features/auth/atoms/sign-out-link";
 import { TakeMeToLoginLink } from "~/features/auth/atoms/take-me-to-login-link";
 import { useAuthStore } from "~/features/auth/store";
@@ -19,7 +18,7 @@ function SmallProfilePreview() {
   return (
     <div className="flex flex-col items-start gap-2">
       <ProfileStore profile={myProfile}>
-        <Link
+        <QuickLink
           to="/$username"
           params={{ username: myProfile.username }}
           className="cursor-pointer"
@@ -31,7 +30,7 @@ function SmallProfilePreview() {
               <Username className="text-muted-foreground text-sm font-semibold" />
             </div>
           </div>
-        </Link>
+        </QuickLink>
       </ProfileStore>
       <SignOutLink />
     </div>

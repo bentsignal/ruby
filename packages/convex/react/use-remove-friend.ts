@@ -2,8 +2,8 @@ import { useMutation } from "convex/react";
 
 import { api } from "../src/_generated/api";
 
-export const useRemoveFriend = ({ username }: { username: string }) =>
-  useMutation(api.friends.remove).withOptimisticUpdate((localStore) => {
+export function useRemoveFriend({ username }: { username: string }) {
+  return useMutation(api.friends.remove).withOptimisticUpdate((localStore) => {
     const result = localStore.getQuery(api.profile.getByUsername, {
       username,
     });
@@ -14,3 +14,4 @@ export const useRemoveFriend = ({ username }: { username: string }) =>
       { ...result, relationship: null },
     );
   });
+}

@@ -15,22 +15,22 @@ configureReanimatedLogger({
   strict: false,
 });
 
-const useInitApp = () => {
+function useInitApp() {
   const backgroundColor = useColor("background");
   const colorScheme = useColorScheme();
 
-  // initialize root background color to match system theme
   const [backgroundColorsAreLoaded, setBackgroundColorsAreLoaded] =
     useState(false);
+  // eslint-disable-next-line no-restricted-syntax -- Native system background has to be initialized after color resolution.
   useEffect(() => {
-    const init = async () => {
+    async function init() {
       await SystemUI.setBackgroundColorAsync(backgroundColor);
       setBackgroundColorsAreLoaded(true);
-    };
+    }
     void init();
   }, [backgroundColor, backgroundColorsAreLoaded]);
 
-  // update root background color whenever the system color scheme changes
+  // eslint-disable-next-line no-restricted-syntax -- Native system background follows color-scheme changes.
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(backgroundColor);
   }, [backgroundColor, colorScheme]);
@@ -43,6 +43,6 @@ const useInitApp = () => {
     backgroundColorsAreLoaded,
     fontsAreLoaded,
   };
-};
+}
 
 export { useInitApp };

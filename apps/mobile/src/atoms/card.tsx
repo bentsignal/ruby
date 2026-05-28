@@ -2,13 +2,13 @@ import { View } from "react-native";
 
 import { cn } from "~/utils/style-utils";
 
-const Card = ({
+function Card({
   className,
   children,
 }: {
   className?: string;
   children: React.ReactNode;
-}) => {
+}) {
   return (
     <View
       className={cn(
@@ -19,6 +19,6 @@ const Card = ({
       {children}
     </View>
   );
-};
+}
 
 export { Card };

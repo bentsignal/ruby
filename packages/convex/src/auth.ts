@@ -10,6 +10,7 @@ import { primaryAuthConfig } from "./auth.config";
 import { env } from "./convex.env";
 import { urls } from "./urls";
 
+// eslint-disable-next-line no-restricted-syntax -- This preserves Better Auth's generated Convex API typing.
 const authFunctions: AuthFunctions = internal.auth;
 const trustedOrigins =
   env.ENVIRONMENT === "production"
@@ -30,7 +31,7 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
   triggers: {},
 });
 
-export const createAuth = (ctx: GenericCtx<DataModel>) => {
+export function createAuth(ctx: GenericCtx<DataModel>) {
   return betterAuth({
     baseURL: urls.convex.site,
     trustedOrigins,
@@ -48,6 +49,6 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       convex({ authConfig: primaryAuthConfig }),
     ],
   });
-};
+}
 
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();

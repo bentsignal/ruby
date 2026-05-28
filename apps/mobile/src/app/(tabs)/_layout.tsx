@@ -5,7 +5,7 @@ import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 import { useColor } from "~/hooks/use-color";
 import { useRedirect } from "~/hooks/use-redirect";
 
-const TabIcon = ({
+function TabIcon({
   icon: Icon,
   color,
   focused,
@@ -13,9 +13,9 @@ const TabIcon = ({
   icon: React.ElementType;
   color: string;
   focused: boolean;
-}) => {
+}) {
   return <Icon strokeWidth={focused ? 3 : 1.75} color={color} size={24} />;
-};
+}
 
 export default function TabLayout() {
   const sidebar = useColor("sidebar");

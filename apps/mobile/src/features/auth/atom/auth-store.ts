@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import { useConvexAuth, useQuery } from "convex/react";
+// eslint-disable-next-line no-restricted-imports -- Mobile auth state is client-only, so it cannot be route-preloaded.
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useConvexAuth } from "convex/react";
 import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
@@ -14,11 +17,15 @@ function useInternalStore() {
   const { isAuthenticated: imSignedIn } = useConvexAuth();
   const imSignedOut = !imSignedIn;
 
-  const myProfile = useQuery(api.profile.getMine, imSignedIn ? {} : "skip");
+  const { data: myProfile } = useQuery({
+    ...convexQuery(api.profile.getMine, {}),
+    enabled: imSignedIn,
+    select: (profile) => profile,
+  });
 
   const [redirectURL, setRedirectURL] = useState("/");
 
-  const signInWithGoogle = () => {
+  function signInWithGoogle() {
     if (imSignedIn) return;
     start(async () => {
       await authClient.signIn.social({
@@ -27,15 +34,15 @@ function useInternalStore() {
       });
       setRedirectURL("/");
     });
-  };
+  }
 
-  const signOut = () => {
+  function signOut() {
     if (imSignedOut) return;
     start(async () => {
       router.replace("/");
       await authClient.signOut();
     });
-  };
+  }
 
   return {
     myProfile,

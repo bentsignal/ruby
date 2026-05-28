@@ -1,8 +1,9 @@
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
 import { House } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
+
+import { QuickLink } from "~/components/quick-link";
 
 export function Error(_props: ErrorComponentProps) {
   return (
@@ -12,10 +13,10 @@ export function Error(_props: ErrorComponentProps) {
         Something went wrong while loading this page.
       </p>
       <Button asChild className="mt-1">
-        <Link to="/">
+        <QuickLink to="/">
           <House className="size-4" />
           Back to home
-        </Link>
+        </QuickLink>
       </Button>
     </div>
   );

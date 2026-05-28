@@ -9,10 +9,11 @@ import { authedMutation } from "./utils";
 function getOrderedProfileIds(
   profileOne: Id<"profiles">,
   profileTwo: Id<"profiles">,
-): [Id<"profiles">, Id<"profiles">] {
-  return profileOne < profileTwo
-    ? [profileOne, profileTwo]
-    : [profileTwo, profileOne];
+) {
+  if (profileOne < profileTwo) {
+    return { profileIdA: profileOne, profileIdB: profileTwo };
+  }
+  return { profileIdA: profileTwo, profileIdB: profileOne };
 }
 
 async function getFriendshipStatusHelper(
@@ -23,7 +24,10 @@ async function getFriendshipStatusHelper(
   // TODO: This line shouldn't be neccessary but it does seem to be fixing a bug.
   // Look closer once convex isn't broken lol
   if (!profileOne || !profileTwo) return null;
-  const [profileIdA, profileIdB] = getOrderedProfileIds(profileOne, profileTwo);
+  const { profileIdA, profileIdB } = getOrderedProfileIds(
+    profileOne,
+    profileTwo,
+  );
   if (profileIdA === profileIdB)
     throw new ConvexError("Cannot get friendship status to yourself");
   return await ctx.db
@@ -33,6 +37,7 @@ async function getFriendshipStatusHelper(
     .first();
 }
 
+// eslint-disable-next-line no-restricted-syntax -- This helper defines a public Convex query union contract.
 export async function getRelationshipHelper({
   ctx,
   profileRequestingInfo,
@@ -93,7 +98,7 @@ export const sendRequest = authedMutation({
     if (relationship === "pending-outgoing") {
       throw new ConvexError("Friend request already sent");
     }
-    const [profileIdA, profileIdB] = getOrderedProfileIds(
+    const { profileIdA, profileIdB } = getOrderedProfileIds(
       ctx.myProfile._id,
       profile._id,
     );

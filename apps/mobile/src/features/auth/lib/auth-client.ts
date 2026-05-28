@@ -10,13 +10,17 @@ const scheme = Constants.expoConfig?.scheme;
 if (scheme === undefined || scheme.length === 0) {
   throw new Error("Missing Expo scheme");
 }
+const expoScheme = Array.isArray(scheme) ? scheme[0] : scheme;
+if (expoScheme === undefined || expoScheme.length === 0) {
+  throw new Error("Missing Expo scheme");
+}
 
 export const authClient = createAuthClient({
   baseURL: urls.web,
   plugins: [
     expoClient({
-      scheme: scheme as string,
-      storagePrefix: scheme as string,
+      scheme: expoScheme,
+      storagePrefix: expoScheme,
       storage: SecureStore,
     }),
     convexClient(),

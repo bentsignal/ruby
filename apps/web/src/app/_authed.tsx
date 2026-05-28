@@ -2,7 +2,6 @@ import type { LucideIcon } from "lucide-react";
 import { queryOptions } from "@tanstack/react-query";
 import {
   createFileRoute,
-  Link,
   linkOptions,
   Outlet,
   redirect,
@@ -15,6 +14,7 @@ import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
 
+import { QuickLink } from "~/components/quick-link";
 import { ensureProfileExists } from "~/features/auth/lib/auth.functions";
 import { useAuthStore } from "~/features/auth/store";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
@@ -86,8 +86,76 @@ function TabBar() {
   const pathname = location.pathname;
   const myUsername = useAuthStore((s) => s.myProfile?.username);
   const imSignedIn = useAuthStore((s) => s.imSignedIn);
+  const tabs = getTabs(myUsername);
 
-  const tabs = linkOptions([
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-1",
+        "fixed bottom-6 left-1/2 z-50 -translate-x-1/2",
+        "bg-sidebar/80 border-sidebar-border border",
+        "rounded-full px-3 py-2",
+        "shadow-lg backdrop-blur-sm",
+      )}
+    >
+      {tabs.map((tab) => {
+        if (tab.to === "/create") {
+          return (
+            <QuickLink to={tab.to} aria-label={tab.label} key={tab.to}>
+              <TabBarSlot>
+                <tab.children />
+              </TabBarSlot>
+            </QuickLink>
+          );
+        }
+
+        if (tab.to === "/$username") {
+          return (
+            <HoverCard.Container openDelay={0} closeDelay={200} key={tab.to}>
+              <HoverCard.Trigger asChild>
+                <QuickLink
+                  to={tab.to}
+                  params={tab.params}
+                  aria-label={tab.label}
+                >
+                  <TabBarSlot>
+                    <tab.children
+                      isActive={
+                        myUsername !== undefined &&
+                        pathname === `/${tab.params.username}`
+                      }
+                    />
+                  </TabBarSlot>
+                </QuickLink>
+              </HoverCard.Trigger>
+              <HoverCard.Content
+                className={cn(
+                  "flex flex-col items-start",
+                  imSignedIn && "px-6! pt-5 pb-3!",
+                  !imSignedIn && "px-4 py-2 pt-3",
+                )}
+              >
+                <SmallProfilePreview />
+                <ThemeToggle />
+              </HoverCard.Content>
+            </HoverCard.Container>
+          );
+        }
+
+        return (
+          <QuickLink to={tab.to} aria-label={tab.label} key={tab.to}>
+            <TabBarSlot>
+              <tab.children isActive={pathname === tab.to} />
+            </TabBarSlot>
+          </QuickLink>
+        );
+      })}
+    </div>
+  );
+}
+
+function getTabs(myUsername: string | undefined) {
+  return linkOptions([
     {
       to: "/",
       label: "Home",
@@ -127,65 +195,4 @@ function TabBar() {
       ),
     },
   ]);
-
-  return (
-    <div
-      className={cn(
-        "flex items-center gap-1",
-        "fixed bottom-6 left-1/2 z-50 -translate-x-1/2",
-        "bg-sidebar/80 border-sidebar-border border",
-        "rounded-full px-3 py-2",
-        "shadow-lg backdrop-blur-sm",
-      )}
-    >
-      {tabs.map((tab) => {
-        if (tab.to === "/create") {
-          return (
-            <Link to={tab.to} aria-label={tab.label} key={tab.to}>
-              <TabBarSlot>
-                <tab.children />
-              </TabBarSlot>
-            </Link>
-          );
-        }
-
-        if (tab.to === "/$username") {
-          return (
-            <HoverCard.Container openDelay={0} closeDelay={200} key={tab.to}>
-              <HoverCard.Trigger asChild>
-                <Link to={tab.to} params={tab.params} aria-label={tab.label}>
-                  <TabBarSlot>
-                    <tab.children
-                      isActive={
-                        myUsername !== undefined &&
-                        pathname === `/${tab.params.username}`
-                      }
-                    />
-                  </TabBarSlot>
-                </Link>
-              </HoverCard.Trigger>
-              <HoverCard.Content
-                className={cn(
-                  "flex flex-col items-start",
-                  imSignedIn && "px-6! pt-5 pb-3!",
-                  !imSignedIn && "px-4 py-2 pt-3",
-                )}
-              >
-                <SmallProfilePreview />
-                <ThemeToggle />
-              </HoverCard.Content>
-            </HoverCard.Container>
-          );
-        }
-
-        return (
-          <Link to={tab.to} aria-label={tab.label} key={tab.to}>
-            <TabBarSlot>
-              <tab.children isActive={pathname === tab.to} />
-            </TabBarSlot>
-          </Link>
-        );
-      })}
-    </div>
-  );
 }

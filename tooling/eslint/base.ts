@@ -53,7 +53,8 @@ export const baseConfig = defineConfig(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      ...turboPlugin.configs.recommended.rules,
+      "turbo/no-undeclared-env-vars": "error",
+      "import/no-cycle": ["error", { maxDepth: 1, ignoreExternal: true }],
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -66,14 +67,7 @@ export const baseConfig = defineConfig(
         2,
         { checksVoidReturn: { attributes: false } },
       ],
-      "@typescript-eslint/no-unnecessary-condition": [
-        "error",
-        {
-          allowConstantLoopConditions: true,
-        },
-      ],
-      "@typescript-eslint/no-non-null-assertion": "error",
-      "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+      "func-style": ["error", "declaration", { allowArrowFunctions: false }],
     },
   },
   {
@@ -86,3 +80,39 @@ export const baseConfig = defineConfig(
     },
   },
 );
+
+export const strictConfig = defineConfig({
+  rules: {
+    complexity: ["error", 10],
+    "max-lines": [
+      "error",
+      {
+        max: 300,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
+    "max-lines-per-function": [
+      "error",
+      {
+        max: 100,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
+    "@typescript-eslint/no-unnecessary-condition": [
+      "error",
+      {
+        allowConstantLoopConditions: true,
+      },
+    ],
+    "@typescript-eslint/no-non-null-assertion": "error",
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      { assertionStyle: "never" },
+    ],
+    "@typescript-eslint/switch-exhaustiveness-check": "error",
+    "no-else-return": "error",
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+  },
+});
