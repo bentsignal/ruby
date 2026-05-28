@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { handler } from "~/features/auth/lib/auth.server";
 import { withAuthCookies } from "~/features/auth/lib/cookies";
-import { handler } from "~/features/auth/lib/server";
 
 export const Route = createFileRoute("/api/auth/$")({
   server: {

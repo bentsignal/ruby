@@ -1,7 +1,4 @@
-import { createServerFn } from "@tanstack/react-start";
 import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
-
-import { api } from "@acme/convex/api";
 
 import { urls } from "~/urls";
 
@@ -19,15 +16,6 @@ export async function verifyOneTimeToken(token: string) {
   );
 }
 
-export const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-  return await getToken();
-});
-
-export const ensureProfileExists = createServerFn({
-  method: "GET",
-}).handler(async () => {
-  return await fetchAuthMutation(api.profile.ensureProfileExists, {});
-});
 export const {
   handler,
   getToken,

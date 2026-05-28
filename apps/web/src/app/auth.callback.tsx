@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { verifyOneTimeToken } from "~/features/auth/lib/auth.server";
 import { copyAuthCookies } from "~/features/auth/lib/cookies";
-import { verifyOneTimeToken } from "~/features/auth/lib/server";
 
 function redirectPath(value: string | null) {
   if (!value?.startsWith("/")) {

@@ -15,7 +15,7 @@ import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
 
-import { ensureProfileExists } from "~/features/auth/lib/server";
+import { ensureProfileExists } from "~/features/auth/lib/auth.functions";
 import { useAuthStore } from "~/features/auth/store";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
 import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
