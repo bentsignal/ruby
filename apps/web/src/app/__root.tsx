@@ -19,7 +19,7 @@ import type { RouterContext } from "~/router";
 import appStyles from "~/app/styles.css?url";
 import { env } from "~/env";
 import { authClient } from "~/features/auth/lib/client";
-import { getToken } from "~/features/auth/lib/server";
+import { getAuth } from "~/features/auth/lib/server";
 import { AuthStore } from "~/features/auth/store";
 import { ThemeStore } from "~/features/theme/store";
 import { getTheme } from "~/features/theme/utils";
@@ -27,10 +27,6 @@ import { getTheme } from "~/features/theme/utils";
 const getThemeFromCookie = createServerFn({ method: "GET" }).handler(() => {
   const themeCookie = getCookie("theme");
   return getTheme(themeCookie);
-});
-
-const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-  return await getToken();
 });
 
 export const Route = createRootRouteWithContext<RouterContext>()({

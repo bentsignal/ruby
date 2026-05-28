@@ -11,20 +11,18 @@ import {
 import { convert } from "great-time";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
-import { api } from "@acme/convex/api";
 import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
 
-import { fetchAuthMutation } from "~/features/auth/lib/server";
+import { ensureProfileExists } from "~/features/auth/lib/server";
 import { useAuthStore } from "~/features/auth/store";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
 import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
 
 const profileEnsureQuery = queryOptions({
   queryKey: ["auth", "profile"],
-  queryFn: async () =>
-    await fetchAuthMutation(api.profile.ensureProfileExists, {}),
+  queryFn: async () => await ensureProfileExists(),
   staleTime: convert(50, "minutes", "to ms"),
   gcTime: Infinity,
 });
