@@ -9,54 +9,60 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
-import { Route as TabsRouteImport } from './app/_tabs'
-import { Route as TabsIndexRouteImport } from './app/_tabs.index'
-import { Route as TabsSearchRouteImport } from './app/_tabs.search'
-import { Route as TabsNotificationsRouteImport } from './app/_tabs.notifications'
-import { Route as TabsLoginRouteImport } from './app/_tabs.login'
-import { Route as TabsEditProfileRouteImport } from './app/_tabs.edit-profile'
-import { Route as TabsCreateRouteImport } from './app/_tabs.create'
-import { Route as TabsUsernameRouteImport } from './app/_tabs.$username'
+import { Route as LoginRouteImport } from './app/login'
+import { Route as AuthedRouteImport } from './app/_authed'
+import { Route as AuthedIndexRouteImport } from './app/_authed/index'
+import { Route as AuthCallbackRouteImport } from './app/auth.callback'
+import { Route as AuthedSearchRouteImport } from './app/_authed/search'
+import { Route as AuthedNotificationsRouteImport } from './app/_authed/notifications'
+import { Route as AuthedEditProfileRouteImport } from './app/_authed/edit-profile'
+import { Route as AuthedCreateRouteImport } from './app/_authed/create'
+import { Route as AuthedUsernameRouteImport } from './app/_authed/$username'
 import { Route as ApiAuthSplatRouteImport } from './app/api.auth.$'
 
-const TabsRoute = TabsRouteImport.update({
-  id: '/_tabs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TabsIndexRoute = TabsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => TabsRoute,
-} as any)
-const TabsSearchRoute = TabsSearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => TabsRoute,
-} as any)
-const TabsNotificationsRoute = TabsNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => TabsRoute,
-} as any)
-const TabsLoginRoute = TabsLoginRouteImport.update({
+const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => TabsRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const TabsEditProfileRoute = TabsEditProfileRouteImport.update({
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedIndexRoute = AuthedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedSearchRoute = AuthedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedNotificationsRoute = AuthedNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedEditProfileRoute = AuthedEditProfileRouteImport.update({
   id: '/edit-profile',
   path: '/edit-profile',
-  getParentRoute: () => TabsRoute,
+  getParentRoute: () => AuthedRoute,
 } as any)
-const TabsCreateRoute = TabsCreateRouteImport.update({
+const AuthedCreateRoute = AuthedCreateRouteImport.update({
   id: '/create',
   path: '/create',
-  getParentRoute: () => TabsRoute,
+  getParentRoute: () => AuthedRoute,
 } as any)
-const TabsUsernameRoute = TabsUsernameRouteImport.update({
+const AuthedUsernameRoute = AuthedUsernameRouteImport.update({
   id: '/$username',
   path: '/$username',
-  getParentRoute: () => TabsRoute,
+  getParentRoute: () => AuthedRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -65,133 +71,148 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof TabsIndexRoute
-  '/$username': typeof TabsUsernameRoute
-  '/create': typeof TabsCreateRoute
-  '/edit-profile': typeof TabsEditProfileRoute
-  '/login': typeof TabsLoginRoute
-  '/notifications': typeof TabsNotificationsRoute
-  '/search': typeof TabsSearchRoute
+  '/': typeof AuthedIndexRoute
+  '/login': typeof LoginRoute
+  '/$username': typeof AuthedUsernameRoute
+  '/create': typeof AuthedCreateRoute
+  '/edit-profile': typeof AuthedEditProfileRoute
+  '/notifications': typeof AuthedNotificationsRoute
+  '/search': typeof AuthedSearchRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
-  '/$username': typeof TabsUsernameRoute
-  '/create': typeof TabsCreateRoute
-  '/edit-profile': typeof TabsEditProfileRoute
-  '/login': typeof TabsLoginRoute
-  '/notifications': typeof TabsNotificationsRoute
-  '/search': typeof TabsSearchRoute
-  '/': typeof TabsIndexRoute
+  '/login': typeof LoginRoute
+  '/$username': typeof AuthedUsernameRoute
+  '/create': typeof AuthedCreateRoute
+  '/edit-profile': typeof AuthedEditProfileRoute
+  '/notifications': typeof AuthedNotificationsRoute
+  '/search': typeof AuthedSearchRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_tabs': typeof TabsRouteWithChildren
-  '/_tabs/$username': typeof TabsUsernameRoute
-  '/_tabs/create': typeof TabsCreateRoute
-  '/_tabs/edit-profile': typeof TabsEditProfileRoute
-  '/_tabs/login': typeof TabsLoginRoute
-  '/_tabs/notifications': typeof TabsNotificationsRoute
-  '/_tabs/search': typeof TabsSearchRoute
-  '/_tabs/': typeof TabsIndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authed/$username': typeof AuthedUsernameRoute
+  '/_authed/create': typeof AuthedCreateRoute
+  '/_authed/edit-profile': typeof AuthedEditProfileRoute
+  '/_authed/notifications': typeof AuthedNotificationsRoute
+  '/_authed/search': typeof AuthedSearchRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/_authed/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/$username'
     | '/create'
     | '/edit-profile'
-    | '/login'
     | '/notifications'
     | '/search'
+    | '/auth/callback'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/login'
     | '/$username'
     | '/create'
     | '/edit-profile'
-    | '/login'
     | '/notifications'
     | '/search'
+    | '/auth/callback'
     | '/'
     | '/api/auth/$'
   id:
     | '__root__'
-    | '/_tabs'
-    | '/_tabs/$username'
-    | '/_tabs/create'
-    | '/_tabs/edit-profile'
-    | '/_tabs/login'
-    | '/_tabs/notifications'
-    | '/_tabs/search'
-    | '/_tabs/'
+    | '/_authed'
+    | '/login'
+    | '/_authed/$username'
+    | '/_authed/create'
+    | '/_authed/edit-profile'
+    | '/_authed/notifications'
+    | '/_authed/search'
+    | '/auth/callback'
+    | '/_authed/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  TabsRoute: typeof TabsRouteWithChildren
+  AuthedRoute: typeof AuthedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_tabs': {
-      id: '/_tabs'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof TabsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_tabs/': {
-      id: '/_tabs/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof TabsIndexRouteImport
-      parentRoute: typeof TabsRoute
-    }
-    '/_tabs/search': {
-      id: '/_tabs/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof TabsSearchRouteImport
-      parentRoute: typeof TabsRoute
-    }
-    '/_tabs/notifications': {
-      id: '/_tabs/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof TabsNotificationsRouteImport
-      parentRoute: typeof TabsRoute
-    }
-    '/_tabs/login': {
-      id: '/_tabs/login'
+    '/login': {
+      id: '/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof TabsLoginRouteImport
-      parentRoute: typeof TabsRoute
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_tabs/edit-profile': {
-      id: '/_tabs/edit-profile'
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed/': {
+      id: '/_authed/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed/search': {
+      id: '/_authed/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AuthedSearchRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/notifications': {
+      id: '/_authed/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthedNotificationsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/edit-profile': {
+      id: '/_authed/edit-profile'
       path: '/edit-profile'
       fullPath: '/edit-profile'
-      preLoaderRoute: typeof TabsEditProfileRouteImport
-      parentRoute: typeof TabsRoute
+      preLoaderRoute: typeof AuthedEditProfileRouteImport
+      parentRoute: typeof AuthedRoute
     }
-    '/_tabs/create': {
-      id: '/_tabs/create'
+    '/_authed/create': {
+      id: '/_authed/create'
       path: '/create'
       fullPath: '/create'
-      preLoaderRoute: typeof TabsCreateRouteImport
-      parentRoute: typeof TabsRoute
+      preLoaderRoute: typeof AuthedCreateRouteImport
+      parentRoute: typeof AuthedRoute
     }
-    '/_tabs/$username': {
-      id: '/_tabs/$username'
+    '/_authed/$username': {
+      id: '/_authed/$username'
       path: '/$username'
       fullPath: '/$username'
-      preLoaderRoute: typeof TabsUsernameRouteImport
-      parentRoute: typeof TabsRoute
+      preLoaderRoute: typeof AuthedUsernameRouteImport
+      parentRoute: typeof AuthedRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -203,30 +224,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface TabsRouteChildren {
-  TabsUsernameRoute: typeof TabsUsernameRoute
-  TabsCreateRoute: typeof TabsCreateRoute
-  TabsEditProfileRoute: typeof TabsEditProfileRoute
-  TabsLoginRoute: typeof TabsLoginRoute
-  TabsNotificationsRoute: typeof TabsNotificationsRoute
-  TabsSearchRoute: typeof TabsSearchRoute
-  TabsIndexRoute: typeof TabsIndexRoute
+interface AuthedRouteChildren {
+  AuthedUsernameRoute: typeof AuthedUsernameRoute
+  AuthedCreateRoute: typeof AuthedCreateRoute
+  AuthedEditProfileRoute: typeof AuthedEditProfileRoute
+  AuthedNotificationsRoute: typeof AuthedNotificationsRoute
+  AuthedSearchRoute: typeof AuthedSearchRoute
+  AuthedIndexRoute: typeof AuthedIndexRoute
 }
 
-const TabsRouteChildren: TabsRouteChildren = {
-  TabsUsernameRoute: TabsUsernameRoute,
-  TabsCreateRoute: TabsCreateRoute,
-  TabsEditProfileRoute: TabsEditProfileRoute,
-  TabsLoginRoute: TabsLoginRoute,
-  TabsNotificationsRoute: TabsNotificationsRoute,
-  TabsSearchRoute: TabsSearchRoute,
-  TabsIndexRoute: TabsIndexRoute,
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedUsernameRoute: AuthedUsernameRoute,
+  AuthedCreateRoute: AuthedCreateRoute,
+  AuthedEditProfileRoute: AuthedEditProfileRoute,
+  AuthedNotificationsRoute: AuthedNotificationsRoute,
+  AuthedSearchRoute: AuthedSearchRoute,
+  AuthedIndexRoute: AuthedIndexRoute,
 }
 
-const TabsRouteWithChildren = TabsRoute._addFileChildren(TabsRouteChildren)
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  TabsRoute: TabsRouteWithChildren,
+  AuthedRoute: AuthedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

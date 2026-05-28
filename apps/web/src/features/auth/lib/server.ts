@@ -1,6 +1,6 @@
 import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
 
-import { env } from "~/env";
+import { urls } from "~/urls";
 
 export const {
   handler,
@@ -9,6 +9,20 @@ export const {
   fetchAuthMutation,
   fetchAuthAction,
 } = convexBetterAuthReactStart({
-  convexUrl: env.VITE_CONVEX_URL,
-  convexSiteUrl: env.VITE_CONVEX_SITE_URL,
+  convexUrl: urls.convex.cloud,
+  convexSiteUrl: urls.convex.site,
 });
+
+export async function verifyOneTimeToken(token: string) {
+  return await fetch(
+    `${urls.convex.site}/api/auth/cross-domain/one-time-token/verify`,
+    {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    },
+  );
+}

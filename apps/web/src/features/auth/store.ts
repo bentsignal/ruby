@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createStore } from "rostra";
 
@@ -8,53 +5,38 @@ import { api } from "@acme/convex/api";
 import { toast } from "@acme/ui/toast";
 
 import { useLoading } from "~/hooks/use-loading";
+import { urls } from "~/urls";
 import { authClient } from "./lib/client";
 
-function useInternalStore({
-  isAuthenticatedServerSide,
-}: {
-  isAuthenticatedServerSide: boolean;
-}) {
+function useInternalStore() {
   const { isLoading, start } = useLoading();
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const { isAuthenticated } = useConvexAuth();
 
-  const { isAuthenticated: isAuthenticatedClientSide } = useConvexAuth();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setTimeout(() => {
-      setMounted(true);
-    }, 1000);
-  }, []);
-
-  const imSignedIn = mounted
-    ? isAuthenticatedClientSide
-    : isAuthenticatedServerSide;
-  const imSignedOut = !imSignedIn;
-
-  const myProfile = useQuery(api.profile.getMine);
+  const myProfile = useQuery(
+    api.profile.getMine,
+    isAuthenticated ? undefined : "skip",
+  );
 
   const signInWithGoogle = (redirectUri?: string) => {
-    if (imSignedIn) return;
+    if (isAuthenticated) return;
     start(async () => {
+      const callbackUrl = new URL("/auth/callback", urls.web);
+      callbackUrl.searchParams.set("redirect_uri", redirectUri ?? "/");
+
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: redirectUri ?? "/",
+        callbackURL: callbackUrl.toString(),
       });
     });
   };
 
   const signOut = () => {
-    if (imSignedOut) return;
+    if (!isAuthenticated) return;
     start(async () => {
-      void navigate({ to: "/", replace: true, search: { signedOut: true } });
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            queryClient.removeQueries({ queryKey: ["auth-token"] });
-            const url = new URL(window.location.href);
-            url.searchParams.delete("signedOut");
-            window.location.replace(url.toString());
+            window.location.replace("/login");
           },
           onError: (error: unknown) => {
             console.error(error);
@@ -68,8 +50,8 @@ function useInternalStore({
   return {
     myProfile,
     isLoading,
-    imSignedIn,
-    imSignedOut,
+    imSignedIn: isAuthenticated,
+    imSignedOut: !isAuthenticated,
     signInWithGoogle,
     signOut,
   };

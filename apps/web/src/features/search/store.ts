@@ -26,7 +26,7 @@ function useInternalStore({
 
   const navigate = useNavigate();
   const urlSearchTerm = useSearch({
-    from: "/_tabs/search",
+    from: "/_authed/search",
     select: (s) => s.q,
   });
 

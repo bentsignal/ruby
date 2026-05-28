@@ -7,7 +7,10 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  server: { port: 3000 },
+  server: {
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
+    host: true,
+  },
   ssr: {
     noExternal: ["@convex-dev/better-auth"],
   },

@@ -35,10 +35,11 @@
   },
   "prettier": "@acme/prettier-config",
   "dependencies": {
-    "@better-auth/expo": "^1.4.7",
+    "@acme/app-config": "workspace:*",
+    "@better-auth/expo": "catalog:",
     "@convex-dev/better-auth": "catalog:",
     "@convex-dev/rate-limiter": "^0.3.2",
-    "better-auth": "^1.4.7",
+    "better-auth": "catalog:",
     "convex": "catalog:",
     "convex-env": "^2.3.0",
     "convex-helpers": "^0.1.108",
