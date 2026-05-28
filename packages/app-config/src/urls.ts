@@ -46,11 +46,15 @@ function webUrl(options: UrlOptions & { effectiveWorktreeId?: string }) {
 export function createUrls(options: UrlOptions = {}) {
   const tier = options.nodeEnv === "production" ? "production" : "development";
   const effectiveWorktreeId = options.worktreeId ?? overrideWorktreeId;
+  const effectiveConvexCloudUrl =
+    tier === "production"
+      ? CONVEX.production.cloud
+      : (overrideConvexCloudUrl ?? CONVEX.development.cloud);
 
   return {
     web: webUrl({ ...options, effectiveWorktreeId }),
     convex: {
-      cloud: overrideConvexCloudUrl ?? CONVEX[tier].cloud,
+      cloud: effectiveConvexCloudUrl,
       site: CONVEX[tier].site,
     },
   } as const;

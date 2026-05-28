@@ -43,6 +43,12 @@ cd "$NEW_WT/packages/convex"
 # Pull env vars from the main deployment before switching
 TEMP_ENV=$(mktemp)
 npx convex env list > "$TEMP_ENV"
+if grep -Eq '^ENVIRONMENT="?production"?$' "$TEMP_ENV" ||
+  grep -Eq '^CONVEX_CLOUD_URL="?https://api\.ruby\.travel"?$' "$TEMP_ENV"; then
+  rm -f "$TEMP_ENV"
+  echo "Refusing to copy environment variables from the production Convex deployment." >&2
+  exit 1
+fi
 
 npx convex deployment create "dev/$WT_NAME" --select --expiration "in 7 days" --type dev < /dev/null
 npx convex deployment token create "$WT_NAME" --save-env < /dev/null

@@ -3,9 +3,11 @@ import { getAuthConfigProvider } from "@convex-dev/better-auth/auth-config";
 
 import { env } from "./convex.env";
 
-const isMainDeployment =
+const usesOwnAuthProvider =
   env.ENVIRONMENT === "production" ||
   env.CONVEX_CLOUD_URL === "https://api.dev.ruby.travel";
+const trustsSharedDevelopmentAuth =
+  env.ENVIRONMENT === "development" && !usesOwnAuthProvider;
 
 const sharedDevelopmentAuthProviders =
   process.env.SHARED_AUTH_JWT_ISSUER && process.env.SHARED_AUTH_JWT_JWKS
@@ -29,6 +31,6 @@ export const primaryAuthConfig = {
 export default {
   providers: [
     getAuthConfigProvider(),
-    ...(isMainDeployment ? [] : sharedDevelopmentAuthProviders),
+    ...(trustsSharedDevelopmentAuth ? sharedDevelopmentAuthProviders : []),
   ],
 } satisfies AuthConfig;
