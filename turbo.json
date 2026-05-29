@@ -49,8 +49,7 @@
     "AUTH_SECRET",
     "CONVEX_DEPLOY_KEY",
     "UPLOADTHING_APP_ID",
-    "VITE_NODE_ENV",
-    "VITE_WORKTREE_ID"
+    "VITE_NODE_ENV"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
