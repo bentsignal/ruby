@@ -18,9 +18,9 @@ import { Toaster } from "@acme/ui/toast";
 import type { RouterContext } from "~/router";
 import appStyles from "~/app/styles.css?url";
 import { env } from "~/env";
+import { AuthStore } from "~/features/auth/auth-store";
 import { getAuth } from "~/features/auth/lib/auth.functions";
 import { authClient } from "~/features/auth/lib/client";
-import { AuthStore } from "~/features/auth/store";
 import { ThemeStore } from "~/features/theme/store";
 import { getTheme } from "~/features/theme/utils";
 

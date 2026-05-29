@@ -16,7 +16,6 @@ import * as HoverCard from "@acme/ui/hover-card";
 
 import { QuickLink } from "~/components/quick-link";
 import { ensureProfileExists } from "~/features/auth/lib/auth.functions";
-import { useAuthStore } from "~/features/auth/store";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
 import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
 
@@ -84,8 +83,9 @@ function TabBarSlot({ children }: { children: React.ReactNode }) {
 function TabBar() {
   const location = useLocation();
   const pathname = location.pathname;
-  const myUsername = useAuthStore((s) => s.myProfile?.username);
-  const imSignedIn = useAuthStore((s) => s.imSignedIn);
+  const myUsername = Route.useRouteContext({
+    select: (ctx) => ctx.profile.username,
+  });
   const tabs = getTabs(myUsername);
 
   return (
@@ -120,20 +120,13 @@ function TabBar() {
                 >
                   <TabBarSlot>
                     <tab.children
-                      isActive={
-                        myUsername !== undefined &&
-                        pathname === `/${tab.params.username}`
-                      }
+                      isActive={pathname === `/${tab.params.username}`}
                     />
                   </TabBarSlot>
                 </QuickLink>
               </HoverCard.Trigger>
               <HoverCard.Content
-                className={cn(
-                  "flex flex-col items-start",
-                  imSignedIn && "px-6! pt-5 pb-3!",
-                  !imSignedIn && "px-4 py-2 pt-3",
-                )}
+                className={cn("flex flex-col items-start", "px-6! pt-5 pb-3!")}
               >
                 <SmallProfilePreview />
                 <ThemeToggle />

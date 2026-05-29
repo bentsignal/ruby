@@ -7,7 +7,7 @@ import * as Dialog from "@acme/ui/dialog";
 import * as Drawer from "@acme/ui/drawer";
 
 import { GoogleSignInButton } from "~/features/auth/atoms/google-sign-in-button";
-import { useAuthStore } from "~/features/auth/store";
+import { useAuthStore } from "~/features/auth/auth-store";
 import { useIsMobile } from "~/hooks/use-is-mobile";
 
 export const Route = createFileRoute("/login")({

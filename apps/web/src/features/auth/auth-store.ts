@@ -1,10 +1,6 @@
-// eslint-disable-next-line no-restricted-imports -- Auth store is mounted at the root and cannot use a route loader.
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { useConvexAuth } from "convex/react";
+import { useRouteContext } from "@tanstack/react-router";
 import { createStore } from "rostra";
 
-import { api } from "@acme/convex/api";
 import { toast } from "@acme/ui/toast";
 
 import { useLoading } from "~/hooks/use-loading";
@@ -13,12 +9,9 @@ import { authClient } from "./lib/client";
 
 function useInternalStore() {
   const { isLoading, start } = useLoading();
-  const { isAuthenticated } = useConvexAuth();
-
-  const { data: myProfile } = useQuery({
-    ...convexQuery(api.profile.getMine, {}),
-    enabled: isAuthenticated,
-    select: (profile) => profile,
+  const isAuthenticated = useRouteContext({
+    from: "__root__",
+    select: (ctx) => ctx.isAuthenticated,
   });
 
   function signInWithGoogle(redirectUri?: string) {
@@ -52,7 +45,6 @@ function useInternalStore() {
   }
 
   return {
-    myProfile,
     isLoading,
     imSignedIn: isAuthenticated,
     imSignedOut: !isAuthenticated,
