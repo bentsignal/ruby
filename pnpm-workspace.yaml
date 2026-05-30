@@ -9,7 +9,7 @@ catalog:
   "@convex-dev/better-auth": 0.12.2
   "@convex-dev/react-query": 0.1.0
   "@eslint/js": ^9.38.0
-  "@legendapp/list": beta
+  "@legendapp/list": 3.0.0
   "@tailwindcss/postcss": ^4.1.16
   "@tailwindcss/vite": ^4.1.16
   "@tanstack/react-form": ^1.23.8

@@ -1,6 +1,6 @@
-import type { LegendListRenderItemProps } from "@legendapp/list";
+import type { LegendListRenderItemProps } from "@legendapp/list/react";
 import { useLayoutEffect, useRef, useState } from "react";
-import { LegendList } from "@legendapp/list";
+import { LegendList } from "@legendapp/list/react";
 import { Loader } from "lucide-react";
 
 import type { UIProfile } from "@acme/convex/types";
