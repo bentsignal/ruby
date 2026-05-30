@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const MOBILE_BREAKPOINT = 1024;
 
-function useIsMobile() {
+export function useIsMobile() {
   const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
 
   // eslint-disable-next-line no-restricted-syntax -- Tracks viewport changes from the browser media query API.
@@ -19,5 +19,3 @@ function useIsMobile() {
 
   return !!isMobile;
 }
-
-export { useIsMobile };

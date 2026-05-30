@@ -6,7 +6,7 @@ import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../store";
 import { normalizeProfileLink } from "../utils";
 
-function UserProvidedLink({ className }: { className?: string }) {
+export function UserProvidedLink({ className }: { className?: string }) {
   const link = useProfileStore((s) => s.link);
   if (!link) return null;
   const { href, display } = normalizeProfileLink(link);
@@ -28,5 +28,3 @@ function UserProvidedLink({ className }: { className?: string }) {
     </Button>
   );
 }
-
-export { UserProvidedLink };

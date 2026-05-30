@@ -3,7 +3,7 @@ import { Container } from "../atoms/container";
 import { Icon } from "../atoms/icon";
 import { Input } from "../atoms/input";
 
-function SearchBar() {
+export function SearchBar() {
   return (
     <Container>
       <Icon />
@@ -12,5 +12,3 @@ function SearchBar() {
     </Container>
   );
 }
-
-export { SearchBar };

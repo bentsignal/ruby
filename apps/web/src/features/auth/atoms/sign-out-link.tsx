@@ -2,7 +2,7 @@ import { LogOut } from "lucide-react";
 
 import { Button } from "@acme/ui/button";
 
-import { useAuthStore } from "../auth-store";
+import { useAuthStore } from "../store";
 
 export function SignOutLink() {
   const signOut = useAuthStore((s) => s.signOut);

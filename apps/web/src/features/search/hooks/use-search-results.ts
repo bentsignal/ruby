@@ -8,7 +8,7 @@ import { useSearchStore } from "../store";
 
 const PAGE_SIZE = 25;
 
-function useSearchResults() {
+export function useSearchResults() {
   const searchTerm = useSearchStore((s) => s.searchTerm.trim());
   const debouncedSearchTerm = useSearchStore((s) =>
     s.debouncedSearchTerm.trim(),
@@ -57,5 +57,3 @@ function useSearchResults() {
 
   return { results, resultsStatus, loadingStatus, loadMoreItems };
 }
-
-export { useSearchResults };

@@ -1,3 +1,1 @@
-type PFPVariant = "sm" | "md" | "lg";
-
-export type { PFPVariant };
+export type PFPVariant = "sm" | "md" | "lg";

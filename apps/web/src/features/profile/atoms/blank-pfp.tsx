@@ -2,7 +2,7 @@ import type { PFPVariant } from "../types";
 import { cn } from "~/utils/style-utils";
 import { getPFPClassName } from "../utils";
 
-function BlankPFP({
+export function BlankPFP({
   className,
   variant = "sm",
 }: {
@@ -19,5 +19,3 @@ function BlankPFP({
     />
   );
 }
-
-export { BlankPFP };

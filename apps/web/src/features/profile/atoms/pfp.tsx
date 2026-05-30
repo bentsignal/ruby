@@ -6,7 +6,7 @@ import { useProfileStore } from "../store";
 import { getPFPClassName, getPFPSizeNumber } from "../utils";
 import { BlankPFP } from "./blank-pfp";
 
-function PFP({
+export function PFP({
   className,
   variant = "sm",
 }: {
@@ -27,5 +27,3 @@ function PFP({
     />
   );
 }
-
-export { PFP };

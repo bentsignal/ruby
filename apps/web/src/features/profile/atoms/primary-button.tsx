@@ -5,7 +5,7 @@ import { FriendsButton } from "./friends-button";
 import { IncomingRequestButton } from "./incoming-request-button";
 import { OutgoingRequestButton } from "./outgoing-request-button";
 
-function PrimaryButton({ className }: { className?: string }) {
+export function PrimaryButton({ className }: { className?: string }) {
   const relationship = useProfileStore((s) => s.relationship);
   if (relationship === undefined) return null;
   if (relationship === "my-profile") {
@@ -22,5 +22,3 @@ function PrimaryButton({ className }: { className?: string }) {
   }
   return <AddFriendButton className={className} />;
 }
-
-export { PrimaryButton };

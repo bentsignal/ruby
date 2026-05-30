@@ -6,7 +6,7 @@ import * as Dropdown from "@acme/ui/dropdown-menu";
 import { cn } from "~/utils/style-utils";
 import { RemoveFriendButton } from "./remove-friend-button";
 
-function FriendsButton({ className }: { className?: string }) {
+export function FriendsButton({ className }: { className?: string }) {
   return (
     <Dropdown.Container>
       <Dropdown.Trigger asChild>
@@ -32,5 +32,3 @@ function FriendsButton({ className }: { className?: string }) {
     </Dropdown.Container>
   );
 }
-
-export { FriendsButton };

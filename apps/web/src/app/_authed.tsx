@@ -15,6 +15,7 @@ import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
 
 import { QuickLink } from "~/components/quick-link";
+import { SignOutLink } from "~/features/auth/atoms/sign-out-link";
 import { ensureProfileExists } from "~/features/auth/lib/auth.functions";
 import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
 import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
@@ -125,10 +126,9 @@ function TabBar() {
                   </TabBarSlot>
                 </QuickLink>
               </HoverCard.Trigger>
-              <HoverCard.Content
-                className={cn("flex flex-col items-start", "px-6! pt-5 pb-3!")}
-              >
-                <SmallProfilePreview />
+              <HoverCard.Content className="flex flex-col items-start px-6! pt-5 pb-3!">
+                <SmallProfilePreview className="mb-2" />
+                <SignOutLink />
                 <ThemeToggle />
               </HoverCard.Content>
             </HoverCard.Container>

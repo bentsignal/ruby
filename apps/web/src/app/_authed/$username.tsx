@@ -12,7 +12,6 @@ import { PrimaryButton } from "~/features/profile/atoms/primary-button";
 import { UserProvidedLink } from "~/features/profile/atoms/user-provided-link";
 import { Username } from "~/features/profile/atoms/username";
 import { ProfileStore } from "~/features/profile/store";
-import { MainLayout } from "~/layouts/main";
 
 export const Route = createFileRoute("/_authed/$username")({
   loader: async ({ context, params }) => {
@@ -36,7 +35,7 @@ function ProfilePage() {
   }
   const { info: profile, relationship } = result.data;
   return (
-    <MainLayout className="flex flex-col gap-4">
+    <div className="max-w-auto mx-auto flex flex-col gap-4 px-4 pt-8 sm:max-w-md sm:pt-12 lg:max-w-xl">
       <ProfileStore profile={profile} relationship={relationship}>
         <div className="flex items-center gap-4">
           <PFP variant="md" />
@@ -51,6 +50,6 @@ function ProfilePage() {
         <PrimaryButton className="flex lg:hidden" />
         <Separator />
       </ProfileStore>
-    </MainLayout>
+    </div>
   );
 }

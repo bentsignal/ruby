@@ -2,7 +2,7 @@ import { useSearch } from "@tanstack/react-router";
 
 import { GoogleIcon } from "~/features/auth/icons";
 import { cn } from "~/utils/style-utils";
-import { useAuthStore } from "../auth-store";
+import { useAuthStore } from "../store";
 
 export function GoogleSignInButton({ className }: { className?: string }) {
   const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);

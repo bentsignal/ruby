@@ -10,7 +10,6 @@ import { Name } from "~/features/profile/atoms/name";
 import { PFP } from "~/features/profile/atoms/pfp";
 import { Username } from "~/features/profile/atoms/username";
 import { ProfileStore } from "~/features/profile/store";
-import { MainLayout } from "~/layouts/main";
 import { useSearchResults } from "../hooks/use-search-results";
 import { SearchBar } from "./search-bar";
 
@@ -40,7 +39,7 @@ export function SearchPageResults() {
   }, []);
 
   return (
-    <MainLayout className="flex h-screen flex-col overflow-hidden">
+    <div className="max-w-auto mx-auto flex h-screen flex-col gap-4 overflow-hidden px-4 pt-8 sm:max-w-md sm:pt-12 lg:max-w-xl">
       <SearchBar />
       <div className="min-h-0 flex-1" ref={containerRef}>
         <LegendList
@@ -82,7 +81,7 @@ export function SearchPageResults() {
           }
         />
       </div>
-    </MainLayout>
+    </div>
   );
 }
 

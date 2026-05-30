@@ -7,7 +7,7 @@ import { toast } from "@acme/ui/toast";
 import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../store";
 
-function AddFriendButton({ className }: { className?: string }) {
+export function AddFriendButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);
   const sendFriendRequest = useSendFriendRequest({ username });
   return (
@@ -25,5 +25,3 @@ function AddFriendButton({ className }: { className?: string }) {
     </Button>
   );
 }
-
-export { AddFriendButton };

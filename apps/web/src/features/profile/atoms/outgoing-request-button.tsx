@@ -8,7 +8,7 @@ import * as Tooltip from "@acme/ui/tooltip";
 import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../store";
 
-function OutgoingRequestButton({ className }: { className?: string }) {
+export function OutgoingRequestButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);
   const cancelFriendRequest = useCancelFriendRequest({ username });
   return (
@@ -38,5 +38,3 @@ function OutgoingRequestButton({ className }: { className?: string }) {
     </div>
   );
 }
-
-export { OutgoingRequestButton };

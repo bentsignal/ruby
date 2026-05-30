@@ -1,11 +1,9 @@
 import { Loader } from "lucide-react";
 
-import { MainLayout } from "~/layouts/main";
-
 export function Pending() {
   return (
-    <MainLayout className="animate-in fade-in my-0 flex h-screen flex-col items-center justify-center gap-4 py-0 pb-8 duration-1000">
+    <div className="animate-in fade-in flex h-screen w-full flex-1 items-center justify-center duration-1000">
       <Loader className="size-6 animate-spin" />
-    </MainLayout>
+    </div>
   );
 }

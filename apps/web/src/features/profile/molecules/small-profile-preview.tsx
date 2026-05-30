@@ -1,20 +1,20 @@
 import { useRouteContext } from "@tanstack/react-router";
 
 import { QuickLink } from "~/components/quick-link";
-import { SignOutLink } from "~/features/auth/atoms/sign-out-link";
+import { cn } from "~/utils/style-utils";
 import { Name } from "../atoms/name";
 import { PFP } from "../atoms/pfp";
 import { Username } from "../atoms/username";
 import { ProfileStore } from "../store";
 
-function SmallProfilePreview() {
+export function SmallProfilePreview({ className }: { className?: string }) {
   const myProfile = useRouteContext({
     from: "/_authed",
     select: (ctx) => ctx.profile,
   });
 
   return (
-    <div className="flex flex-col items-start gap-2">
+    <div className={cn("flex flex-col items-start gap-2", className)}>
       <ProfileStore profile={myProfile}>
         <QuickLink
           to="/$username"
@@ -30,9 +30,6 @@ function SmallProfilePreview() {
           </div>
         </QuickLink>
       </ProfileStore>
-      <SignOutLink />
     </div>
   );
 }
-
-export { SmallProfilePreview };

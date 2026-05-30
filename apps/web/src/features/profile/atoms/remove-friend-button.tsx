@@ -8,7 +8,7 @@ import * as Tooltip from "@acme/ui/tooltip";
 
 import { useProfileStore } from "../store";
 
-function RemoveFriendButton() {
+export function RemoveFriendButton() {
   const username = useProfileStore((s) => s.username);
   const removeFriend = useRemoveFriend({ username });
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -61,5 +61,3 @@ function RemoveFriendButton() {
     </Button>
   );
 }
-
-export { RemoveFriendButton };

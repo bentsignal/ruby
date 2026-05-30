@@ -43,5 +43,4 @@ function ThemeStore({
   );
 }
 
-export const useThemeStore = useStore;
-export { ThemeStore };
+export { ThemeStore, useStore as useThemeStore };

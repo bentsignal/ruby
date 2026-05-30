@@ -11,7 +11,7 @@ import * as Tooltip from "@acme/ui/tooltip";
 import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../store";
 
-function IncomingRequestButton({ className }: { className?: string }) {
+export function IncomingRequestButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);
   const acceptFriendRequest = useAcceptFriendRequest({ username });
   const ignoreFriendRequest = useIgnoreFriendRequest({ username });
@@ -61,5 +61,3 @@ function IncomingRequestButton({ className }: { className?: string }) {
     </div>
   );
 }
-
-export { IncomingRequestButton };

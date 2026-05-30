@@ -5,7 +5,7 @@ import { Button } from "@acme/ui/button";
 import { QuickLink } from "~/components/quick-link";
 import { cn } from "~/utils/style-utils";
 
-function EditProfileButton({ className }: { className?: string }) {
+export function EditProfileButton({ className }: { className?: string }) {
   return (
     <Button className={cn("rounded-full", className)} asChild>
       <QuickLink to="/edit-profile">
@@ -15,5 +15,3 @@ function EditProfileButton({ className }: { className?: string }) {
     </Button>
   );
 }
-
-export { EditProfileButton };
