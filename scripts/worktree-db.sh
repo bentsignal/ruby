@@ -30,14 +30,6 @@ set_env_var() {
   fi
 }
 
-touch .env
-if grep -q '^VITE_WORKTREE_ID=' .env; then
-  sed -i '' "s|^VITE_WORKTREE_ID=.*|VITE_WORKTREE_ID=$PORTLESS_WORKTREE_ID|" .env
-else
-  printf '\nVITE_WORKTREE_ID=%s\n' "$PORTLESS_WORKTREE_ID" >> .env
-fi
-echo "updated VITE_WORKTREE_ID to $PORTLESS_WORKTREE_ID"
-
 cd "$NEW_WT/packages/convex"
 
 # Pull env vars from the main deployment before switching

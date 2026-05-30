@@ -17,7 +17,6 @@ export const env = createEnv({
       .default(
         import.meta.env.MODE === "development" ? "development" : "production",
       ),
-    VITE_WORKTREE_ID: z.string().optional(),
   },
   runtimeEnv,
   emptyStringAsUndefined: true,

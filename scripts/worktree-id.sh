@@ -2,11 +2,18 @@
 set -eu
 
 branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+git_dir="$(git rev-parse --path-format=absolute --git-dir)"
+git_common_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+
+if [ "$git_dir" = "$git_common_dir" ]; then
+  printf 'Current checkout is not a linked git worktree.\n' >&2
+  exit 1
+fi
 
 if [ -n "$branch" ] && [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
   raw_id="${branch##*/}"
 else
-  raw_id="$(git rev-parse --short HEAD)"
+  raw_id="$(basename "$git_dir")"
 fi
 
 worktree_id="$(printf '%s\n' "$raw_id" \

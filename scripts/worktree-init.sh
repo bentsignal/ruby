@@ -1,3 +1,6 @@
+#!/bin/sh
+set -eu
+
 NEW_WT="$PWD"
 MAIN_REPO="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)")"
 if [ -n "$MAIN_REPO" ] && [ "$MAIN_REPO" != "$NEW_WT" ]; then
@@ -11,5 +14,13 @@ if [ -n "$MAIN_REPO" ] && [ "$MAIN_REPO" != "$NEW_WT" ]; then
   done
   cd "$NEW_WT"
 fi
+
+WORKTREE_ID="$("$NEW_WT/scripts/worktree-id.sh")"
+
+cat > packages/app-config/src/overrides.ts <<EOF
+export const convexCloudUrl: string | undefined = undefined;
+export const worktreeId: string | undefined = "${WORKTREE_ID}";
+EOF
+echo "generated overrides.ts (worktreeId=${WORKTREE_ID})"
 
 pnpm install
