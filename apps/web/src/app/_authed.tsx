@@ -111,7 +111,7 @@ function TabBar() {
 
         if (tab.to === "/$username") {
           return (
-            <HoverCard.Container openDelay={0} closeDelay={200} key={tab.to}>
+            <HoverCard.Container openDelay={500} closeDelay={200} key={tab.to}>
               <HoverCard.Trigger asChild>
                 <QuickLink
                   to={tab.to}
@@ -147,7 +147,7 @@ function TabBar() {
   );
 }
 
-function getTabs(myUsername: string | undefined) {
+function getTabs(myUsername: string) {
   return linkOptions([
     {
       to: "/",
@@ -172,7 +172,7 @@ function getTabs(myUsername: string | undefined) {
     },
     {
       to: "/$username",
-      params: { username: myUsername ?? "my-profile" },
+      params: { username: myUsername },
       label: "Profile",
       children: ({ isActive }: { isActive: boolean }) => (
         <TabBarIcon Icon={UserRound} isActive={isActive} />
