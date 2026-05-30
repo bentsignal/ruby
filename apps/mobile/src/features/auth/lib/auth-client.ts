@@ -16,7 +16,7 @@ if (expoScheme === undefined || expoScheme.length === 0) {
 }
 
 export const authClient = createAuthClient({
-  baseURL: urls.web,
+  baseURL: urls.convex.site,
   plugins: [
     expoClient({
       scheme: expoScheme,
