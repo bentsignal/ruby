@@ -34,7 +34,7 @@
     "@acme/prettier-config": "workspace:*",
     "@turbo/gen": "^2.5.8",
     "dotenv-cli": "^10.0.0",
-    "portless": "^0.13.0",
+    "portless": "catalog:",
     "prettier": "catalog:",
     "turbo": "^2.5.8",
     "typescript": "catalog:"
