@@ -22,5 +22,7 @@ export const convexCloudUrl: string | undefined = undefined;
 export const worktreeId: string | undefined = "${WORKTREE_ID}";
 EOF
 echo "generated overrides.ts (worktreeId=${WORKTREE_ID})"
+git update-index --skip-worktree packages/app-config/src/overrides.ts
+echo "marked overrides.ts as skip-worktree"
 
 pnpm install

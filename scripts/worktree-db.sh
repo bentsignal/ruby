@@ -81,5 +81,7 @@ export const convexCloudUrl: string | undefined = "${NEW_CONVEX_URL}";
 export const worktreeId: string | undefined = "${PORTLESS_WORKTREE_ID}";
 EOF
 echo "generated overrides.ts (convexCloudUrl=${NEW_CONVEX_URL}, worktreeId=${PORTLESS_WORKTREE_ID})"
+git update-index --skip-worktree packages/app-config/src/overrides.ts
+echo "marked overrides.ts as skip-worktree"
 
 cd "$NEW_WT"
