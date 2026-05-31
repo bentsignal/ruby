@@ -15,7 +15,7 @@ configureReanimatedLogger({
   strict: false,
 });
 
-function useInitApp() {
+export function useInitApp() {
   const backgroundColor = useColor("background");
   const colorScheme = useColorScheme();
 
@@ -44,5 +44,3 @@ function useInitApp() {
     fontsAreLoaded,
   };
 }
-
-export { useInitApp };

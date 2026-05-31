@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "~/utils/style-utils";
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
   "inline-flex shrink-0 flex-row items-center justify-center gap-2 rounded-full whitespace-nowrap transition-all outline-none disabled:opacity-50",
   {
     variants: {
@@ -30,7 +30,7 @@ const buttonVariants = cva(
   },
 );
 
-const buttonTextVariants = cva(
+export const buttonTextVariants = cva(
   "text-sm font-bold whitespace-nowrap transition-all outline-none disabled:opacity-50",
   {
     variants: {
@@ -49,7 +49,7 @@ const buttonTextVariants = cva(
   },
 );
 
-function Button({
+export function Button({
   className,
   variant,
   size,
@@ -64,7 +64,7 @@ function Button({
   );
 }
 
-function ButtonText({
+export function ButtonText({
   className,
   variant,
   ...props
@@ -77,6 +77,3 @@ function ButtonText({
     />
   );
 }
-
-export { buttonVariants, buttonTextVariants };
-export { Button, ButtonText };

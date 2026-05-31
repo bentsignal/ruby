@@ -1,11 +1,11 @@
 import { useRouter } from "expo-router";
 
-import * as Auth from "~/features/auth/atom";
+import { useAuthStore } from "~/features/auth/store";
 
-function useRedirect() {
+export function useRedirect() {
   const router = useRouter();
-  const imNotSignedIn = Auth.useStore((s) => s.imSignedIn === false);
-  const setRedirectURL = Auth.useStore((s) => s.setRedirectURL);
+  const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
+  const setRedirectURL = useAuthStore((s) => s.setRedirectURL);
   function redirectIfNotSignedIn({
     redirectURL,
     ifSignedIn,
@@ -22,5 +22,3 @@ function useRedirect() {
   }
   return { redirectIfNotSignedIn };
 }
-
-export { useRedirect };

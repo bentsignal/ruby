@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-import { SignOutButton } from "~/features/auth/atom";
+import { SignOutButton } from "~/features/auth/components/sign-out-button";
 
 export default function Settings() {
   return (

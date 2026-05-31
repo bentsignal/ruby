@@ -2,7 +2,7 @@ import type { ViewProps } from "react-native";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function SafeAreaView({
+export function SafeAreaView({
   top = true,
   bottom = false,
   children,
@@ -25,5 +25,3 @@ function SafeAreaView({
     </View>
   );
 }
-
-export { SafeAreaView };

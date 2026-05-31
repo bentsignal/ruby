@@ -11,7 +11,7 @@ import { Loader } from "lucide-react-native";
 
 import { useColor } from "~/hooks/use-color";
 
-function LoadingSpinner({
+export function LoadingSpinner({
   color = "foreground",
   className,
 }: {
@@ -41,5 +41,3 @@ function LoadingSpinner({
     </Animated.View>
   );
 }
-
-export { LoadingSpinner };

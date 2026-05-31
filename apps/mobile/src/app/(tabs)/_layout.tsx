@@ -68,7 +68,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="(search)"
         options={{
           tabBarLabel: "Search",
           animation: "none",
@@ -78,7 +78,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
+        name="(notifications)"
         options={{
           tabBarLabel: "Notifications",
           animation: "none",
@@ -88,7 +88,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="my-profile"
+        name="(my-profile)"
         options={{
           tabBarLabel: "Profile",
           animation: "none",

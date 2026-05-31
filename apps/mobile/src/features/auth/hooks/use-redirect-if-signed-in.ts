@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 
-import * as Auth from "~/features/auth/atom";
+import { useAuthStore } from "~/features/auth/store";
 
-function useRedirectIfSignedIn() {
-  const imSignedIn = Auth.useStore((s) => s.imSignedIn);
+export function useRedirectIfSignedIn() {
+  const imSignedIn = useAuthStore((s) => s.imSignedIn);
 
   const router = useRouter();
 
@@ -19,5 +19,3 @@ function useRedirectIfSignedIn() {
     }
   }, [imSignedIn, router]);
 }
-
-export { useRedirectIfSignedIn };

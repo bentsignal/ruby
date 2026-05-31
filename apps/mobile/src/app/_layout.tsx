@@ -6,8 +6,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 
 import { Provider as ConvexProvider } from "~/context/convex-context";
-import * as Auth from "~/features/auth/atom";
 import { useAuthDrawerSize } from "~/features/auth/hooks/use-auth-drawer-size";
+import { AuthStore } from "~/features/auth/store";
 import { useColor } from "~/hooks/use-color";
 
 import "../styles.css";
@@ -36,7 +36,7 @@ export default function RootLayout() {
 
   return (
     <ConvexProvider>
-      <Auth.Store>
+      <AuthStore>
         <SafeAreaProvider>
           <Stack
             screenOptions={{
@@ -74,7 +74,7 @@ export default function RootLayout() {
           </Stack>
         </SafeAreaProvider>
         <StatusBar />
-      </Auth.Store>
+      </AuthStore>
     </ConvexProvider>
   );
 }

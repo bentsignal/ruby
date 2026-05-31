@@ -2,7 +2,7 @@ import { View } from "react-native";
 
 import { cn } from "~/utils/style-utils";
 
-function Card({
+export function Card({
   className,
   children,
 }: {
@@ -20,5 +20,3 @@ function Card({
     </View>
   );
 }
-
-export { Card };

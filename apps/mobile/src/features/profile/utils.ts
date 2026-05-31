@@ -1,6 +1,6 @@
 import type { PFPVariant } from "./types";
 
-function getPFPSizeNumber(variant: PFPVariant) {
+export function getPFPSizeNumber(variant: PFPVariant) {
   switch (variant) {
     case "sm":
       return 48;
@@ -11,7 +11,7 @@ function getPFPSizeNumber(variant: PFPVariant) {
   }
 }
 
-function getPFPClassName(variant: PFPVariant) {
+export function getPFPClassName(variant: PFPVariant) {
   switch (variant) {
     case "sm":
       return "size-10";
@@ -22,7 +22,7 @@ function getPFPClassName(variant: PFPVariant) {
   }
 }
 
-function normalizeProfileLink(link: string) {
+export function normalizeProfileLink(link: string) {
   const trimmed = link.trim();
   if (!trimmed) return null;
 
@@ -37,5 +37,3 @@ function normalizeProfileLink(link: string) {
   if (!display) return null;
   return { href, display };
 }
-
-export { getPFPSizeNumber, getPFPClassName, normalizeProfileLink };

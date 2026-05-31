@@ -1,11 +1,12 @@
 import { Text, View } from "react-native";
 
 import { LoadingSpinner } from "~/components/loading-spinner";
-import * as Auth from "~/features/auth/atom";
+import { SignInButton } from "~/features/auth/components/sign-in-button";
 import { useAuthDrawerSize } from "~/features/auth/hooks/use-auth-drawer-size";
 import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
+import { useAuthStore } from "~/features/auth/store";
 
-function Login() {
+export default function Login() {
   useRedirectIfSignedIn();
   const { height: drawerHeight } = useAuthDrawerSize();
 
@@ -19,7 +20,7 @@ function Login() {
         <Text className="text-muted-foreground text-center">
           Please choose your preferred sign in method
         </Text>
-        <Auth.GoogleSignInButton />
+        <SignInButton />
         <Text className="text-muted-foreground text-center text-xs">
           By continuing, you agree to our Terms of Service, and acknowledge that
           you have read our Privacy Policy.
@@ -30,7 +31,7 @@ function Login() {
 }
 
 function LoadingOverlay() {
-  const isLoading = Auth.useStore((s) => s.isLoading);
+  const isLoading = useAuthStore((s) => s.isLoading);
 
   if (!isLoading) return null;
 
@@ -40,5 +41,3 @@ function LoadingOverlay() {
     </View>
   );
 }
-
-export default Login;

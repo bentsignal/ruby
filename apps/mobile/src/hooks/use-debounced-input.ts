@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function useDebouncedInput(time = 500) {
+export function useDebouncedInput(time = 500) {
   const [value, setValue] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
 
