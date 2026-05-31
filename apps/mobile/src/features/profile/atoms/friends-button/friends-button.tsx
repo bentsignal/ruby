@@ -1,44 +1,22 @@
-import { useState } from "react";
-import { Alert, Modal, Pressable, View } from "react-native";
+import { Modal, Pressable, View } from "react-native";
 import { UserRound } from "lucide-react-native";
 
-import { useRemoveFriend } from "@acme/convex/react";
-
 import { Button, ButtonText } from "~/atoms/button";
-import { useProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
+import { useFriendsButtonStore } from "./friends-button-store";
 
 export function FriendsButton() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const name = useProfileStore((s) => s.name);
-  const username = useProfileStore((s) => s.username);
-  const removeFriend = useRemoveFriend({ username });
+  const removeFriend = useFriendsButtonStore((s) => s.removeFriend);
+  const isModalVisible = useFriendsButtonStore((s) => s.isModalVisible);
+  const setModalVisibility = useFriendsButtonStore((s) => s.setModalVisibility);
   const foreground = useColor("foreground");
-
-  function handleRemoveFriend() {
-    setModalVisible(false);
-    Alert.alert(
-      `Are you sure you want to unfriend ${name}?`,
-      "You'll have to send a new friend request if you change your mind.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: () => {
-            void removeFriend({ username });
-          },
-        },
-      ],
-    );
-  }
 
   return (
     <View className="mx-4">
       <Button
         variant="outline"
         className="w-full"
-        onPress={() => setModalVisible(true)}
+        onPress={() => setModalVisibility(true)}
       >
         <UserRound size={16} color={foreground} />
         <ButtonText variant="outline">Friends</ButtonText>
@@ -47,25 +25,25 @@ export function FriendsButton() {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        visible={isModalVisible}
+        onRequestClose={() => setModalVisibility(false)}
       >
         <Pressable
           className="flex-1 items-center justify-center bg-black/50"
-          onPress={() => setModalVisible(false)}
+          onPress={() => setModalVisibility(false)}
         >
           <View className="bg-background mx-8 w-full max-w-sm rounded-2xl p-4">
             <Button
               variant="destructive"
               className="mb-2 w-full"
-              onPress={handleRemoveFriend}
+              onPress={removeFriend}
             >
               <ButtonText variant="destructive">Remove friend</ButtonText>
             </Button>
             <Button
               variant="outline"
               className="w-full"
-              onPress={() => setModalVisible(false)}
+              onPress={() => setModalVisibility(false)}
             >
               <ButtonText variant="outline">Cancel</ButtonText>
             </Button>
