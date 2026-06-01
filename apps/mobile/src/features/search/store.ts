@@ -1,13 +1,16 @@
 import { createStore } from "rostra";
 
-import { useDebouncedInput } from "~/hooks/use-debounced-input";
+import { useDebouncedInput } from "@acme/std/use-debounced-input";
 
 function useInternalStore({ debounceTime = 500 }: { debounceTime?: number }) {
   const {
     value: searchTerm,
     setValue: setSearchTerm,
     debouncedValue: debouncedSearchTerm,
-  } = useDebouncedInput(debounceTime);
+  } = useDebouncedInput({
+    timeInMs: debounceTime,
+    initialValue: "",
+  });
 
   return {
     searchTerm,

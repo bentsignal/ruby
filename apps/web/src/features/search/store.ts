@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { createStore } from "rostra";
 
-import useDebouncedInput from "~/hooks/use-debounced-input";
+import { useDebouncedInput } from "@acme/std/use-debounced-input";
 
 function useInternalStore({
   debounceTime = 500,
@@ -20,8 +20,8 @@ function useInternalStore({
     setValue: setSearchTerm,
     debouncedValue: debouncedSearchTerm,
   } = useDebouncedInput({
-    time: debounceTime,
-    initialValue: initialSearchTerm,
+    timeInMs: debounceTime,
+    initialValue: initialSearchTerm ?? "",
   });
 
   const navigate = useNavigate();

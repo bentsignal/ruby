@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
-export default function useDebouncedInput(options?: {
-  time?: number;
-  initialValue?: string;
+export function useDebouncedInput<T>(options: {
+  timeInMs?: number;
+  initialValue: T;
 }) {
-  const { time = 500, initialValue = "" } = options ?? {};
-  const [value, setValue] = useState(initialValue);
-  const [debouncedValue, setDebouncedValue] = useState(initialValue);
+  const [value, setValue] = useState<T>(options.initialValue);
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  const time = options.timeInMs ?? 500;
 
   // eslint-disable-next-line no-restricted-syntax -- Debouncing needs a timer tied to value changes.
   useEffect(() => {

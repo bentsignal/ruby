@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./cn": "./src/cn.ts"
+    "./cn": "./src/cn.ts",
+    "./use-loading": "./src/use-loading.ts",
+    "./use-debounced-input": "./src/use-debounced-input.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -23,8 +25,10 @@
     "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "react": "catalog:react19",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:react19"
   },
   "prettier": "@acme/prettier-config"
 }

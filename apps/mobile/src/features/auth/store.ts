@@ -7,12 +7,12 @@ import { useConvexAuth } from "convex/react";
 import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
+import { useLoading } from "@acme/std/use-loading";
 
 import { authClient } from "~/features/auth/lib/auth-client";
-import { useLoading } from "~/hooks/use-loading";
 
 function useInternalStore() {
-  const { isLoading, start } = useLoading();
+  const { isLoading, run } = useLoading();
   const router = useRouter();
   const { isAuthenticated: imSignedIn } = useConvexAuth();
   const imSignedOut = !imSignedIn;
@@ -27,20 +27,30 @@ function useInternalStore() {
 
   function signInWithGoogle() {
     if (imSignedIn) return;
-    start(async () => {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: redirectURL,
-      });
-      setRedirectURL("/");
+    void run({
+      fn: async () => {
+        await authClient.signIn.social({
+          provider: "google",
+          callbackURL: redirectURL,
+        });
+        setRedirectURL("/");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
     });
   }
 
   function signOut() {
     if (imSignedOut) return;
-    start(async () => {
-      router.replace("/");
-      await authClient.signOut();
+    void run({
+      fn: async () => {
+        router.replace("/");
+        await authClient.signOut();
+      },
+      onError: (error) => {
+        console.error(error);
+      },
     });
   }
 
