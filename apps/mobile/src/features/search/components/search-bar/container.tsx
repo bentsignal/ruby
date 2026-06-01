@@ -2,7 +2,7 @@ import { KeyboardAvoidingView } from "react-native";
 
 import { cn } from "@acme/std/cn";
 
-export function SearchContainer({
+export function Container({
   className,
   children,
 }: {

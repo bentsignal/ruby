@@ -5,7 +5,7 @@ import { cn } from "@acme/std/cn";
 
 import { useSearchStore } from "~/features/search/store";
 
-export function SearchInput({ className, ...props }: TextInputProps) {
+export function Input({ className, ...props }: TextInputProps) {
   const searchTerm = useSearchStore((s) => s.searchTerm);
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
   return (

@@ -7,7 +7,7 @@ import { cn } from "@acme/std/cn";
 import { useSearchStore } from "~/features/search/store";
 import { useColor } from "~/hooks/use-color";
 
-export function SearchClearButton({ className, ...props }: PressableProps) {
+export function ClearButton({ className, ...props }: PressableProps) {
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
   const hideButton = useSearchStore((s) => s.searchTerm.length === 0);
   const sidebarForeground = useColor("sidebar-foreground");

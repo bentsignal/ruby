@@ -8,10 +8,10 @@ import type { UIProfile } from "@acme/convex/types";
 import { LoadingSpinner } from "~/components/loading-spinner";
 import { SafeAreaView } from "~/components/safe-area-view";
 import { ProfileSearchItem } from "~/features/profile/components/profile-search-item";
-import { SearchClearButton } from "~/features/search/components/search-clear-button";
-import { SearchContainer } from "~/features/search/components/search-container";
-import { SearchIcon } from "~/features/search/components/search-icon";
-import { SearchInput } from "~/features/search/components/search-input";
+import { ClearButton } from "~/features/search/components/search-bar/clear-button";
+import { Container } from "~/features/search/components/search-bar/container";
+import { Icon } from "~/features/search/components/search-bar/icon";
+import { Input } from "~/features/search/components/search-bar/input";
 import { useSearchResults } from "~/features/search/hooks/use-search-results";
 import { SearchStore } from "~/features/search/store";
 
@@ -20,13 +20,19 @@ export default function SearchPage() {
     <SearchStore>
       <View className="relative flex-1">
         <SearchPageResults />
-        <SearchContainer className="absolute bottom-0 left-0 mx-4 mb-4">
-          <SearchIcon />
-          <SearchInput />
-          <SearchClearButton />
-        </SearchContainer>
+        <SearchBar />
       </View>
     </SearchStore>
+  );
+}
+
+function SearchBar() {
+  return (
+    <Container className="absolute bottom-0 left-0 mx-4 mb-4">
+      <Icon />
+      <Input />
+      <ClearButton />
+    </Container>
   );
 }
 
