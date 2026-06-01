@@ -269,6 +269,9 @@ importers:
       '@acme/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      '@expo/config-plugins':
+        specifier: ^54.0.4
+        version: 54.0.4
       '@types/node':
         specifier: 'catalog:'
         version: 22.18.12
@@ -2028,6 +2031,9 @@ packages:
 
   '@expo/json-file@10.0.8':
     resolution: {integrity: sha512-9LOTh1PgKizD1VXfGQ88LtDH0lRwq9lsTb4aichWTWSWqy3Ugfkhfm3BhzBIkJJfQQ5iJu3m/BoRlEIjoCGcnQ==}
+
+  '@expo/json-file@10.2.0':
+    resolution: {integrity: sha512-S6XzKe3R9GQeHiUPXc3xJjOv2VJhOEwFYf7xdC2z2cUqt3kZJ9mSO877sNQloVdnW/SUCtPY3bexlM7nwq+CAQ==}
 
   '@expo/metro-config@54.0.14':
     resolution: {integrity: sha512-hxpLyDfOR4L23tJ9W1IbJJsG7k4lv2sotohBm/kTYyiG+pe1SYCAWsRmgk+H42o/wWf/HQjE5k45S5TomGLxNA==}
@@ -5068,6 +5074,7 @@ packages:
   '@xmldom/xmldom@0.8.10':
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   abbrev@3.0.1:
     resolution: {integrity: sha512-AO2ac6pjRB3SJmGJo+v5/aK6Omggp6fsLrs6wN9bd35ulu4cCwaAU9+7ZhXjeqHVkaHThLuzH0nZr0YpCDhygg==}
@@ -11502,6 +11509,11 @@ snapshots:
       '@babel/code-frame': 7.10.4
       json5: 2.2.3
 
+  '@expo/json-file@10.2.0':
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      json5: 2.2.3
+
   '@expo/metro-config@54.0.14(bufferutil@4.0.8)(expo@54.0.33)':
     dependencies:
       '@babel/code-frame': 7.27.1
@@ -11572,7 +11584,7 @@ snapshots:
 
   '@expo/package-manager@1.9.10':
     dependencies:
-      '@expo/json-file': 10.0.8
+      '@expo/json-file': 10.2.0
       '@expo/spawn-async': 1.7.2
       chalk: 4.1.2
       npm-package-arg: 11.0.3

@@ -15,7 +15,7 @@ fi
 echo "branch=${BRANCH_NAME:-HEAD}"
 echo "head=$HEAD_SHA"
 echo "worktree_id=$PORTLESS_WORKTREE_ID"
-echo "web_url=https://$PORTLESS_WORKTREE_ID.www.ruby.localhost"
+echo "web_url=https://$PORTLESS_WORKTREE_ID.www.ruby.local"
 
 set_env_var() {
   FILE="$1"

@@ -39,7 +39,7 @@ function webUrl(options: UrlOptions & { effectiveWorktreeId?: string }) {
     return "https://www.ruby.travel";
   }
   const prefix = normalizeWorktreeId(options.effectiveWorktreeId);
-  const host = [prefix, "www.ruby", "localhost"].filter(Boolean).join(".");
+  const host = [prefix, "www.ruby", "local"].filter(Boolean).join(".");
   return `https://${host}`;
 }
 

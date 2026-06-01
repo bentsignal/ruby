@@ -15,16 +15,9 @@ const authFunctions: AuthFunctions = internal.auth;
 const trustedOrigins =
   env.ENVIRONMENT === "production"
     ? [urls.web, "ruby://"]
-    : [
-        urls.web,
-        "https://*.ruby.localhost",
-        "https://*.www.ruby.localhost",
-        "ruby://",
-      ];
+    : [urls.web, "https://*.ruby.local", "https://*.www.ruby.local", "ruby://"];
 export const authCorsAllowedOrigins =
-  env.ENVIRONMENT === "production"
-    ? []
-    : ["*.ruby.localhost", "*.www.ruby.localhost"];
+  env.ENVIRONMENT === "production" ? [] : ["*.ruby.local", "*.www.ruby.local"];
 
 export const authComponent = createClient<DataModel>(components.betterAuth, {
   authFunctions,

@@ -42,6 +42,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-secure-store",
     "expo-web-browser",
     "expo-system-ui",
+    "./expo-plugins/with-android-user-certs.cjs",
     [
       "expo-splash-screen",
       {
