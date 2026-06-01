@@ -2,7 +2,8 @@ import { Text } from "react-native";
 import { useRouter } from "expo-router";
 import { SearchIcon } from "lucide-react-native";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { Button, ButtonText } from "@acme/ui-mobile/button";
+
 import { SafeAreaView } from "~/components/safe-area-view";
 import { useColor } from "~/hooks/use-color";
 

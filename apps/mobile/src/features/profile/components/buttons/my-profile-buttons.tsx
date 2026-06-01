@@ -2,9 +2,10 @@ import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { Pencil } from "lucide-react-native";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { cn } from "@acme/std/cn";
+import { Button, ButtonText } from "@acme/ui-mobile/button";
+
 import { useColor } from "~/hooks/use-color";
-import { cn } from "~/utils/style-utils";
 import { SettingsButton } from "./settings-button";
 
 export function MyProfileButtons({ className }: { className?: string }) {

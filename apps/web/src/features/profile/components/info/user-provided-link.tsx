@@ -1,8 +1,8 @@
 import { Globe } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { cn } from "@acme/std/cn";
+import { Button } from "@acme/ui-web/button";
 
-import { cn } from "~/utils/style-utils";
 import { useProfileStore } from "../../store";
 import { normalizeProfileLink } from "../../utils";
 

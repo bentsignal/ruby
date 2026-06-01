@@ -1,8 +1,9 @@
 import type { InputHTMLAttributes } from "react";
 import { useEffect } from "react";
 
+import { cn } from "@acme/std/cn";
+
 import { useSearchStore } from "~/features/search/store";
-import { cn } from "~/utils/style-utils";
 
 export function Input({
   className,

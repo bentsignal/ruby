@@ -1,8 +1,9 @@
 import { Image } from "@unpic/react";
 
+import { cn } from "@acme/std/cn";
+
 import type { PFPVariant } from "~/features/profile/types";
 import { useProfileStore } from "~/features/profile/store";
-import { cn } from "~/utils/style-utils";
 import { getPFPClassName, getPFPSizeNumber } from "../../utils";
 
 export function PFP({

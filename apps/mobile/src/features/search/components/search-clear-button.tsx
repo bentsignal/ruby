@@ -2,9 +2,10 @@ import type { PressableProps } from "react-native";
 import { Pressable } from "react-native";
 import { XIcon } from "lucide-react-native";
 
+import { cn } from "@acme/std/cn";
+
 import { useSearchStore } from "~/features/search/store";
 import { useColor } from "~/hooks/use-color";
-import { cn } from "~/utils/style-utils";
 
 export function SearchClearButton({ className, ...props }: PressableProps) {
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);

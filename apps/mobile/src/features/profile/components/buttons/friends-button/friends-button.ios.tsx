@@ -2,9 +2,10 @@ import { ContextMenu, Host, Button as SwiftUIButton } from "@expo/ui/swift-ui";
 import { UserRound } from "lucide-react-native";
 import { withUniwind } from "uniwind";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { cn } from "@acme/std/cn";
+import { Button, ButtonText } from "@acme/ui-mobile/button";
+
 import { useColor } from "~/hooks/use-color";
-import { cn } from "~/utils/style-utils";
 import { SettingsButton } from "../settings-button";
 import { useFriendsButtonStore } from "./store";
 

@@ -5,3 +5,5 @@
 @import "uniwind";
 
 @import "@acme/tailwind-config/theme";
+
+@source "../../../shared/ui-mobile/src/*.{ts,tsx}";

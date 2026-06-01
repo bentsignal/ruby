@@ -1,6 +1,6 @@
 import { Drawer as DrawerPrimitive } from "vaul";
 
-import { cn } from "./index";
+import { cn } from "@acme/std/cn";
 
 function Container({
   ...props

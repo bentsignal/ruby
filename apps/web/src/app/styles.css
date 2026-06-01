@@ -6,7 +6,7 @@
 @import "@fontsource-variable/geist-mono";
 @import "@fontsource-variable/roboto";
 
-@source "../../../../packages/ui/src/*.{ts,tsx}";
+@source "../../../../shared/ui-web/src/*.{ts,tsx}";
 
 @custom-variant dark (&:where(.dark, .dark *));
 @custom-variant light (&:where(.light, .light *));

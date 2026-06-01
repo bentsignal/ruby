@@ -6,7 +6,8 @@
 import { Platform, Text } from "react-native";
 import { router } from "expo-router";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { Button, ButtonText } from "@acme/ui-mobile/button";
+
 import { SafeAreaView } from "~/components/safe-area-view";
 
 // import { PostList } from "~/features/post/molecules/post-list";

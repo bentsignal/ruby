@@ -1,6 +1,7 @@
 import { useSearch } from "@tanstack/react-router";
 
-import { cn } from "~/utils/style-utils";
+import { cn } from "@acme/std/cn";
+
 import { useAuthStore } from "../store";
 
 export function SignInButton({ className }: { className?: string }) {

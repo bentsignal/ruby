@@ -1,6 +1,7 @@
 import { LogOut } from "lucide-react-native";
 
-import { Button } from "~/atoms/button";
+import { Button } from "@acme/ui-mobile/button";
+
 import { useColor } from "~/hooks/use-color";
 import { useAuthStore } from "../store";
 

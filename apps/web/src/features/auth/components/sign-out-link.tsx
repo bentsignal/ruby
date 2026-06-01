@@ -1,6 +1,6 @@
 import { LogOut } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@acme/ui-web/button";
 
 import { useAuthStore } from "../store";
 

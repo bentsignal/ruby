@@ -1,7 +1,8 @@
 import { Pressable, Text } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
-import { cn } from "~/utils/style-utils";
+import { cn } from "@acme/std/cn";
+
 import { useAuthStore } from "../store";
 
 export function SignInButton() {

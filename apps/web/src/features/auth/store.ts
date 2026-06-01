@@ -1,7 +1,7 @@
 import { useRouteContext } from "@tanstack/react-router";
 import { createStore } from "rostra";
 
-import { toast } from "@acme/ui/toast";
+import { toast } from "@acme/ui-web/toast";
 
 import { useLoading } from "~/hooks/use-loading";
 import { urls } from "~/urls";

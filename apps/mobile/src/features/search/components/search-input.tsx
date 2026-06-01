@@ -1,8 +1,9 @@
 import type { TextInputProps } from "react-native";
 import { TextInput } from "react-native";
 
+import { cn } from "@acme/std/cn";
+
 import { useSearchStore } from "~/features/search/store";
-import { cn } from "~/utils/style-utils";
 
 export function SearchInput({ className, ...props }: TextInputProps) {
   const searchTerm = useSearchStore((s) => s.searchTerm);

@@ -3,7 +3,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { convexQuery } from "@convex-dev/react-query";
 
 import { api } from "@acme/convex/api";
-import { Separator } from "@acme/ui/separator";
+import { Separator } from "@acme/ui-web/separator";
 
 import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
 import { Bio } from "~/features/profile/components/info/bio";

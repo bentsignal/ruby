@@ -2,7 +2,7 @@ import type { VariantProps } from "class-variance-authority";
 import { Pressable, Text } from "react-native";
 import { cva } from "class-variance-authority";
 
-import { cn } from "~/utils/style-utils";
+import { cn } from "@acme/std/cn";
 
 export const buttonVariants = cva(
   "inline-flex shrink-0 flex-row items-center justify-center gap-2 rounded-full whitespace-nowrap transition-all outline-none disabled:opacity-50",

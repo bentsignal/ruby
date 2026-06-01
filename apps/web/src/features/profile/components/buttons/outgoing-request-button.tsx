@@ -1,12 +1,12 @@
 import { X } from "lucide-react";
 
 import { useCancelFriendRequest } from "@acme/convex/react";
-import { Button } from "@acme/ui/button";
-import { toast } from "@acme/ui/toast";
-import * as Tooltip from "@acme/ui/tooltip";
+import { cn } from "@acme/std/cn";
+import { Button } from "@acme/ui-web/button";
+import { toast } from "@acme/ui-web/toast";
+import * as Tooltip from "@acme/ui-web/tooltip";
 
 import { useProfileStore } from "~/features/profile/store";
-import { cn } from "~/utils/style-utils";
 
 export function OutgoingRequestButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);

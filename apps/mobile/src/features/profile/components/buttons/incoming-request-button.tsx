@@ -5,11 +5,11 @@ import {
   useAcceptFriendRequest,
   useIgnoreFriendRequest,
 } from "@acme/convex/react";
+import { cn } from "@acme/std/cn";
+import { Button } from "@acme/ui-mobile/button";
 
-import { Button } from "~/atoms/button";
 import { useProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
-import { cn } from "~/utils/style-utils";
 
 export function IncomingRequestButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);

@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import { SettingsIcon } from "lucide-react-native";
 
-import { Button } from "~/atoms/button";
+import { Button } from "@acme/ui-mobile/button";
+
 import { useProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
 

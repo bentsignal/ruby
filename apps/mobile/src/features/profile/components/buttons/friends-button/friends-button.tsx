@@ -1,7 +1,8 @@
 import { Modal, Pressable, View } from "react-native";
 import { UserRound } from "lucide-react-native";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { Button, ButtonText } from "@acme/ui-mobile/button";
+
 import { useColor } from "~/hooks/use-color";
 import { useFriendsButtonStore } from "./store";
 

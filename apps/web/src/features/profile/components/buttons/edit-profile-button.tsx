@@ -1,9 +1,9 @@
 import { PencilIcon } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { cn } from "@acme/std/cn";
+import { Button } from "@acme/ui-web/button";
 
 import { QuickLink } from "~/components/quick-link";
-import { cn } from "~/utils/style-utils";
 
 export function EditProfileButton({ className }: { className?: string }) {
   return (

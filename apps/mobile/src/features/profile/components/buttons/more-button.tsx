@@ -1,7 +1,8 @@
 import { Share } from "react-native";
 import { Ellipsis } from "lucide-react-native";
 
-import { Button } from "~/atoms/button";
+import { Button } from "@acme/ui-mobile/button";
+
 import { useProfileStore } from "~/features/profile/store";
 import { useColor } from "~/hooks/use-color";
 import { urls } from "~/utils/urls";

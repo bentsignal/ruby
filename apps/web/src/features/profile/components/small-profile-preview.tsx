@@ -1,7 +1,8 @@
 import { useRouteContext } from "@tanstack/react-router";
 
+import { cn } from "@acme/std/cn";
+
 import { QuickLink } from "~/components/quick-link";
-import { cn } from "~/utils/style-utils";
 import { ProfileStore } from "../store";
 import { Name } from "./info/name";
 import { PFP } from "./info/pfp";

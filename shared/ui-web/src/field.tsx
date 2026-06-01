@@ -1,9 +1,9 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
-import { cn } from "@acme/ui";
-import { Label } from "@acme/ui/label";
-import { Separator } from "@acme/ui/separator";
+import { cn } from "@acme/std/cn";
+import { Label } from "@acme/ui-web/label";
+import { Separator } from "@acme/ui-web/separator";
 
 export function FieldSet({
   className,

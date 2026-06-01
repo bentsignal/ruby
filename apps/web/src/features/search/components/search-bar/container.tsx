@@ -1,4 +1,4 @@
-import { cn } from "~/utils/style-utils";
+import { cn } from "@acme/std/cn";
 
 export function Container({
   className,

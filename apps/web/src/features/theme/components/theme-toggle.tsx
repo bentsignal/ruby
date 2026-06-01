@@ -1,6 +1,6 @@
 import { MoonIcon, SunIcon } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@acme/ui-web/button";
 
 import { useThemeStore } from "../store";
 

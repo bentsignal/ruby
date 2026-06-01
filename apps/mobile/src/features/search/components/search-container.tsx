@@ -1,6 +1,6 @@
 import { KeyboardAvoidingView } from "react-native";
 
-import { cn } from "~/utils/style-utils";
+import { cn } from "@acme/std/cn";
 
 export function SearchContainer({
   className,

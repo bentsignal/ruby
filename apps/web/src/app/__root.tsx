@@ -12,8 +12,8 @@ import { getCookie } from "@tanstack/react-start/server";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { convert } from "great-time";
 
-import { cn } from "@acme/ui";
-import { Toaster } from "@acme/ui/toast";
+import { cn } from "@acme/std/cn";
+import { Toaster } from "@acme/ui-web/toast";
 
 import type { RouterContext } from "~/router";
 import appStyles from "~/app/styles.css?url";

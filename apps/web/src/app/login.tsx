@@ -3,8 +3,8 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Loader } from "lucide-react";
 import { z } from "zod";
 
-import * as Dialog from "@acme/ui/dialog";
-import * as Drawer from "@acme/ui/drawer";
+import * as Dialog from "@acme/ui-web/dialog";
+import * as Drawer from "@acme/ui-web/drawer";
 
 import { SignInButton } from "~/features/auth/components/sign-in-button";
 import { useAuthStore } from "~/features/auth/store";

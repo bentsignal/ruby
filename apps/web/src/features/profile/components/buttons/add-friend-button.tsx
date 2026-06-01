@@ -1,11 +1,11 @@
 import { UserRoundPlus } from "lucide-react";
 
 import { useSendFriendRequest } from "@acme/convex/react";
-import { Button } from "@acme/ui/button";
-import { toast } from "@acme/ui/toast";
+import { cn } from "@acme/std/cn";
+import { Button } from "@acme/ui-web/button";
+import { toast } from "@acme/ui-web/toast";
 
 import { useProfileStore } from "~/features/profile/store";
-import { cn } from "~/utils/style-utils";
 
 export function AddFriendButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);

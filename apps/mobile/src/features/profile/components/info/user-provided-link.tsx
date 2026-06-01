@@ -1,11 +1,12 @@
 import { Linking } from "react-native";
 import { Globe } from "lucide-react-native";
 
-import { Button, ButtonText } from "~/atoms/button";
+import { cn } from "@acme/std/cn";
+import { Button, ButtonText } from "@acme/ui-mobile/button";
+
 import { useProfileStore } from "~/features/profile/store";
 import { normalizeProfileLink } from "~/features/profile/utils";
 import { useColor } from "~/hooks/use-color";
-import { cn } from "~/utils/style-utils";
 
 export function UserProvidedLink({ className }: { className?: string }) {
   const linkString = useProfileStore((s) => s.link);

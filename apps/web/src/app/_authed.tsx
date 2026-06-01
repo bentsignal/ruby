@@ -10,9 +10,9 @@ import {
 import { convert } from "great-time";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
-import { cn } from "@acme/ui";
-import { buttonVariants } from "@acme/ui/button";
-import * as HoverCard from "@acme/ui/hover-card";
+import { cn } from "@acme/std/cn";
+import { buttonVariants } from "@acme/ui-web/button";
+import * as HoverCard from "@acme/ui-web/hover-card";
 
 import { QuickLink } from "~/components/quick-link";
 import { SignOutLink } from "~/features/auth/components/sign-out-link";

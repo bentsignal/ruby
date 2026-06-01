@@ -1,9 +1,9 @@
 import { ChevronDown, UserRound } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
-import * as Dropdown from "@acme/ui/dropdown-menu";
+import { cn } from "@acme/std/cn";
+import { Button } from "@acme/ui-web/button";
+import * as Dropdown from "@acme/ui-web/dropdown-menu";
 
-import { cn } from "~/utils/style-utils";
 import { RemoveFriendButton } from "./remove-friend-button";
 
 export function FriendsButton({ className }: { className?: string }) {

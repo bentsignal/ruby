@@ -1,7 +1,8 @@
 import { X } from "lucide-react";
 
+import { cn } from "@acme/std/cn";
+
 import { useSearchStore } from "~/features/search/store";
-import { cn } from "~/utils/style-utils";
 
 export function ClearButton({ className }: { className?: string }) {
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);

@@ -1,8 +1,9 @@
 import { Image, View } from "react-native";
 
+import { cn } from "@acme/std/cn";
+
 import type { PFPVariant } from "../../types";
 import { useProfileStore } from "~/features/profile/store";
-import { cn } from "~/utils/style-utils";
 import { getPFPClassName, getPFPSizeNumber } from "../../utils";
 
 interface PFPProps {

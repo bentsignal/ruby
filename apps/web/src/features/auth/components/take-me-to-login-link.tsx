@@ -1,6 +1,6 @@
 import { LogIn } from "lucide-react";
 
-import { Button } from "@acme/ui/button";
+import { Button } from "@acme/ui-web/button";
 
 import { QuickLink } from "~/components/quick-link";
 
