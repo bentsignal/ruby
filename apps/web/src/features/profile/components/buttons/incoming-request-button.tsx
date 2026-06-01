@@ -8,8 +8,8 @@ import { Button } from "@acme/ui/button";
 import { toast } from "@acme/ui/toast";
 import * as Tooltip from "@acme/ui/tooltip";
 
+import { useProfileStore } from "~/features/profile/store";
 import { cn } from "~/utils/style-utils";
-import { useProfileStore } from "../store";
 
 export function IncomingRequestButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);

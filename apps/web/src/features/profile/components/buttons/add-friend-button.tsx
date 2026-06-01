@@ -4,8 +4,8 @@ import { useSendFriendRequest } from "@acme/convex/react";
 import { Button } from "@acme/ui/button";
 import { toast } from "@acme/ui/toast";
 
+import { useProfileStore } from "~/features/profile/store";
 import { cn } from "~/utils/style-utils";
-import { useProfileStore } from "../store";
 
 export function AddFriendButton({ className }: { className?: string }) {
   const username = useProfileStore((s) => s.username);

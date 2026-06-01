@@ -3,8 +3,8 @@ import { Globe } from "lucide-react";
 import { Button } from "@acme/ui/button";
 
 import { cn } from "~/utils/style-utils";
-import { useProfileStore } from "../store";
-import { normalizeProfileLink } from "../utils";
+import { useProfileStore } from "../../store";
+import { normalizeProfileLink } from "../../utils";
 
 export function UserProvidedLink({ className }: { className?: string }) {
   const link = useProfileStore((s) => s.link);

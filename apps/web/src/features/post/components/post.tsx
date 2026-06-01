@@ -3,9 +3,9 @@ import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
 
 import type { UIPost } from "@acme/convex/types";
 
-import { Name } from "~/features/profile/atoms/name";
-import { PFP } from "~/features/profile/atoms/pfp";
-import { Username } from "~/features/profile/atoms/username";
+import { Name } from "~/features/profile/components/info/name";
+import { PFP } from "~/features/profile/components/info/pfp";
+import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
 
 export function Post({ post }: { post: UIPost }) {

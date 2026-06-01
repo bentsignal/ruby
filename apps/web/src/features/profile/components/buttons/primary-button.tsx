@@ -1,4 +1,4 @@
-import { useProfileStore } from "../store";
+import { useProfileStore } from "~/features/profile/store";
 import { AddFriendButton } from "./add-friend-button";
 import { EditProfileButton } from "./edit-profile-button";
 import { FriendsButton } from "./friends-button";

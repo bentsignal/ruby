@@ -2,10 +2,10 @@ import { useRouteContext } from "@tanstack/react-router";
 
 import { QuickLink } from "~/components/quick-link";
 import { cn } from "~/utils/style-utils";
-import { Name } from "../atoms/name";
-import { PFP } from "../atoms/pfp";
-import { Username } from "../atoms/username";
 import { ProfileStore } from "../store";
+import { Name } from "./info/name";
+import { PFP } from "./info/pfp";
+import { Username } from "./info/username";
 
 export function SmallProfilePreview({ className }: { className?: string }) {
   const myProfile = useRouteContext({

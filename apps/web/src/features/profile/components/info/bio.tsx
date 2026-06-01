@@ -1,5 +1,5 @@
+import { useProfileStore } from "~/features/profile/store";
 import { cn } from "~/utils/style-utils";
-import { useProfileStore } from "../store";
 
 export function Bio({ className }: { className?: string }) {
   const bio = useProfileStore((s) => s.bio);

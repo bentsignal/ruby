@@ -1,10 +1,9 @@
 import { Image } from "@unpic/react";
 
-import type { PFPVariant } from "../types";
+import type { PFPVariant } from "~/features/profile/types";
+import { useProfileStore } from "~/features/profile/store";
 import { cn } from "~/utils/style-utils";
-import { useProfileStore } from "../store";
-import { getPFPClassName, getPFPSizeNumber } from "../utils";
-import { BlankPFP } from "./blank-pfp";
+import { getPFPClassName, getPFPSizeNumber } from "../../utils";
 
 export function PFP({
   className,
@@ -24,6 +23,24 @@ export function PFP({
       height={size}
       layout="fixed"
       className={cn("rounded-full", getPFPClassName(variant), className)}
+    />
+  );
+}
+
+function BlankPFP({
+  className,
+  variant = "sm",
+}: {
+  className?: string;
+  variant?: PFPVariant;
+}) {
+  return (
+    <div
+      className={cn(
+        "bg-muted rounded-full",
+        getPFPClassName(variant),
+        className,
+      )}
     />
   );
 }

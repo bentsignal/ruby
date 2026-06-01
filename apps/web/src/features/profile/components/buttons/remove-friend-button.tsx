@@ -6,7 +6,7 @@ import { Button } from "@acme/ui/button";
 import { toast } from "@acme/ui/toast";
 import * as Tooltip from "@acme/ui/tooltip";
 
-import { useProfileStore } from "../store";
+import { useProfileStore } from "~/features/profile/store";
 
 export function RemoveFriendButton() {
   const username = useProfileStore((s) => s.username);

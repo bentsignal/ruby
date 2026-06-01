@@ -15,10 +15,10 @@ import { buttonVariants } from "@acme/ui/button";
 import * as HoverCard from "@acme/ui/hover-card";
 
 import { QuickLink } from "~/components/quick-link";
-import { SignOutLink } from "~/features/auth/atoms/sign-out-link";
+import { SignOutLink } from "~/features/auth/components/sign-out-link";
 import { ensureProfileExists } from "~/features/auth/lib/auth.functions";
-import { SmallProfilePreview } from "~/features/profile/molecules/small-profile-preview";
-import { ThemeToggle } from "~/features/theme/atoms/theme-toggle";
+import { SmallProfilePreview } from "~/features/profile/components/small-profile-preview";
+import { ThemeToggle } from "~/features/theme/components/theme-toggle";
 
 const profileEnsureQuery = queryOptions({
   queryKey: ["auth", "profile"],

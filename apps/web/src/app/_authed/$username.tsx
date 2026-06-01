@@ -5,12 +5,12 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui/separator";
 
-import { Bio } from "~/features/profile/atoms/bio";
-import { Name } from "~/features/profile/atoms/name";
-import { PFP } from "~/features/profile/atoms/pfp";
-import { PrimaryButton } from "~/features/profile/atoms/primary-button";
-import { UserProvidedLink } from "~/features/profile/atoms/user-provided-link";
-import { Username } from "~/features/profile/atoms/username";
+import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
+import { Bio } from "~/features/profile/components/info/bio";
+import { Name } from "~/features/profile/components/info/name";
+import { PFP } from "~/features/profile/components/info/pfp";
+import { UserProvidedLink } from "~/features/profile/components/info/user-provided-link";
+import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
 
 export const Route = createFileRoute("/_authed/$username")({
