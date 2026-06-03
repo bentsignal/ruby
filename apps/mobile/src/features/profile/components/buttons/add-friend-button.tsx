@@ -1,6 +1,6 @@
 import { UserRoundPlus } from "lucide-react-native";
 
-import { useSendFriendRequest } from "@acme/convex/react";
+import { useSendFriendRequest } from "@acme/features/friends";
 import { cn } from "@acme/std/cn";
 import { Button, ButtonText } from "@acme/ui-mobile/button";
 

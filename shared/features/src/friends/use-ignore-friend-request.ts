@@ -1,9 +1,9 @@
 import { useMutation } from "convex/react";
 
-import { api } from "../src/_generated/api";
+import { api } from "@acme/convex/api";
 
-export function useCancelFriendRequest({ username }: { username: string }) {
-  return useMutation(api.friends.cancelRequest).withOptimisticUpdate(
+export function useIgnoreFriendRequest({ username }: { username: string }) {
+  return useMutation(api.friends.ignoreRequest).withOptimisticUpdate(
     (localStore) => {
       const result = localStore.getQuery(api.profile.getByUsername, {
         username,

@@ -5,7 +5,8 @@
   "exports": {
     "./cn": "./src/cn.ts",
     "./use-loading": "./src/use-loading.ts",
-    "./use-debounced-input": "./src/use-debounced-input.ts"
+    "./use-debounced-input": "./src/use-debounced-input.ts",
+    "./use-screen": "./src/use-screen/index.ts"
   },
   "license": "MIT",
   "scripts": {

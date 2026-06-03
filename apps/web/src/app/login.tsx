@@ -3,12 +3,12 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Loader } from "lucide-react";
 import { z } from "zod";
 
+import { useScreen } from "@acme/std/use-screen";
 import * as Dialog from "@acme/ui-web/dialog";
 import * as Drawer from "@acme/ui-web/drawer";
 
 import { SignInButton } from "~/features/auth/components/sign-in-button";
 import { useAuthStore } from "~/features/auth/store";
-import { useIsMobile } from "~/hooks/use-is-mobile";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const screen = useScreen();
 
   const [isOpen, _setIsOpen] = useState(true);
 
@@ -41,7 +41,7 @@ function Login() {
     }
   }
 
-  if (isMobile) {
+  if (screen?.size.closestTo === "mobile") {
     return (
       <Drawer.Container open={isOpen} onOpenChange={handleOpenChange}>
         <Drawer.Content className="my-4">

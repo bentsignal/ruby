@@ -18,6 +18,7 @@
   "dependencies": {
     "@acme/app-config": "workspace:*",
     "@acme/convex": "workspace:*",
+    "@acme/features": "workspace:*",
     "@acme/std": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/ui-mobile": "workspace:*",

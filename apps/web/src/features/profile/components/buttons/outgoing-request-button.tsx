@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-import { useCancelFriendRequest } from "@acme/convex/react";
+import { useCancelFriendRequest } from "@acme/features/friends";
 import { cn } from "@acme/std/cn";
 import { Button } from "@acme/ui-web/button";
 import { toast } from "@acme/ui-web/toast";

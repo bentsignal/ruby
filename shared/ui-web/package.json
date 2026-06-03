@@ -45,6 +45,7 @@
     "typescript": "catalog:"
   },
   "peerDependencies": {
+    "@tanstack/react-router": "catalog:",
     "class-variance-authority": "catalog:",
     "lucide-react": "catalog:",
     "react": "catalog:react19",

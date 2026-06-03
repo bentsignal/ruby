@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UserRoundMinus, X } from "lucide-react";
 
-import { useRemoveFriend } from "@acme/convex/react";
+import { useRemoveFriend } from "@acme/features/friends";
 import { Button } from "@acme/ui-web/button";
 import { toast } from "@acme/ui-web/toast";
 import * as Tooltip from "@acme/ui-web/tooltip";

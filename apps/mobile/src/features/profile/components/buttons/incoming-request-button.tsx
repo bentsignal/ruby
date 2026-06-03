@@ -4,7 +4,7 @@ import { Check, X } from "lucide-react-native";
 import {
   useAcceptFriendRequest,
   useIgnoreFriendRequest,
-} from "@acme/convex/react";
+} from "@acme/features/friends";
 import { cn } from "@acme/std/cn";
 import { Button } from "@acme/ui-mobile/button";
 

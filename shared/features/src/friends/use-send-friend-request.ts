@@ -1,6 +1,6 @@
 import { useMutation } from "convex/react";
 
-import { api } from "../src/_generated/api";
+import { api } from "@acme/convex/api";
 
 export function useSendFriendRequest({ username }: { username: string }) {
   return useMutation(api.friends.sendRequest).withOptimisticUpdate(

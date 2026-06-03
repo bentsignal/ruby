@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { createStore } from "rostra";
 
-import { useRemoveFriend } from "@acme/convex/react";
+import { useRemoveFriend } from "@acme/features/friends";
 
 import { useProfileStore } from "~/features/profile/store";
 

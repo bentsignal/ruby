@@ -3,7 +3,7 @@ import { Check, X } from "lucide-react";
 import {
   useAcceptFriendRequest,
   useIgnoreFriendRequest,
-} from "@acme/convex/react";
+} from "@acme/features/friends";
 import { cn } from "@acme/std/cn";
 import { Button } from "@acme/ui-web/button";
 import { toast } from "@acme/ui-web/toast";
