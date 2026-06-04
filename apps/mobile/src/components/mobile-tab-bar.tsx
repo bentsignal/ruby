@@ -1,6 +1,7 @@
 import type { Tabs } from "expo-router";
 import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { PlusIcon } from "lucide-react-native";
@@ -48,13 +49,10 @@ function TabBarBackdrop({
 }) {
   if (!liquidGlassIsAvailable) {
     return (
-      <View
-        style={[
-          StyleSheet.absoluteFill,
-          {
-            backgroundColor: `${sidebar}CC`,
-          },
-        ]}
+      <BlurView
+        intensity={42}
+        style={StyleSheet.absoluteFill}
+        tint="systemMaterialDark"
       />
     );
   }
