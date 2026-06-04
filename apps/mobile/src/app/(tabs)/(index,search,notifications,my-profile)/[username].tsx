@@ -3,12 +3,14 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- Expo Router profile screens fetch after route params are available.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { useConvex } from "convex/react";
 
 import { api } from "@acme/convex/api";
 
 import { BackButton } from "~/components/back-button";
 import { SafeAreaView } from "~/components/safe-area-view";
 import { useAuthStore } from "~/features/auth/store";
+import { PostList } from "~/features/post/components/post-list";
 import { AccountNotFound } from "~/features/profile/components/account-not-found";
 import { MoreButton } from "~/features/profile/components/buttons/more-button";
 import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
@@ -23,11 +25,19 @@ import { ProfileStore } from "~/features/profile/store";
 export default function ProfileByUsername() {
   const { username } = useLocalSearchParams<{ username: string }>();
 
+  const convex = useConvex();
   const router = useRouter();
   const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
   const { data: result } = useQuery({
     ...convexQuery(api.profile.getByUsername, { username }),
     select: (profile) => profile,
+  });
+  const { data: posts } = useQuery({
+    queryKey: ["posts", username],
+    queryFn: async () =>
+      await convex.query(api.posts.getByUsername, { username }),
+    enabled: !!username,
+    select: (profilePosts) => profilePosts,
   });
 
   if (imNotSignedIn) {
@@ -50,7 +60,7 @@ export default function ProfileByUsername() {
   const { info: profile, relationship } = result;
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1">
       <ProfileStore profile={profile} relationship={relationship}>
         <View className="flex flex-col gap-4">
           <View className="flex-row items-center justify-between px-4">
@@ -70,6 +80,7 @@ export default function ProfileByUsername() {
           <View className="bg-border h-px" />
         </View>
       </ProfileStore>
+      <PostList posts={posts ?? []} />
     </SafeAreaView>
   );
 }

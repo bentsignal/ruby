@@ -9,6 +9,19 @@ import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
 
 export function Post({ post }: { post: UIPost }) {
+  const mediaItems = [
+    ...post.files.map((file) => ({
+      alt: post.caption ?? file.fileName,
+      mediaType: file.mediaType,
+      url: file.url,
+    })),
+    ...post.images.map((image) => ({
+      alt: image.alt ?? post.caption ?? "",
+      mediaType: "image" as const,
+      url: image.url,
+    })),
+  ];
+
   return (
     <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
       <ProfileStore profile={post.creator}>
@@ -24,16 +37,32 @@ export function Post({ post }: { post: UIPost }) {
         </div>
       </ProfileStore>
 
-      {post.images.length > 0 && post.images[0] && (
-        <div className="bg-muted relative w-full overflow-hidden rounded-lg">
-          <Image
-            src={post.images[0].url}
-            alt={post.images[0].alt ?? post.caption ?? ""}
-            width={800}
-            height={600}
-            layout="constrained"
-            className="object-cover"
-          />
+      {mediaItems.length > 0 && (
+        <div className="grid gap-2">
+          {mediaItems.map((media, index) => (
+            <div
+              className="bg-muted relative w-full overflow-hidden rounded-lg"
+              key={`${media.url}-${index}`}
+            >
+              {media.mediaType === "video" ? (
+                <video
+                  className="max-h-[640px] w-full object-cover"
+                  src={media.url}
+                  controls
+                  playsInline
+                />
+              ) : (
+                <Image
+                  src={media.url}
+                  alt={media.alt}
+                  width={800}
+                  height={600}
+                  layout="constrained"
+                  className="object-cover"
+                />
+              )}
+            </div>
+          ))}
         </div>
       )}
 

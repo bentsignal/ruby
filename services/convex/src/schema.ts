@@ -12,7 +12,7 @@ import {
 export default defineSchema(
   {
     trips: defineTable(vTrip),
-    posts: defineTable(vPost),
+    posts: defineTable(vPost).index("by_profileId", ["profileId"]),
     images: defineTable(vImage),
     files: defineTable(vFile)
       .index("by_uploadedBy", ["uploadedBy"])

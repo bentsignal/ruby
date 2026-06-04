@@ -15,11 +15,19 @@ export function PostList({ posts }: { posts: UIPost[] }) {
   return (
     <LegendList
       data={posts}
-      renderItem={PostListItem}
-      keyExtractor={(item) => item._id}
-      style={{ paddingTop: inset.top }}
-      contentContainerClassName="flex-1"
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingBottom: inset.bottom + 24 }}
       recycleItems={true}
     />
   );
+}
+
+function renderItem(props: LegendListRenderItemProps<UIPost>) {
+  return <PostListItem {...props} />;
+}
+
+function keyExtractor(post: UIPost) {
+  return post._id;
 }

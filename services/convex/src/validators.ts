@@ -47,10 +47,10 @@ const vFile = v.object({
 });
 
 const vPost = v.object({
-  tripId: v.id("trips"),
+  tripId: v.optional(v.id("trips")),
   profileId: v.id("profiles"),
   fileIds: v.optional(v.array(v.id("files"))),
-  imagesIds: v.array(v.id("images")),
+  imagesIds: v.optional(v.array(v.id("images"))),
   caption: v.optional(v.string()),
 });
 

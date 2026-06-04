@@ -5,6 +5,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui-web/separator";
 
+import { PostList } from "~/features/post/components/post-list";
 import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
 import { Bio } from "~/features/profile/components/info/bio";
 import { Name } from "~/features/profile/components/info/name";
@@ -50,6 +51,7 @@ function ProfilePage() {
         <PrimaryButton className="flex lg:hidden" />
         <Separator />
       </ProfileStore>
+      <PostList username={params.username} />
     </div>
   );
 }
