@@ -42,6 +42,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-secure-store",
     "expo-web-browser",
     "expo-system-ui",
+    [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "Allow Ruby to access your photos and videos so you can share travel updates.",
+      },
+    ],
     "./expo-plugins/with-android-user-certs.cjs",
     [
       "expo-splash-screen",

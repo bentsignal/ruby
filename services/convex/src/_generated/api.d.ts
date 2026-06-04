@@ -9,6 +9,9 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as bunny from "../bunny.js";
+import type * as fileMutations from "../fileMutations.js";
+import type * as files from "../files.js";
 import type * as friends from "../friends.js";
 import type * as http from "../http.js";
 import type * as limiter from "../limiter.js";
@@ -28,6 +31,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  bunny: typeof bunny;
+  fileMutations: typeof fileMutations;
+  files: typeof files;
   friends: typeof friends;
   http: typeof http;
   limiter: typeof limiter;

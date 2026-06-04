@@ -34,11 +34,32 @@ const vImage = v.object({
   alt: v.optional(v.string()),
 });
 
+const vFile = v.object({
+  contentType: v.string(),
+  fileName: v.string(),
+  key: v.string(),
+  mediaType: v.union(v.literal("image"), v.literal("video")),
+  size: v.number(),
+  status: v.union(v.literal("pending"), v.literal("uploaded")),
+  uploadedBy: v.id("profiles"),
+  uploadToken: v.optional(v.string()),
+  url: v.string(),
+});
+
 const vPost = v.object({
   tripId: v.id("trips"),
   profileId: v.id("profiles"),
+  fileIds: v.optional(v.array(v.id("files"))),
   imagesIds: v.array(v.id("images")),
   caption: v.optional(v.string()),
 });
 
-export { vProfile, vPost, vTrip, vImage, vFriendship, vFriendshipStatus };
+export {
+  vProfile,
+  vPost,
+  vTrip,
+  vImage,
+  vFile,
+  vFriendship,
+  vFriendshipStatus,
+};

@@ -9,12 +9,29 @@ function getScreenSize(width: number) {
   return "desktop" as const;
 }
 
+let cachedSnapshot:
+  | {
+      px: number;
+      closestTo: ReturnType<typeof getScreenSize>;
+    }
+  | undefined;
+
 function getSnapshot() {
-  const size = {
+  const nextSnapshot = {
     px: window.innerWidth,
     closestTo: getScreenSize(window.innerWidth),
   };
-  return size;
+
+  if (
+    cachedSnapshot &&
+    cachedSnapshot.px === nextSnapshot.px &&
+    cachedSnapshot.closestTo === nextSnapshot.closestTo
+  ) {
+    return cachedSnapshot;
+  }
+
+  cachedSnapshot = nextSnapshot;
+  return cachedSnapshot;
 }
 
 function subscribe(onStoreChange: () => void) {
@@ -24,9 +41,11 @@ function subscribe(onStoreChange: () => void) {
   );
   mql.addEventListener("change", onStoreChange);
   tabletMql.addEventListener("change", onStoreChange);
+  window.addEventListener("resize", onStoreChange);
   return () => {
     mql.removeEventListener("change", onStoreChange);
     tabletMql.removeEventListener("change", onStoreChange);
+    window.removeEventListener("resize", onStoreChange);
   };
 }
 

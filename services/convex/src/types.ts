@@ -1,9 +1,16 @@
 import type { Infer } from "convex/values";
 
 import type { Id } from "./_generated/dataModel";
-import type { vFriendshipStatus, vImage, vPost, vProfile } from "./validators";
+import type {
+  vFile,
+  vFriendshipStatus,
+  vImage,
+  vPost,
+  vProfile,
+} from "./validators";
 
 type UIImage = Infer<typeof vImage>;
+type UIFile = Omit<Infer<typeof vFile>, "uploadToken">;
 
 type Profile = Infer<typeof vProfile>;
 type UIProfile = Omit<Profile, "userId" | "searchTerm">;
@@ -13,6 +20,7 @@ type UIPost = Omit<Post, "profileId" | "imagesIds"> & {
   _id: Id<"posts">;
   _creationTime: number;
   creator: UIProfile;
+  files: UIFile[];
   images: UIImage[];
 };
 
@@ -30,6 +38,7 @@ export type {
   Profile,
   UIProfile,
   UIImage,
+  UIFile,
   FriendshipStatus,
   Relationship,
 };

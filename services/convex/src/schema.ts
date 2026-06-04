@@ -1,12 +1,22 @@
 import { defineSchema, defineTable } from "convex/server";
 
-import { vFriendship, vImage, vPost, vProfile, vTrip } from "./validators";
+import {
+  vFile,
+  vFriendship,
+  vImage,
+  vPost,
+  vProfile,
+  vTrip,
+} from "./validators";
 
 export default defineSchema(
   {
     trips: defineTable(vTrip),
     posts: defineTable(vPost),
     images: defineTable(vImage),
+    files: defineTable(vFile)
+      .index("by_uploadedBy", ["uploadedBy"])
+      .index("by_key", ["key"]),
     profiles: defineTable(vProfile)
       .index("by_userId", ["userId"])
       .index("by_username", ["username"])

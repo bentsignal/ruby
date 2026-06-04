@@ -20,9 +20,18 @@ export const getAll = query({
           .map((image) => ({
             url: image.url,
           })) satisfies UIImage[];
+        const fileResults = await Promise.all(
+          (post.fileIds ?? []).map(async (fileId) => {
+            return await ctx.db.get(fileId);
+          }),
+        );
+        const files = fileResults
+          .filter((file) => file !== null)
+          .map(({ uploadToken: _uploadToken, ...file }) => file);
         return {
           ...rest,
           creator: profile ? getPublicProfile(profile) : DeletedProfile,
+          files,
           images,
         };
       }),

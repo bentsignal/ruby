@@ -2,6 +2,7 @@ import {
   convexCloudUrl as overrideConvexCloudUrl,
   worktreeId as overrideWorktreeId,
 } from "./overrides";
+import { normalizeWorktreeId } from "./worktrees";
 
 const CONVEX = {
   production: {
@@ -17,21 +18,6 @@ const CONVEX = {
 interface UrlOptions {
   nodeEnv?: "development" | "production" | "test";
   worktreeId?: string;
-}
-
-function normalizeWorktreeId(worktreeId: string | undefined) {
-  const slug = worktreeId
-    ?.trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  if (!slug) {
-    return undefined;
-  }
-
-  const shortId = /(?:^|-)([a-f0-9]{7,12})$/.exec(slug);
-  return shortId?.[1] ?? slug;
 }
 
 function webUrl(options: UrlOptions & { effectiveWorktreeId?: string }) {

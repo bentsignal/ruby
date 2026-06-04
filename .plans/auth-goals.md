@@ -42,14 +42,14 @@ The important split is:
 
 These files currently encode pieces of this architecture:
 
-- `packages/app-config/src/urls.ts` centralizes URL construction.
-- `packages/app-config/src/overrides.ts` is intentionally a mutable/generated override file. Do not remove it just because it looks trivial.
-- `scripts/worktree-db.sh` creates a worktree Convex deployment, writes `VITE_WORKTREE_ID` to `.env`, rewrites `packages/app-config/src/overrides.ts` with the worktree Convex cloud URL and worktree id, and does a one-shot Convex push so the isolated deployment has the current schema/functions before `pnpm run dev`.
+- `shared/app-config/src/urls.ts` centralizes URL construction.
+- `shared/app-config/src/overrides.ts` is intentionally a mutable/generated override file. Do not remove it just because it looks trivial.
+- `scripts/worktree-db.sh` creates a worktree Convex deployment, writes `VITE_WORKTREE_ID` to `.env`, rewrites `shared/app-config/src/overrides.ts` with the worktree Convex cloud URL and worktree id, and does a one-shot Convex push so the isolated deployment has the current schema/functions before `pnpm run dev`.
 - `scripts/worktree-init.sh` copies env files from the main checkout and runs `pnpm install`.
 - `apps/web/src/features/auth/lib/server.ts` configures TanStack Start auth proxy helpers with `urls.convex.cloud` and `urls.convex.site`.
 - `apps/web/src/app/api.auth.$.ts` proxies `/api/auth/*` through the Better Auth/Convex handler.
 - `apps/web/src/app/auth.callback.tsx` handles the cross-domain one-time token callback and copies auth cookies.
-- `packages/convex/src/auth.ts`, `packages/convex/src/auth.config.ts`, and `packages/convex/src/http.ts` are the Convex-side Better Auth integration.
+- `services/convex/src/auth.ts`, `services/convex/src/auth.config.ts`, and `services/convex/src/http.ts` are the Convex-side Better Auth integration.
 
 Portless is installed intentionally. Do not infer from old history, removed config, or a lack of `portless.json` that Portless is no longer wanted.
 
@@ -59,7 +59,7 @@ Portless is part of the intended architecture.
 
 The desired web host is `www.ruby.local`, with worktree prefixes becoming `<worktree-id>.www.ruby.local`. Portless supports named `.local` HTTPS URLs and git worktree subdomain prefixes. Its docs describe `portless run --name myapp ...` producing `https://<branch>.myapp.local` in linked worktrees, and HTTPS is enabled by default.
 
-For this app, the Portless base name should preserve the host shape `www.ruby`, not merely `ruby` or `web.ruby`. A worktree URL must be compatible with `createUrls()` in `packages/app-config/src/urls.ts`.
+For this app, the Portless base name should preserve the host shape `www.ruby`, not merely `ruby` or `web.ruby`. A worktree URL must be compatible with `createUrls()` in `shared/app-config/src/urls.ts`.
 
 Do not replace the stable URL model with arbitrary ports, `localhost:3000`, or per-agent env vars unless the user explicitly changes this architecture.
 
@@ -90,7 +90,7 @@ Each worktree gets its own Convex deployment for data:
 - It can safely diverge for schema experiments.
 - It needs to trust tokens issued by the main development auth deployment.
 
-The current `packages/convex/src/auth.config.ts` reflects this idea by adding the shared development auth deployment's real JWT issuer as a trusted provider for non-main deployments. Be very careful before changing that logic.
+The current services/convex/src/auth.config.ts` reflects this idea by adding the shared development auth deployment's real JWT issuer as a trusted provider for non-main deployments. Be very careful before changing that logic.
 
 That trust must use Convex's `customJwt` provider shape, not the OIDC provider shape. The values come from the shared auth metadata endpoint at `https://site.dev.ruby.travel/api/auth/convex/.well-known/openid-configuration`, and `scripts/worktree-db.sh` writes them as:
 
@@ -108,9 +108,9 @@ This matters because the Better Auth Convex plugin mints a custom JWT whose issu
 
 ## Source Of Truth
 
-Use `packages/app-config/src/urls.ts` as the source of truth for app URLs.
+Use `shared/app-config/src/urls.ts` as the source of truth for app URLs.
 
-Use `packages/app-config/src/overrides.ts` as the worktree-specific override hook. It exists so generated setup scripts can inject:
+Use `shared/app-config/src/overrides.ts` as the worktree-specific override hook. It exists so generated setup scripts can inject:
 
 - `convexCloudUrl`: the worktree deployment's Convex cloud URL for app data
 - `worktreeId`: the Portless/local URL prefix
@@ -127,7 +127,7 @@ Worktree setup may rewrite this file locally. Do not remove it for being generat
 ## Things Agents Must Not Do
 
 - Do not remove Portless support.
-- Do not remove `packages/app-config/src/overrides.ts`.
+- Do not remove `shared/app-config/src/overrides.ts`.
 - Do not collapse all Convex URLs into one value. Cloud and site URLs have different jobs.
 - Do not make worktree auth depend on registering a new Google origin/callback.
 - Do not point worktree auth at the worktree Convex site unless the architecture has been intentionally changed.

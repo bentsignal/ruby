@@ -30,7 +30,7 @@ set_env_var() {
   fi
 }
 
-cd "$NEW_WT/packages/convex"
+cd "$NEW_WT/services/convex"
 
 # Pull env vars from the main deployment before switching
 TEMP_ENV=$(mktemp)
@@ -67,21 +67,21 @@ echo "pushed Convex functions to worktree deployment"
 
 cd "$NEW_WT"
 
-cat > packages/convex/src/auth.shared.ts <<EOF
+cat > services/convex/src/auth.shared.ts <<EOF
 export const sharedAuthIssuer: string | undefined = "${SHARED_AUTH_JWT_ISSUER}";
 export const sharedAuthJwksUri: string | undefined = "${SHARED_AUTH_JWKS_URI}";
 EOF
 echo "generated auth.shared.ts (sharedAuthIssuer=${SHARED_AUTH_JWT_ISSUER})"
 
 # Generate the app-config overrides with worktree-specific values
-NEW_CONVEX_URL="$(grep '^CONVEX_URL=' packages/convex/.env.local | cut -d= -f2-)"
+NEW_CONVEX_URL="$(grep '^CONVEX_URL=' services/convex/.env.local | cut -d= -f2-)"
 
-cat > packages/app-config/src/overrides.ts <<EOF
+cat > services/convex/src/overrides.ts <<EOF
 export const convexCloudUrl: string | undefined = "${NEW_CONVEX_URL}";
 export const worktreeId: string | undefined = "${PORTLESS_WORKTREE_ID}";
 EOF
 echo "generated overrides.ts (convexCloudUrl=${NEW_CONVEX_URL}, worktreeId=${PORTLESS_WORKTREE_ID})"
-git update-index --skip-worktree packages/app-config/src/overrides.ts
+git update-index --skip-worktree services/app-config/src/overrides.ts
 echo "marked overrides.ts as skip-worktree"
 
 cd "$NEW_WT"

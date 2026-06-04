@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-syntax -- Convex auth generation needs this override typed as optional string.
-export const sharedAuthIssuer: string | undefined = undefined;
-// eslint-disable-next-line no-restricted-syntax -- Convex auth generation needs this override typed as optional string.
-export const sharedAuthJwksUri: string | undefined = undefined;
+export const sharedAuthIssuer = "https://outgoing-moose-159.convex.site";
+export const sharedAuthJwksUri =
+  "https://outgoing-moose-159.convex.site/api/auth/convex/jwks";
