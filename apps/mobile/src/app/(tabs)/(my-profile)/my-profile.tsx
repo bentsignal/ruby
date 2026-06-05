@@ -1,13 +1,17 @@
+import type { LegendListRenderItemProps } from "@legendapp/list";
 import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line no-restricted-imports -- This query depends on the profile loaded into the auth store.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { LegendList } from "@legendapp/list";
 
+import type { UIPost } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import { useAuthStore } from "~/features/auth/store";
-import { PostList } from "~/features/post/components/post-list";
+import { Post } from "~/features/post/components/post";
 import { MyProfileButtons } from "~/features/profile/components/buttons/my-profile-buttons";
 import { Bio } from "~/features/profile/components/info/bio";
 import { Name } from "~/features/profile/components/info/name";
@@ -47,7 +51,32 @@ export default function MyProfile() {
           <View className="bg-border h-px" />
         </View>
       </ProfileStore>
-      <PostList posts={posts ?? []} topInset={false} />
+      <ProfilePostList posts={posts ?? []} />
     </SafeAreaView>
   );
+}
+
+function ProfilePostList({ posts }: { posts: UIPost[] }) {
+  const inset = useSafeAreaInsets();
+
+  return (
+    <LegendList
+      data={posts}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      style={{ flex: 1 }}
+      contentContainerStyle={{
+        paddingBottom: inset.bottom + 24,
+      }}
+      recycleItems={true}
+    />
+  );
+}
+
+function renderItem(props: LegendListRenderItemProps<UIPost>) {
+  return <Post post={props.item} />;
+}
+
+function keyExtractor(post: UIPost) {
+  return post._id;
 }

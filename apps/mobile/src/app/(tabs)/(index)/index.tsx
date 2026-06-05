@@ -1,10 +1,16 @@
+import type { LegendListRenderItemProps } from "@legendapp/list";
+import { Image, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line no-restricted-imports -- Expo Router tab screens fetch after auth context is mounted.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { LegendList } from "@legendapp/list";
 
+import type { UIPost } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
 
-import { PostList } from "~/features/post/components/post-list";
+import { Post } from "~/features/post/components/post";
+import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
   const { data } = useQuery({
@@ -14,5 +20,43 @@ export default function Home() {
 
   const posts = data ?? [];
 
-  return <PostList posts={posts} />;
+  return <HomePostList posts={posts} />;
+}
+
+function HomePostList({ posts }: { posts: UIPost[] }) {
+  const inset = useSafeAreaInsets();
+
+  return (
+    <LegendList
+      data={posts}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      style={{ flex: 1 }}
+      ListHeaderComponent={<HomePostListHeader topPadding={inset.top} />}
+      contentContainerStyle={{
+        paddingBottom: inset.bottom + 24,
+      }}
+      recycleItems={true}
+    />
+  );
+}
+
+function HomePostListHeader({ topPadding }: { topPadding: number }) {
+  return (
+    <View className="items-center pb-6" style={{ paddingTop: topPadding }}>
+      <Image
+        accessibilityLabel="Ruby"
+        source={roundedIcon}
+        style={{ borderRadius: 24, height: 48, width: 48 }}
+      />
+    </View>
+  );
+}
+
+function renderItem(props: LegendListRenderItemProps<UIPost>) {
+  return <Post post={props.item} />;
+}
+
+function keyExtractor(post: UIPost) {
+  return post._id;
 }
