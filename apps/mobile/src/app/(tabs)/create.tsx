@@ -39,7 +39,7 @@ type PickedFile = ImagePicker.ImagePickerAsset;
 interface ComposerItem {
   id: string;
   file: PickedFile;
-  status: "uploading" | "uploaded" | "error";
+  status: "ready" | "uploading" | "uploaded" | "error";
   uploadedFile?: UIFile;
   error?: string;
 }
@@ -115,10 +115,6 @@ export default function Create() {
   const failedItemsCount = items.filter(
     (item) => item.status === "error",
   ).length;
-  const uploadedItems = items.filter(
-    (item): item is ComposerItem & { uploadedFile: UIFile } =>
-      item.status === "uploaded" && !!item.uploadedFile,
-  );
   const selectedItem =
     items.find((item) => item.id === selectedItemId) ?? items[0] ?? null;
   const selectedItemIndex = selectedItem
@@ -127,7 +123,7 @@ export default function Create() {
   const canPost =
     !isPosting &&
     !hasUploadingItems &&
-    (uploadedItems.length > 0 || caption.trim().length > 0);
+    (items.length > 0 || caption.trim().length > 0);
 
   async function pickFiles() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -141,15 +137,23 @@ export default function Create() {
     const newItems = result.assets.map((file) => ({
       file,
       id: `${Date.now()}-${Math.random()}`,
-      status: "uploading" as const,
+      status: "ready" as const,
     }));
     setSelectedItemId((current) => current ?? newItems[0]?.id ?? null);
     setItems((current) => [...current, ...newItems]);
     void Haptics.selectionAsync();
-    void Promise.all(newItems.map(uploadItem));
   }
 
   async function uploadItem(item: ComposerItem) {
+    if (item.status === "uploaded" && item.uploadedFile) {
+      return item.uploadedFile;
+    }
+
+    updateItem(item.id, {
+      error: undefined,
+      status: "uploading",
+      uploadedFile: undefined,
+    });
     try {
       const contentType =
         item.file.mimeType ?? getFallbackContentType(item.file);
@@ -172,24 +176,22 @@ export default function Create() {
       if (!uploadResponse.ok || "error" in result) {
         throw new Error("error" in result ? result.error : "Upload failed");
       }
-      setItems((current) =>
-        current.map((currentItem) =>
-          currentItem.id === item.id
-            ? { ...currentItem, status: "uploaded", uploadedFile: result.file }
-            : currentItem,
-        ),
-      );
+      updateItem(item.id, { status: "uploaded", uploadedFile: result.file });
+      return result.file;
     } catch (caughtError) {
       const message =
         caughtError instanceof Error ? caughtError.message : "Upload failed";
-      setItems((current) =>
-        current.map((currentItem) =>
-          currentItem.id === item.id
-            ? { ...currentItem, error: message, status: "error" }
-            : currentItem,
-        ),
-      );
+      updateItem(item.id, { error: message, status: "error" });
+      throw new Error(message);
     }
+  }
+
+  function updateItem(itemId: string, patch: Partial<ComposerItem>) {
+    setItems((current) =>
+      current.map((item) =>
+        item.id === itemId ? { ...item, ...patch } : item,
+      ),
+    );
   }
 
   function removeItem(itemId: string) {
@@ -220,23 +222,17 @@ export default function Create() {
   }
 
   function retryItem(item: ComposerItem) {
-    setItems((current) =>
-      current.map((currentItem) =>
-        currentItem.id === item.id
-          ? { ...currentItem, error: undefined, status: "uploading" }
-          : currentItem,
-      ),
-    );
-    void uploadItem(item);
+    updateItem(item.id, { error: undefined, status: "ready" });
   }
 
   async function publishPost() {
     setIsPosting(true);
     setError(null);
     try {
+      const uploadedFiles = await Promise.all(items.map(uploadItem));
       await convex.mutation(createPost, {
         caption: caption.trim() || undefined,
-        fileIds: uploadedItems.map((item) => item.uploadedFile._id),
+        fileIds: uploadedFiles.map((file) => file._id),
       });
       await queryClient.invalidateQueries({ queryKey: ["posts"] });
       setIsPosting(false);
@@ -325,7 +321,6 @@ export default function Create() {
             <UploadSummary
               failedCount={failedItemsCount}
               totalCount={items.length}
-              uploadedCount={uploadedItems.length}
             />
           </View>
         )}
@@ -501,6 +496,8 @@ function MediaStatusOverlay({
   item: ComposerItem;
   retryItem: (item: ComposerItem) => void;
 }) {
+  if (item.status === "ready") return null;
+
   if (item.status === "uploaded") {
     return (
       <View className="absolute top-3 right-3 flex-row items-center gap-1 rounded-full bg-black/60 px-3 py-1">
@@ -569,7 +566,7 @@ function MediaThumb({
       <View className="absolute top-1 left-1 rounded-full bg-black/65 px-2 py-0.5">
         <Text className="text-[10px] font-black text-white">{index + 1}</Text>
       </View>
-      {item.status !== "uploaded" && (
+      {(item.status === "uploading" || item.status === "error") && (
         <View className="absolute inset-0 items-center justify-center bg-black/45">
           {item.status === "uploading" ? (
             <LoaderCircle className="size-4" color="white" />
@@ -585,16 +582,14 @@ function MediaThumb({
 function UploadSummary({
   failedCount,
   totalCount,
-  uploadedCount,
 }: {
   failedCount: number;
   totalCount: number;
-  uploadedCount: number;
 }) {
   return (
     <View className="bg-card border-border flex-row items-center justify-between rounded-lg border px-4 py-3">
       <Text className="text-foreground text-sm font-bold">
-        {uploadedCount}/{totalCount} ready
+        {totalCount} selected
       </Text>
       <Text
         className={
@@ -605,7 +600,7 @@ function UploadSummary({
       >
         {failedCount > 0
           ? `${failedCount} need retry`
-          : "Photos and videos only"}
+          : "Uploads when you post"}
       </Text>
     </View>
   );
