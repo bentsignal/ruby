@@ -76,7 +76,7 @@ export default function ProfileByUsername() {
           <View className="bg-border h-px" />
         </View>
       </ProfileStore>
-      <PostList posts={posts ?? []} />
+      <PostList posts={posts ?? []} topInset={false} />
     </SafeAreaView>
   );
 }

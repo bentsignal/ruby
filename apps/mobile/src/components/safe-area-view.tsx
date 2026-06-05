@@ -1,6 +1,6 @@
 import type { ViewProps } from "react-native";
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets as useBaseSafeAreaInsets } from "react-native-safe-area-context";
 
 export function SafeAreaView({
   top = true,
@@ -12,7 +12,7 @@ export function SafeAreaView({
   bottom?: boolean;
   children?: React.ReactNode;
 } & ViewProps) {
-  const insets = useSafeAreaInsets();
+  const insets = useBaseSafeAreaInsets();
   return (
     <View
       style={{
@@ -24,4 +24,8 @@ export function SafeAreaView({
       {children}
     </View>
   );
+}
+
+export function useSafeAreaInsets() {
+  return useBaseSafeAreaInsets();
 }
