@@ -1,13 +1,11 @@
 import { defineSchema, defineTable } from "convex/server";
 
-import {
-  vFile,
-  vFriendship,
-  vImage,
-  vPost,
-  vProfile,
-  vTrip,
-} from "./validators";
+import { vFile } from "./features/files/validators";
+import { vFriendship } from "./features/friends/validators";
+import { vImage } from "./features/images/validators";
+import { vPost } from "./features/posts/validators";
+import { vProfile } from "./features/profile/validators";
+import { vTrip } from "./features/trips/validators";
 
 export default defineSchema(
   {

@@ -1,69 +1,7 @@
-import { v } from "convex/values";
-
-const vPermission = v.union(v.literal("can-access-app"), v.literal("can-post"));
-
-const vProfile = v.object({
-  userId: v.string(),
-  name: v.string(),
-  username: v.string(),
-  image: v.optional(v.string()),
-  bio: v.optional(v.string()),
-  link: v.optional(v.string()),
-  permissions: v.optional(v.array(vPermission)),
-  searchTerm: v.string(),
-});
-
-const vFriendshipStatus = v.union(v.literal("pending"), v.literal("friends"));
-
-const vFriendship = v.object({
-  profileIdA: v.id("profiles"),
-  profileIdB: v.id("profiles"),
-  status: vFriendshipStatus,
-  initiatedBy: v.id("profiles"),
-});
-
-const vTrip = v.object({
-  creatorId: v.id("profiles"),
-  name: v.string(),
-  imageId: v.optional(v.id("images")),
-  description: v.optional(v.string()),
-  location: v.optional(v.string()),
-  startDate: v.optional(v.number()),
-  endDate: v.optional(v.number()),
-});
-
-const vImage = v.object({
-  url: v.string(),
-  alt: v.optional(v.string()),
-});
-
-const vFile = v.object({
-  contentType: v.string(),
-  fileName: v.string(),
-  key: v.string(),
-  mediaType: v.union(v.literal("image"), v.literal("video")),
-  size: v.number(),
-  status: v.union(v.literal("pending"), v.literal("uploaded")),
-  uploadedBy: v.id("profiles"),
-  uploadToken: v.optional(v.string()),
-  url: v.string(),
-});
-
-const vPost = v.object({
-  tripId: v.optional(v.id("trips")),
-  profileId: v.id("profiles"),
-  fileIds: v.optional(v.array(v.id("files"))),
-  imagesIds: v.optional(v.array(v.id("images"))),
-  caption: v.optional(v.string()),
-});
-
-export {
-  vProfile,
-  vPost,
-  vTrip,
-  vImage,
-  vFile,
-  vFriendship,
-  vFriendshipStatus,
-  vPermission,
-};
+export { vFile } from "./features/files/validators";
+export { vFriendship, vFriendshipStatus } from "./features/friends/validators";
+export { vImage } from "./features/images/validators";
+export { vPermission } from "./features/permissions/validators";
+export { vPost } from "./features/posts/validators";
+export { vProfile } from "./features/profile/validators";
+export { vTrip } from "./features/trips/validators";

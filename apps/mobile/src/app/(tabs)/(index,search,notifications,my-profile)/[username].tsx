@@ -3,7 +3,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- Expo Router profile screens fetch after route params are available.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { useConvex } from "convex/react";
 
 import { api } from "@acme/convex/api";
 
@@ -25,7 +24,6 @@ import { ProfileStore } from "~/features/profile/store";
 export default function ProfileByUsername() {
   const { username } = useLocalSearchParams<{ username: string }>();
 
-  const convex = useConvex();
   const router = useRouter();
   const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
   const { data: result } = useQuery({
@@ -33,9 +31,7 @@ export default function ProfileByUsername() {
     select: (profile) => profile,
   });
   const { data: posts } = useQuery({
-    queryKey: ["posts", username],
-    queryFn: async () =>
-      await convex.query(api.posts.getByUsername, { username }),
+    ...convexQuery(api.posts.getByUsername, { username }),
     enabled: !!username,
     select: (profilePosts) => profilePosts,
   });

@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     "./base": "./base.ts",
+    "./convex": "./convex.ts",
     "./nextjs": "./nextjs.ts",
     "./react": "./react.ts",
     "./syntax": "./syntax.ts"

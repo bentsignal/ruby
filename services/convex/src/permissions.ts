@@ -4,7 +4,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalQuery } from "./_generated/server";
-import { vPermission } from "./validators";
+import { vPermission } from "./features/permissions/validators";
 
 type UserPermission = Infer<typeof vPermission>;
 

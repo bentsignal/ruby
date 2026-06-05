@@ -9,19 +9,6 @@ import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
 
 export function Post({ post }: { post: UIPost }) {
-  const mediaItems = [
-    ...post.files.map((file) => ({
-      alt: post.caption ?? file.fileName,
-      mediaType: file.mediaType,
-      url: file.url,
-    })),
-    ...post.images.map((image) => ({
-      alt: image.alt ?? post.caption ?? "",
-      mediaType: "image" as const,
-      url: image.url,
-    })),
-  ];
-
   return (
     <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
       <ProfileStore profile={post.creator}>
@@ -37,38 +24,8 @@ export function Post({ post }: { post: UIPost }) {
         </div>
       </ProfileStore>
 
-      {mediaItems.length > 0 && (
-        <div className="grid gap-2">
-          {mediaItems.map((media, index) => (
-            <div
-              className="bg-muted relative w-full overflow-hidden rounded-lg"
-              key={`${media.url}-${index}`}
-            >
-              {media.mediaType === "video" ? (
-                <video
-                  className="max-h-[640px] w-full object-cover"
-                  src={media.url}
-                  controls
-                  playsInline
-                />
-              ) : (
-                <Image
-                  src={media.url}
-                  alt={media.alt}
-                  width={800}
-                  height={600}
-                  layout="constrained"
-                  className="object-cover"
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {post.caption && (
-        <p className="text-sm leading-relaxed">{post.caption}</p>
-      )}
+      <PostMediaGrid post={post} />
+      <PostCaption caption={post.caption} />
 
       <div className="flex items-center gap-6">
         <button className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2">
@@ -87,4 +44,68 @@ export function Post({ post }: { post: UIPost }) {
       </div>
     </article>
   );
+}
+
+type PostMediaItem = ReturnType<typeof getPostMediaItems>[number];
+
+function getPostMediaItems(post: UIPost) {
+  return [
+    ...post.files.map((file) => ({
+      alt: post.caption ?? file.fileName,
+      mediaType: file.mediaType,
+      url: file.url,
+    })),
+    ...post.images.map((image) => ({
+      alt: image.alt ?? post.caption ?? "",
+      mediaType: "image" as const,
+      url: image.url,
+    })),
+  ];
+}
+
+function PostMediaGrid({ post }: { post: UIPost }) {
+  const mediaItems = getPostMediaItems(post);
+
+  if (mediaItems.length === 0) return null;
+
+  return (
+    <div className="grid gap-2">
+      {mediaItems.map((media, index) => (
+        <PostMediaItem key={`${media.url}-${index}`} media={media} />
+      ))}
+    </div>
+  );
+}
+
+function PostMediaItem({ media }: { media: PostMediaItem }) {
+  if (media.mediaType === "video") {
+    return (
+      <div className="bg-muted relative w-full overflow-hidden rounded-lg">
+        <video
+          className="max-h-[640px] w-full object-cover"
+          controls
+          playsInline
+          src={media.url}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-muted relative w-full overflow-hidden rounded-lg">
+      <Image
+        alt={media.alt}
+        className="object-cover"
+        height={600}
+        layout="constrained"
+        src={media.url}
+        width={800}
+      />
+    </div>
+  );
+}
+
+function PostCaption({ caption }: { caption?: string }) {
+  if (!caption) return null;
+  return <p className="text-sm leading-relaxed">{caption}</p>;
 }

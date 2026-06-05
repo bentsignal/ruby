@@ -1,7 +1,10 @@
 import type { Infer } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
-import type { vFriendshipStatus, vImage, vPost, vProfile } from "./validators";
+import type { vFriendshipStatus } from "./features/friends/validators";
+import type { vImage } from "./features/images/validators";
+import type { vPost } from "./features/posts/validators";
+import type { vProfile } from "./features/profile/validators";
 
 type UIImage = Infer<typeof vImage>;
 type UIFile = Omit<Doc<"files">, "uploadToken">;

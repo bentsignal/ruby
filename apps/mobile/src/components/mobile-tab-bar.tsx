@@ -1,139 +1,18 @@
-import type { Tabs } from "expo-router";
-import type { ComponentProps } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { BlurView } from "expo-blur";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
-import * as Haptics from "expo-haptics";
-import { PlusIcon } from "lucide-react-native";
+import { View } from "react-native";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
 
+import type { MobileTabBarProps } from "~/components/mobile-tab-bar/types";
+import { TabBarBackdrop } from "~/components/mobile-tab-bar/tab-bar-backdrop";
+import { TabBarButton } from "~/components/mobile-tab-bar/tab-bar-button";
 import { useColor } from "~/hooks/use-color";
-import { useRedirect } from "~/hooks/use-redirect";
 
-const TAB_BAR_HEIGHT = 64;
-
-type MobileTabBarProps = Parameters<
-  NonNullable<ComponentProps<typeof Tabs>["tabBar"]>
->[0];
-
-type TabBarRoute = MobileTabBarProps["state"]["routes"][number];
-type TabBarNavigation = MobileTabBarProps["navigation"];
-type TabBarOptions = MobileTabBarProps["descriptors"][string]["options"];
-
-function CreateTabIcon({
-  primary,
-  primaryForeground,
-}: {
-  primary: string;
-  primaryForeground: string;
-}) {
-  return (
-    <View
-      style={[
-        styles.createTab,
-        {
-          backgroundColor: primary,
-        },
-      ]}
-    >
-      <PlusIcon color={primaryForeground} size={22} strokeWidth={2} />
-    </View>
-  );
-}
-
-function TabBarBackdrop({
-  liquidGlassIsAvailable,
-  sidebar,
-}: {
-  liquidGlassIsAvailable: boolean;
-  sidebar: string;
-}) {
-  if (!liquidGlassIsAvailable) {
-    return (
-      <BlurView
-        intensity={42}
-        style={StyleSheet.absoluteFill}
-        tint="systemMaterialDark"
-      />
-    );
-  }
-
-  return (
-    <GlassView
-      glassEffectStyle="regular"
-      isInteractive
-      style={StyleSheet.absoluteFill}
-      tintColor={sidebar}
-    />
-  );
-}
-
-function TabBarButton({
-  color,
-  href,
-  isFocused,
-  navigation,
-  options,
-  primary,
-  primaryForeground,
-  route,
-}: {
-  color: string;
-  href: string | undefined;
-  isFocused: boolean;
-  navigation: TabBarNavigation;
-  options: TabBarOptions | undefined;
-  primary: string;
-  primaryForeground: string;
-  route: TabBarRoute;
-}) {
-  const { redirectIfNotSignedIn } = useRedirect();
-  const isCreate = route.name === "create";
-
-  return (
-    <Pressable
-      accessibilityLabel={options?.tabBarAccessibilityLabel}
-      accessibilityRole="button"
-      accessibilityState={isFocused ? { selected: true } : {}}
-      onLongPress={() => {
-        navigation.emit({
-          type: "tabLongPress",
-          target: route.key,
-        });
-      }}
-      onPress={() => {
-        void Haptics.selectionAsync();
-        redirectIfNotSignedIn({
-          redirectURL: href,
-          ifSignedIn: () => {
-            const event = navigation.emit({
-              type: "tabPress",
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name, route.params);
-            }
-          },
-        });
-      }}
-      style={styles.tabBarItem}
-    >
-      {isCreate ? (
-        <CreateTabIcon
-          primary={primary}
-          primaryForeground={primaryForeground}
-        />
-      ) : (
-        options?.tabBarIcon?.({
-          color,
-          focused: isFocused,
-          size: 24,
-        })
-      )}
-    </Pressable>
-  );
-}
+const TAB_BAR_SHADOW_STYLE = {
+  elevation: 12,
+  shadowColor: "#000",
+  shadowOffset: { height: 8, width: 0 },
+  shadowOpacity: 0.2,
+  shadowRadius: 18,
+};
 
 function getTabHref(routeName: string) {
   switch (routeName) {
@@ -168,22 +47,13 @@ export function MobileTabBar({
 
   return (
     <View
+      className="absolute right-0 left-0 z-50 items-center"
       pointerEvents="box-none"
-      style={[
-        styles.tabBarFrame,
-        {
-          bottom: Math.max(insets.bottom, 12),
-        },
-      ]}
+      style={{ bottom: Math.max(insets.bottom, 12) }}
     >
       <View
-        style={[
-          styles.tabBar,
-          {
-            borderColor: sidebarBorder,
-            shadowColor: "#000",
-          },
-        ]}
+        className="h-16 flex-row items-center justify-center gap-2 overflow-hidden rounded-full border px-2"
+        style={[{ borderColor: sidebarBorder }, TAB_BAR_SHADOW_STYLE]}
       >
         <TabBarBackdrop
           liquidGlassIsAvailable={liquidGlassIsAvailable}
@@ -192,7 +62,11 @@ export function MobileTabBar({
         {state.routes.map((route, index) => {
           const options = descriptors[route.key]?.options;
           const isFocused = state.index === index;
-          const color = isFocused ? sidebarActiveColor : sidebarInactiveColor;
+          const color = getTabColor({
+            isFocused,
+            sidebarActiveColor,
+            sidebarInactiveColor,
+          });
 
           return (
             <TabBarButton
@@ -213,41 +87,16 @@ export function MobileTabBar({
   );
 }
 
-const styles = StyleSheet.create({
-  createTab: {
-    alignItems: "center",
-    borderRadius: 999,
-    height: 44,
-    justifyContent: "center",
-    width: 44,
-  },
-  tabBar: {
-    alignItems: "center",
-    borderRadius: 999,
-    borderWidth: 1,
-    elevation: 12,
-    flexDirection: "row",
-    gap: 8,
-    height: TAB_BAR_HEIGHT,
-    justifyContent: "center",
-    overflow: "hidden",
-    paddingHorizontal: 8,
-    shadowOffset: { height: 8, width: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 18,
-  },
-  tabBarFrame: {
-    alignItems: "center",
-    left: 0,
-    position: "absolute",
-    right: 0,
-    zIndex: 50,
-  },
-  tabBarItem: {
-    alignItems: "center",
-    borderRadius: 999,
-    height: 52,
-    justifyContent: "center",
-    width: 52,
-  },
-});
+function getTabColor({
+  isFocused,
+  sidebarActiveColor,
+  sidebarInactiveColor,
+}: {
+  isFocused: boolean;
+  sidebarActiveColor: string;
+  sidebarInactiveColor: string;
+}) {
+  if (isFocused) return sidebarActiveColor;
+
+  return sidebarInactiveColor;
+}

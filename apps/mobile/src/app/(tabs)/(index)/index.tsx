@@ -2,7 +2,7 @@ import { Platform, Text } from "react-native";
 import { router } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- Expo Router tab screens fetch after auth context is mounted.
 import { useQuery } from "@tanstack/react-query";
-import { useConvex } from "convex/react";
+import { convexQuery } from "@convex-dev/react-query";
 
 import { api } from "@acme/convex/api";
 import { Button, ButtonText } from "@acme/ui-mobile/button";
@@ -11,11 +11,8 @@ import { SafeAreaView } from "~/components/safe-area-view";
 import { PostList } from "~/features/post/components/post-list";
 
 export default function Home() {
-  const convex = useConvex();
-
   const { data } = useQuery({
-    queryKey: ["posts"],
-    queryFn: async () => await convex.query(api.posts.getAll),
+    ...convexQuery(api.posts.getAll, {}),
     select: (posts) => posts,
   });
 

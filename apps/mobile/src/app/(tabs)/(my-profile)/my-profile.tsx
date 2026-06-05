@@ -1,7 +1,7 @@
 import { View } from "react-native";
 // eslint-disable-next-line no-restricted-imports -- This query depends on the profile loaded into the auth store.
 import { useQuery } from "@tanstack/react-query";
-import { useConvex } from "convex/react";
+import { convexQuery } from "@convex-dev/react-query";
 
 import { api } from "@acme/convex/api";
 
@@ -18,14 +18,11 @@ import { ProfileLoading } from "~/features/profile/components/profile-loading";
 import { ProfileStore } from "~/features/profile/store";
 
 export default function MyProfile() {
-  const convex = useConvex();
   const myProfile = useAuthStore((s) => s.myProfile);
   const { data: posts } = useQuery({
-    queryKey: ["posts", myProfile?.username],
-    queryFn: async () =>
-      await convex.query(api.posts.getByUsername, {
-        username: myProfile?.username ?? "",
-      }),
+    ...convexQuery(api.posts.getByUsername, {
+      username: myProfile?.username ?? "",
+    }),
     enabled: !!myProfile?.username,
     select: (profilePosts) => profilePosts,
   });
