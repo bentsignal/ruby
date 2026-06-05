@@ -387,9 +387,9 @@ function CreateHeader({
         </Text>
         <Button disabled={!canPost} size="sm" onPress={onPost}>
           {hasUploadingItems || isPosting ? (
-            <LoaderCircle className="size-4" color="white" />
+            <LoaderCircle className="size-4" size={16} color="white" />
           ) : (
-            <Upload className="size-4" color="white" />
+            <Upload className="size-4" size={16} color="white" />
           )}
           <ButtonText>
             {hasUploadingItems ? "Uploading" : isPosting ? "Posting" : "Post"}
@@ -532,7 +532,7 @@ function MediaTile({
             className="size-8 items-center justify-center rounded-full bg-black/45"
             onPress={() => removeItem(item.id)}
           >
-            <Trash2 className="size-4" color="white" />
+            <Trash2 className="size-4" size={16} color="white" />
           </Pressable>
         </View>
         <MediaStatusOverlay item={item} retryItem={retryItem} />

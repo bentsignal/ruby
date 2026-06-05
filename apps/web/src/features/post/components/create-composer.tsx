@@ -28,6 +28,7 @@ import {
   Plus,
   Trash2,
   Upload,
+  UploadIcon,
   X,
 } from "lucide-react";
 
@@ -281,6 +282,7 @@ function ComposerHeader({
         disabled={!canPost}
         onClick={onPost}
       >
+        <UploadIcon className="size-4" />
         Post
       </Button>
     </div>
