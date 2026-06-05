@@ -1,8 +1,14 @@
 /* eslint-disable complexity, max-lines, max-lines-per-function */
-import { useState } from "react";
+import type { ReactNode } from "react";
+import type {
+  GestureResponderEvent,
+  PanResponderGestureState,
+} from "react-native";
+import { useRef, useState } from "react";
 import {
   Alert,
   Image,
+  PanResponder,
   Pressable,
   ScrollView,
   Text,
@@ -16,16 +22,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
 import { makeFunctionReference } from "convex/server";
 import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
   CircleAlert,
   Clapperboard,
+  GripVertical,
   ImagePlus,
   LoaderCircle,
   Play,
   Plus,
   Trash2,
+  Upload,
 } from "lucide-react-native";
 
 import type { Id } from "@acme/convex/model";
@@ -37,6 +42,8 @@ import { authClient } from "~/features/auth/lib/auth-client";
 import { useColor } from "~/hooks/use-color";
 
 const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+const GRID_COLUMNS = 2;
+const TILE_VERTICAL_GAP = 12;
 
 type PickedFile = ImagePicker.ImagePickerAsset;
 interface ComposerItem {
@@ -45,6 +52,11 @@ interface ComposerItem {
   status: "ready" | "uploading" | "uploaded" | "error";
   uploadedFile?: UIFile;
   error?: string;
+}
+
+interface DragState {
+  itemId: string;
+  startIndex: number;
 }
 
 const createUpload = makeFunctionReference<
@@ -122,18 +134,12 @@ export default function Create() {
   const [items, setItems] = useState<ComposerItem[]>([]);
   const [caption, setCaption] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [gridWidth, setGridWidth] = useState(0);
+  const [activeDragItemId, setActiveDragItemId] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const dragStateRef = useRef<DragState | null>(null);
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
-  const failedItemsCount = items.filter(
-    (item) => item.status === "error",
-  ).length;
-  const selectedItem =
-    items.find((item) => item.id === selectedItemId) ?? items[0] ?? null;
-  const selectedItemIndex = selectedItem
-    ? items.findIndex((item) => item.id === selectedItem.id)
-    : -1;
   const canPost =
     !isPosting &&
     !hasUploadingItems &&
@@ -160,7 +166,6 @@ export default function Create() {
       id: `${Date.now()}-${Math.random()}`,
       status: "ready" as const,
     }));
-    setSelectedItemId((current) => current ?? newItems[0]?.id ?? null);
     setItems((current) => [...current, ...newItems]);
     void Haptics.selectionAsync();
   }
@@ -217,29 +222,46 @@ export default function Create() {
   }
 
   function removeItem(itemId: string) {
-    setItems((current) => {
-      const next = current.filter((item) => item.id !== itemId);
-      if (selectedItemId === itemId) {
-        setSelectedItemId(next[0]?.id ?? null);
-      }
-      return next;
-    });
+    setItems((current) => current.filter((item) => item.id !== itemId));
     void Haptics.selectionAsync();
   }
 
-  function moveItem(itemId: string, direction: -1 | 1) {
-    setItems((current) => {
-      const fromIndex = current.findIndex((item) => item.id === itemId);
-      const toIndex = fromIndex + direction;
-      if (fromIndex < 0 || toIndex < 0 || toIndex >= current.length) {
-        return current;
-      }
-      const next = [...current];
-      const [movedItem] = next.splice(fromIndex, 1);
-      if (!movedItem) return current;
-      next.splice(toIndex, 0, movedItem);
-      return next;
-    });
+  function beginReorder(itemId: string, index: number) {
+    dragStateRef.current = { itemId, startIndex: index };
+    setActiveDragItemId(itemId);
+    void Haptics.selectionAsync();
+  }
+
+  function updateReorder(gestureState: PanResponderGestureState) {
+    const dragState = dragStateRef.current;
+    if (!dragState || gridWidth <= 0) return;
+
+    const tileWidth = gridWidth / GRID_COLUMNS;
+    const tileHeight = tileWidth * 1.25 + TILE_VERTICAL_GAP;
+    const startRow = Math.floor(dragState.startIndex / GRID_COLUMNS);
+    const startColumn = dragState.startIndex % GRID_COLUMNS;
+    const targetRow = Math.max(
+      0,
+      Math.round((startRow * tileHeight + gestureState.dy) / tileHeight),
+    );
+    const targetColumn = Math.min(
+      GRID_COLUMNS - 1,
+      Math.max(
+        0,
+        Math.round((startColumn * tileWidth + gestureState.dx) / tileWidth),
+      ),
+    );
+    const targetIndex = Math.min(
+      items.length - 1,
+      targetRow * GRID_COLUMNS + targetColumn,
+    );
+
+    setItems((current) => reorderItems(current, dragState.itemId, targetIndex));
+  }
+
+  function endReorder() {
+    dragStateRef.current = null;
+    setActiveDragItemId(null);
     void Haptics.selectionAsync();
   }
 
@@ -281,114 +303,154 @@ export default function Create() {
         contentContainerClassName="gap-5 px-4 pt-4 pb-32"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="flex-row items-start justify-between gap-4">
-          <View className="flex-1">
-            <Text className="text-foreground text-3xl font-black tracking-normal">
-              Create
-            </Text>
-            <Text className="text-muted-foreground mt-1 text-sm">
-              Shape the order, add context, then post.
-            </Text>
-          </View>
-          {items.length > 0 && (
-            <Pressable
-              className="bg-card border-border h-11 flex-row items-center gap-2 rounded-full border px-4"
-              onPress={pickFiles}
-            >
-              <Plus className="size-4" color={foreground} />
-              <Text className="text-foreground text-sm font-bold">Add</Text>
-            </Pressable>
+        <CreateHeader
+          canPost={canPost}
+          hasUploadingItems={hasUploadingItems}
+          isPosting={isPosting}
+          onPost={confirmPost}
+        >
+          {items.length === 0 && (
+            <EmptyMediaPicker foreground={foreground} onPress={pickFiles} />
           )}
-        </View>
+        </CreateHeader>
 
-        {items.length === 0 ? (
-          <EmptyMediaPicker foreground={foreground} onPress={pickFiles} />
-        ) : (
-          <View className="gap-4">
-            {selectedItem && (
-              <FocusedPreview
+        {items.length > 0 && (
+          <View
+            className="-mx-1.5 flex-row flex-wrap"
+            onLayout={(event) => setGridWidth(event.nativeEvent.layout.width)}
+          >
+            {items.map((item, index) => (
+              <MediaTile
+                activeDragItemId={activeDragItemId}
+                beginReorder={beginReorder}
+                endReorder={endReorder}
                 foreground={foreground}
-                item={selectedItem}
-                itemCount={items.length}
-                itemIndex={selectedItemIndex}
-                moveItem={moveItem}
+                index={index}
+                item={item}
+                key={item.id}
                 removeItem={removeItem}
                 retryItem={retryItem}
+                updateReorder={updateReorder}
               />
-            )}
-
-            <ScrollView
-              horizontal
-              contentContainerClassName="gap-3 pr-2"
-              showsHorizontalScrollIndicator={false}
-            >
-              {items.map((item, index) => (
-                <MediaThumb
-                  foreground={foreground}
-                  index={index}
-                  isSelected={item.id === selectedItem?.id}
-                  item={item}
-                  key={item.id}
-                  onPress={() => setSelectedItemId(item.id)}
-                />
-              ))}
-              <Pressable
-                className="border-border bg-card h-24 w-20 items-center justify-center rounded-lg border border-dashed"
-                onPress={pickFiles}
-              >
-                <Plus className="size-5" color={foreground} />
-              </Pressable>
-            </ScrollView>
-
-            <UploadSummary
-              failedCount={failedItemsCount}
-              totalCount={items.length}
-            />
+            ))}
           </View>
         )}
 
-        <View className="gap-2">
-          <Text className="text-foreground text-sm font-bold">Caption</Text>
-          <TextInput
-            className="bg-card border-border text-foreground min-h-40 rounded-lg border p-4 text-base leading-6"
-            maxLength={2200}
-            multiline
-            placeholder="Tell the story behind this stop."
-            placeholderTextColor={mutedForeground}
-            textAlignVertical="top"
-            value={caption}
-            onChangeText={setCaption}
-          />
-          <Text className="text-muted-foreground self-end text-xs">
-            {caption.length}/2200
-          </Text>
-        </View>
-
-        {error && <Text className="text-destructive text-sm">{error}</Text>}
+        <CreateFooter
+          caption={caption}
+          error={error}
+          foreground={foreground}
+          hasItems={items.length > 0}
+          mutedForeground={mutedForeground}
+          onAddMedia={pickFiles}
+          setCaption={setCaption}
+        />
       </ScrollView>
+    </SafeAreaView>
+  );
+}
 
-      <View className="bg-background/95 border-border absolute inset-x-0 bottom-0 gap-3 border-t p-4">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-muted-foreground text-xs">
-            {items.length} media | {caption.trim().length} chars
-          </Text>
-          {hasUploadingItems && (
-            <Text className="text-muted-foreground text-xs">
-              Uploading media
-            </Text>
+function reorderItems(
+  items: ComposerItem[],
+  itemId: string,
+  targetIndex: number,
+) {
+  const fromIndex = items.findIndex((item) => item.id === itemId);
+  if (fromIndex < 0 || fromIndex === targetIndex) return items;
+
+  const next = [...items];
+  const [movedItem] = next.splice(fromIndex, 1);
+  if (!movedItem) return items;
+
+  next.splice(targetIndex, 0, movedItem);
+  return next;
+}
+
+function CreateHeader({
+  canPost,
+  children,
+  hasUploadingItems,
+  isPosting,
+  onPost,
+}: {
+  canPost: boolean;
+  children: ReactNode;
+  hasUploadingItems: boolean;
+  isPosting: boolean;
+  onPost: () => void;
+}) {
+  return (
+    <View className="gap-5 px-2 pb-3">
+      <View className="flex-row items-center justify-between gap-4">
+        <Text className="text-foreground text-3xl font-black tracking-normal">
+          Create
+        </Text>
+        <Button disabled={!canPost} size="sm" onPress={onPost}>
+          {hasUploadingItems || isPosting ? (
+            <LoaderCircle className="size-4" color="white" />
+          ) : (
+            <Upload className="size-4" color="white" />
           )}
-        </View>
-        <Button disabled={!canPost} onPress={confirmPost}>
           <ButtonText>
-            {hasUploadingItems
-              ? "Uploading..."
-              : isPosting
-                ? "Posting..."
-                : "Post"}
+            {hasUploadingItems ? "Uploading" : isPosting ? "Posting" : "Post"}
           </ButtonText>
         </Button>
       </View>
-    </SafeAreaView>
+      {children}
+    </View>
+  );
+}
+
+function CreateFooter({
+  caption,
+  error,
+  foreground,
+  hasItems,
+  mutedForeground,
+  onAddMedia,
+  setCaption,
+}: {
+  caption: string;
+  error: string | null;
+  foreground: string;
+  hasItems: boolean;
+  mutedForeground: string;
+  onAddMedia: () => void;
+  setCaption: (caption: string) => void;
+}) {
+  return (
+    <View className="gap-5 px-2 pt-3">
+      {hasItems && (
+        <Pressable
+          className="border-border bg-card h-32 items-center justify-center gap-2 rounded-lg border border-dashed"
+          onPress={onAddMedia}
+        >
+          <Plus className="size-6" color={foreground} />
+          <Text className="text-muted-foreground text-sm font-semibold">
+            Add more
+          </Text>
+        </Pressable>
+      )}
+
+      <View className="gap-2">
+        <Text className="text-foreground text-sm font-bold">Caption</Text>
+        <TextInput
+          className="bg-card border-border text-foreground min-h-40 rounded-lg border p-4 text-base leading-6"
+          maxLength={2200}
+          multiline
+          placeholder="Tell the story behind this stop."
+          placeholderTextColor={mutedForeground}
+          textAlignVertical="top"
+          value={caption}
+          onChangeText={setCaption}
+        />
+        <Text className="text-muted-foreground self-end text-xs">
+          {caption.length}/2200
+        </Text>
+      </View>
+
+      {error && <Text className="text-destructive text-sm">{error}</Text>}
+    </View>
   );
 }
 
@@ -401,81 +463,79 @@ function EmptyMediaPicker({
 }) {
   return (
     <Pressable
-      className="bg-card border-border min-h-80 justify-between overflow-hidden rounded-lg border"
+      className="bg-card border-border min-h-80 items-center justify-center gap-4 overflow-hidden rounded-lg border border-dashed p-6"
       onPress={onPress}
     >
-      <View className="h-44 items-center justify-center bg-black/20">
-        <View className="bg-primary/15 size-16 items-center justify-center rounded-full">
-          <ImagePlus className="size-8" color={foreground} />
-        </View>
+      <View className="bg-primary/15 size-16 items-center justify-center rounded-full">
+        <ImagePlus className="size-8" color={foreground} />
       </View>
-      <View className="gap-2 p-5">
-        <Text className="text-foreground text-xl font-black">
-          Start with photos or videos
-        </Text>
-        <Text className="text-muted-foreground text-sm leading-5">
-          Pick a batch from your library. You can add more, remove, and tune the
-          order before posting.
-        </Text>
-      </View>
+      <Text className="text-foreground text-center text-base font-bold">
+        Tap to add photos or videos
+      </Text>
     </Pressable>
   );
 }
 
-function FocusedPreview({
+function MediaTile({
+  activeDragItemId,
+  beginReorder,
+  endReorder,
   foreground,
+  index,
   item,
-  itemCount,
-  itemIndex,
-  moveItem,
   removeItem,
   retryItem,
+  updateReorder,
 }: {
+  activeDragItemId: string | null;
+  beginReorder: (itemId: string, index: number) => void;
+  endReorder: () => void;
   foreground: string;
+  index: number;
   item: ComposerItem;
-  itemCount: number;
-  itemIndex: number;
-  moveItem: (itemId: string, direction: -1 | 1) => void;
   removeItem: (itemId: string) => void;
   retryItem: (item: ComposerItem) => void;
+  updateReorder: (gestureState: PanResponderGestureState) => void;
 }) {
+  const isActive = activeDragItemId === item.id;
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => beginReorder(item.id, index),
+    onPanResponderMove: (
+      _event: GestureResponderEvent,
+      gestureState: PanResponderGestureState,
+    ) => updateReorder(gestureState),
+    onPanResponderRelease: endReorder,
+    onPanResponderTerminate: endReorder,
+    onStartShouldSetPanResponder: () => true,
+  });
+
   return (
-    <View className="bg-card border-border overflow-hidden rounded-lg border">
-      <View className="h-96 items-center justify-center bg-black">
-        <MediaPreview foreground={foreground} item={item} />
-        <MediaStatusOverlay item={item} retryItem={retryItem} />
-        <View className="absolute top-3 left-3 rounded-full bg-black/60 px-3 py-1">
-          <Text className="text-xs font-bold text-white">
-            {itemIndex + 1} of {itemCount}
-          </Text>
+    <View className="w-1/2 p-1.5">
+      <View
+        className={`bg-card border-border aspect-[4/5] overflow-hidden rounded-lg border ${
+          isActive ? "border-primary opacity-80" : ""
+        }`}
+      >
+        <View className="size-full items-center justify-center bg-black">
+          <MediaPreview foreground={foreground} item={item} />
         </View>
-      </View>
-      <View className="flex-row items-center gap-2 p-3">
-        <Button
-          className="flex-1"
-          variant="outline"
-          disabled={itemIndex === 0}
-          onPress={() => moveItem(item.id, -1)}
-        >
-          <ArrowLeft className="size-4" color={foreground} />
-          <ButtonText variant="outline">Earlier</ButtonText>
-        </Button>
-        <Button
-          className="flex-1"
-          variant="outline"
-          disabled={itemIndex === itemCount - 1}
-          onPress={() => moveItem(item.id, 1)}
-        >
-          <ButtonText variant="outline">Later</ButtonText>
-          <ArrowRight className="size-4" color={foreground} />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onPress={() => removeItem(item.id)}
-        >
-          <Trash2 className="size-4" color={foreground} />
-        </Button>
+        <View className="absolute inset-x-0 top-0 flex-row items-center justify-between bg-black/45 p-2">
+          <View
+            className="h-8 flex-row items-center gap-1 rounded-full px-2"
+            {...panResponder.panHandlers}
+          >
+            <GripVertical className="size-4" color="white" />
+            <Text className="text-xs font-black text-white">{index + 1}</Text>
+          </View>
+          <Pressable
+            className="size-8 items-center justify-center rounded-full bg-black/45"
+            onPress={() => removeItem(item.id)}
+          >
+            <Trash2 className="size-4" color="white" />
+          </Pressable>
+        </View>
+        <MediaStatusOverlay item={item} retryItem={retryItem} />
       </View>
     </View>
   );
@@ -518,16 +578,7 @@ function MediaStatusOverlay({
   item: ComposerItem;
   retryItem: (item: ComposerItem) => void;
 }) {
-  if (item.status === "ready") return null;
-
-  if (item.status === "uploaded") {
-    return (
-      <View className="absolute top-3 right-3 flex-row items-center gap-1 rounded-full bg-black/60 px-3 py-1">
-        <CheckCircle2 className="size-3.5" color="white" />
-        <Text className="text-xs font-bold text-white">Ready</Text>
-      </View>
-    );
-  }
+  if (item.status === "ready" || item.status === "uploaded") return null;
 
   return (
     <View className="absolute inset-0 items-center justify-center bg-black/55 px-6">
@@ -550,80 +601,6 @@ function MediaStatusOverlay({
           </Text>
         </Pressable>
       )}
-    </View>
-  );
-}
-
-function MediaThumb({
-  foreground,
-  index,
-  isSelected,
-  item,
-  onPress,
-}: {
-  foreground: string;
-  index: number;
-  isSelected: boolean;
-  item: ComposerItem;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      className={`border-border h-24 w-20 overflow-hidden rounded-lg border ${
-        isSelected ? "border-primary" : ""
-      }`}
-      onPress={onPress}
-    >
-      {item.file.type === "video" ? (
-        <View className="bg-card size-full items-center justify-center">
-          <Play className="size-5" color={foreground} />
-        </View>
-      ) : (
-        <Image
-          className="size-full"
-          resizeMode="cover"
-          source={{ uri: item.file.uri }}
-        />
-      )}
-      <View className="absolute top-1 left-1 rounded-full bg-black/65 px-2 py-0.5">
-        <Text className="text-[10px] font-black text-white">{index + 1}</Text>
-      </View>
-      {(item.status === "uploading" || item.status === "error") && (
-        <View className="absolute inset-0 items-center justify-center bg-black/45">
-          {item.status === "uploading" ? (
-            <LoaderCircle className="size-4" color="white" />
-          ) : (
-            <CircleAlert className="size-4" color="white" />
-          )}
-        </View>
-      )}
-    </Pressable>
-  );
-}
-
-function UploadSummary({
-  failedCount,
-  totalCount,
-}: {
-  failedCount: number;
-  totalCount: number;
-}) {
-  return (
-    <View className="bg-card border-border flex-row items-center justify-between rounded-lg border px-4 py-3">
-      <Text className="text-foreground text-sm font-bold">
-        {totalCount} selected
-      </Text>
-      <Text
-        className={
-          failedCount > 0
-            ? "text-destructive text-sm font-semibold"
-            : "text-muted-foreground text-sm"
-        }
-      >
-        {failedCount > 0
-          ? `${failedCount} need retry`
-          : "Uploads when you post"}
-      </Text>
     </View>
   );
 }
