@@ -18,6 +18,7 @@ import {
   getUploadUrl,
   validateUploadSize,
 } from "./features/files/upload_session";
+import { ensureUserPermissions } from "./permissions";
 import { authedMutation } from "./utils";
 
 export const createUpload = authedMutation({
@@ -30,6 +31,7 @@ export const createUpload = authedMutation({
     ctx,
     args,
   ): Promise<{ fileId: Id<"files">; uploadUrl: string }> => {
+    await ensureUserPermissions(ctx, ["can-post"]);
     validateUploadSize(args.size);
     const mediaType = getMediaType(args.contentType);
     const uploadToken = crypto.randomUUID();

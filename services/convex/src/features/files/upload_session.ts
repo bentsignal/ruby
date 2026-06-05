@@ -44,12 +44,17 @@ export function validateUploadSession(
   file: Doc<"files"> | null,
   args: {
     contentType: string;
+    expectedStatus: Doc<"files">["status"];
     profileId: Doc<"profiles">["_id"];
     size?: number;
     token: string;
   },
 ): asserts file is Doc<"files"> {
-  if (!file || file.uploadToken !== args.token || file.status !== "pending") {
+  if (
+    !file ||
+    file.uploadToken !== args.token ||
+    file.status !== args.expectedStatus
+  ) {
     throw new ConvexError("Invalid upload session");
   }
   if (file.contentType !== args.contentType) {

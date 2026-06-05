@@ -18,7 +18,7 @@ export const completeUpload = internalMutation({
     const fileId = ctx.db.normalizeId("files", args.fileId);
     if (!fileId) throw new ConvexError("Invalid upload session");
     const file = await ctx.db.get(fileId);
-    validateUploadSession(file, args);
+    validateUploadSession(file, { ...args, expectedStatus: "uploading" });
 
     await ctx.db.patch(fileId, {
       status: "uploaded",
@@ -43,7 +43,10 @@ export const verifyUpload = internalMutation({
     const fileId = ctx.db.normalizeId("files", args.fileId);
     if (!fileId) throw new ConvexError("Invalid upload session");
     const file = await ctx.db.get(fileId);
-    validateUploadSession(file, args);
+    validateUploadSession(file, { ...args, expectedStatus: "pending" });
+    await ctx.db.patch(fileId, {
+      status: "uploading",
+    });
     return file.key;
   },
 });
