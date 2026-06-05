@@ -33,7 +33,10 @@ import type { UIFile } from "@acme/convex/types";
 import { Button, ButtonText } from "@acme/ui-mobile/button";
 
 import { SafeAreaView } from "~/components/safe-area-view";
+import { authClient } from "~/features/auth/lib/auth-client";
 import { useColor } from "~/hooks/use-color";
+
+const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 
 type PickedFile = ImagePicker.ImagePickerAsset;
 interface ComposerItem {
@@ -100,6 +103,17 @@ function getFallbackFileName(file: PickedFile) {
   return `upload-${Date.now()}.${extension}`;
 }
 
+async function getUploadHeaders(contentType: string) {
+  const { data } = await authClient.convex.token({
+    fetchOptions: { throw: false },
+  });
+  if (!data?.token) throw new Error("Unauthenticated");
+  return {
+    Authorization: `Bearer ${data.token}`,
+    "Content-Type": contentType,
+  };
+}
+
 export default function Create() {
   const convex = useConvex();
   const queryClient = useQueryClient();
@@ -134,7 +148,14 @@ export default function Create() {
     if (result.canceled) return;
 
     setError(null);
-    const newItems = result.assets.map((file) => ({
+    const validFiles = result.assets.filter(
+      (file) =>
+        file.fileSize === undefined || file.fileSize <= MAX_UPLOAD_SIZE_BYTES,
+    );
+    if (validFiles.length !== result.assets.length) {
+      setError("Files must be 10 MB or smaller.");
+    }
+    const newItems = validFiles.map((file) => ({
       file,
       id: `${Date.now()}-${Math.random()}`,
       status: "ready" as const,
@@ -160,6 +181,9 @@ export default function Create() {
       const fileName = item.file.fileName ?? getFallbackFileName(item.file);
       const fileResponse = await fetch(item.file.uri);
       const body = await fileResponse.blob();
+      if (body.size > MAX_UPLOAD_SIZE_BYTES) {
+        throw new Error("Files must be 10 MB or smaller.");
+      }
       const { uploadUrl } = await convex.action(createUpload, {
         contentType,
         fileName,
@@ -167,9 +191,7 @@ export default function Create() {
       });
       const uploadResponse = await fetch(uploadUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": contentType,
-        },
+        headers: await getUploadHeaders(contentType),
         body,
       });
       const result = getUploadResult(await uploadResponse.json());

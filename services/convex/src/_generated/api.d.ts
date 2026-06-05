@@ -15,6 +15,7 @@ import type * as files from "../files.js";
 import type * as friends from "../friends.js";
 import type * as http from "../http.js";
 import type * as limiter from "../limiter.js";
+import type * as permissions from "../permissions.js";
 import type * as posts from "../posts.js";
 import type * as profile from "../profile.js";
 import type * as types from "../types.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   friends: typeof friends;
   http: typeof http;
   limiter: typeof limiter;
+  permissions: typeof permissions;
   posts: typeof posts;
   profile: typeof profile;
   types: typeof types;

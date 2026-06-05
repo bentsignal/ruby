@@ -3,16 +3,18 @@ import { ConvexError, v } from "convex/values";
 import { createStorageKeyPrefix } from "@acme/app-config/storage";
 
 import type { Id } from "./_generated/dataModel";
+import type { ActionCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { action, httpAction } from "./_generated/server";
 import { uploadToBunny } from "./bunny";
 import { storageEnv } from "./storage.env";
 
-const MAX_UPLOAD_SIZE_BYTES = 100 * 1024 * 1024;
+const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+type UploadActionCtx = Pick<ActionCtx, "auth" | "runMutation" | "runQuery">;
 
 function corsHeaders() {
   return {
-    "Access-Control-Allow-Headers": "content-type",
+    "Access-Control-Allow-Headers": "authorization, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Origin": "*",
   };
@@ -48,6 +50,76 @@ function getSizeFromRequest(request: Request) {
   return size;
 }
 
+async function ensureCanPostFromAction(ctx: UploadActionCtx) {
+  const user = await ctx.auth.getUserIdentity();
+  if (!user) throw new ConvexError("Unauthenticated");
+  const profile = await ctx.runQuery(internal.permissions.ensureForUser, {
+    permissions: ["can-post"],
+    userId: user.subject,
+  });
+  return { profile, user };
+}
+
+async function getUploadPermission(ctx: UploadActionCtx) {
+  try {
+    return { result: await ensureCanPostFromAction(ctx) };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unauthenticated";
+    const status = message === "Unauthenticated" ? 401 : 403;
+    return { response: jsonResponse({ error: message }, status) };
+  }
+}
+
+function hasUploadPermission(
+  permission: Awaited<ReturnType<typeof getUploadPermission>>,
+): permission is {
+  result: Awaited<ReturnType<typeof ensureCanPostFromAction>>;
+} {
+  return "result" in permission;
+}
+
+async function storeUpload(
+  ctx: UploadActionCtx,
+  request: Request,
+  args: {
+    contentType: string;
+    fileId: string;
+    profileId: Id<"profiles">;
+    token: string;
+  },
+) {
+  try {
+    const body = await request.arrayBuffer();
+    if (body.byteLength > MAX_UPLOAD_SIZE_BYTES) {
+      return jsonResponse({ error: "File is too large" }, 413);
+    }
+    const uploadedSize = body.byteLength;
+    await uploadToBunny({
+      body,
+      contentType: args.contentType,
+      key: await ctx.runMutation(internal.fileMutations.verifyUpload, {
+        contentType: args.contentType,
+        fileId: args.fileId,
+        profileId: args.profileId,
+        size: uploadedSize,
+        token: args.token,
+      }),
+    });
+
+    const file = await ctx.runMutation(internal.fileMutations.completeUpload, {
+      contentType: args.contentType,
+      fileId: args.fileId,
+      profileId: args.profileId,
+      size: uploadedSize,
+      token: args.token,
+    });
+    return jsonResponse({ file });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Upload failed";
+    return jsonResponse({ error: message }, 400);
+  }
+}
+
 export const createUpload = action({
   args: {
     contentType: v.string(),
@@ -58,8 +130,7 @@ export const createUpload = action({
     ctx,
     args,
   ): Promise<{ fileId: Id<"files">; uploadUrl: string }> => {
-    const user = await ctx.auth.getUserIdentity();
-    if (!user) throw new ConvexError("Unauthenticated");
+    const { profile, user } = await ensureCanPostFromAction(ctx);
     if (args.size <= 0 || args.size > MAX_UPLOAD_SIZE_BYTES) {
       throw new ConvexError("File is too large");
     }
@@ -79,9 +150,9 @@ export const createUpload = action({
       fileName: args.fileName,
       key,
       mediaType,
+      profileId: profile._id,
       size: args.size,
       uploadToken,
-      userId: user.subject,
     });
     const uploadUrl = new URL("/api/files/upload", storageEnv.CONVEX_SITE_URL);
     uploadUrl.searchParams.set("fileId", fileId);
@@ -94,7 +165,7 @@ export const createUpload = action({
   },
 });
 
-export const upload = httpAction(async (ctx, request) => {
+export const upload = httpAction(async (ctx: UploadActionCtx, request) => {
   if (request.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders() });
   }
@@ -109,6 +180,11 @@ export const upload = httpAction(async (ctx, request) => {
     request.headers.get("content-type") ?? "application/octet-stream";
   const size = getSizeFromRequest(request);
 
+  const permission = await getUploadPermission(ctx);
+  if (!hasUploadPermission(permission)) {
+    return permission.response;
+  }
+
   if (!fileId || !token) {
     return jsonResponse({ error: "Missing upload session" }, 401);
   }
@@ -116,28 +192,10 @@ export const upload = httpAction(async (ctx, request) => {
     return jsonResponse({ error: "File is too large" }, 413);
   }
 
-  try {
-    const body = await request.arrayBuffer();
-    await uploadToBunny({
-      body,
-      contentType,
-      key: await ctx.runMutation(internal.fileMutations.verifyUpload, {
-        contentType,
-        fileId,
-        size,
-        token,
-      }),
-    });
-
-    const file = await ctx.runMutation(internal.fileMutations.completeUpload, {
-      contentType,
-      fileId,
-      size,
-      token,
-    });
-    return jsonResponse({ file });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Upload failed";
-    return jsonResponse({ error: message }, 400);
-  }
+  return await storeUpload(ctx, request, {
+    contentType,
+    fileId,
+    profileId: permission.result.profile._id,
+    token,
+  });
 });

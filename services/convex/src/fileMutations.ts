@@ -10,17 +10,11 @@ export const createPending = internalMutation({
     fileName: v.string(),
     key: v.string(),
     mediaType: v.union(v.literal("image"), v.literal("video")),
+    profileId: v.id("profiles"),
     size: v.number(),
     uploadToken: v.string(),
-    userId: v.string(),
   },
   handler: async (ctx, args) => {
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .first();
-    if (!profile) throw new ConvexError("Profile not found");
-
     return await ctx.db.insert("files", {
       contentType: args.contentType,
       fileName: args.fileName,
@@ -29,7 +23,7 @@ export const createPending = internalMutation({
       size: args.size,
       status: "pending",
       uploadToken: args.uploadToken,
-      uploadedBy: profile._id,
+      uploadedBy: args.profileId,
       url: createPublicUrl(args.key),
     });
   },
@@ -39,6 +33,7 @@ export const completeUpload = internalMutation({
   args: {
     contentType: v.string(),
     fileId: v.string(),
+    profileId: v.id("profiles"),
     size: v.optional(v.number()),
     token: v.string(),
   },
@@ -63,6 +58,7 @@ export const verifyUpload = internalMutation({
   args: {
     contentType: v.string(),
     fileId: v.string(),
+    profileId: v.id("profiles"),
     size: v.optional(v.number()),
     token: v.string(),
   },
@@ -79,6 +75,7 @@ function validateUploadSession(
   file: Doc<"files"> | null,
   args: {
     contentType: string;
+    profileId: Doc<"profiles">["_id"];
     size?: number;
     token: string;
   },
@@ -88,6 +85,9 @@ function validateUploadSession(
   }
   if (file.contentType !== args.contentType) {
     throw new ConvexError("Upload content type does not match session");
+  }
+  if (file.uploadedBy !== args.profileId) {
+    throw new ConvexError("Invalid upload session");
   }
   if (args.size !== undefined && args.size > file.size) {
     throw new ConvexError("Upload size does not match session");

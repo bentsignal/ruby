@@ -38,6 +38,10 @@ import { Button } from "@acme/ui-web/button";
 import * as Dialog from "@acme/ui-web/dialog";
 import * as Tooltip from "@acme/ui-web/tooltip";
 
+import { authClient } from "~/features/auth/lib/client";
+
+const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+
 const createUpload = makeFunctionReference<
   "action",
   { contentType: string; fileName: string; size: number },
@@ -85,6 +89,17 @@ function isMediaFile(file: File) {
   return file.type.startsWith("image/") || file.type.startsWith("video/");
 }
 
+async function getUploadHeaders(contentType: string) {
+  const { data } = await authClient.convex.token({
+    fetchOptions: { throw: false },
+  });
+  if (!data?.token) throw new Error("Unauthenticated");
+  return {
+    Authorization: `Bearer ${data.token}`,
+    "Content-Type": contentType,
+  };
+}
+
 export function CreateComposer() {
   const convex = useConvex();
   const navigate = useNavigate();
@@ -106,12 +121,17 @@ export function CreateComposer() {
   function addFiles(fileList: FileList | File[]) {
     const files = Array.from(fileList);
     const mediaFiles = files.filter(isMediaFile);
-    setError(
-      mediaFiles.length === files.length
-        ? null
-        : "Only photos and videos can be added to a post.",
+    const validFiles = mediaFiles.filter(
+      (file) => file.size <= MAX_UPLOAD_SIZE_BYTES,
     );
-    const newItems = mediaFiles.map((file) => {
+    setError(
+      mediaFiles.length !== files.length
+        ? "Only photos and videos can be added to a post."
+        : validFiles.length === mediaFiles.length
+          ? null
+          : "Files must be 10 MB or smaller.",
+    );
+    const newItems = validFiles.map((file) => {
       const previewUrl = URL.createObjectURL(file);
       previewUrlsRef.current.add(previewUrl);
       return {
@@ -135,7 +155,7 @@ export function CreateComposer() {
       });
       const response = await fetch(uploadUrl, {
         body: item.file,
-        headers: { "Content-Type": contentType },
+        headers: await getUploadHeaders(contentType),
         method: "POST",
       });
       const result = getUploadResult(await response.json());

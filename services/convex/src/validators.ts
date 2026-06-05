@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 
+const vPermission = v.union(v.literal("can-access-app"), v.literal("can-post"));
+
 const vProfile = v.object({
   userId: v.string(),
   name: v.string(),
@@ -7,6 +9,7 @@ const vProfile = v.object({
   image: v.optional(v.string()),
   bio: v.optional(v.string()),
   link: v.optional(v.string()),
+  permissions: v.optional(v.array(vPermission)),
   searchTerm: v.string(),
 });
 
@@ -62,4 +65,5 @@ export {
   vFile,
   vFriendship,
   vFriendshipStatus,
+  vPermission,
 };

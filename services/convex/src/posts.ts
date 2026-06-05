@@ -3,6 +3,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { UIImage } from "./types";
 import type { AuthedMutationCtx, AuthedQueryCtx } from "./utils";
+import { ensureUserPermissions } from "./permissions";
 import { DeletedProfile, getPublicProfile } from "./profile";
 import { authedMutation, authedQuery } from "./utils";
 
@@ -15,6 +16,7 @@ export const create = authedMutation({
     fileIds: v.array(v.id("files")),
   },
   handler: async (ctx, args) => {
+    await ensureUserPermissions(ctx, ["can-post"]);
     const caption = validatePostInput(args.caption, args.fileIds);
     await validatePostFiles(ctx, args.fileIds);
 
