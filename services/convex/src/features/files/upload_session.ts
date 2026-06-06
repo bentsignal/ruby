@@ -1,14 +1,19 @@
 import { ConvexError } from "convex/values";
 
-import { createStorageKeyPrefix } from "@acme/app-config/storage";
+import {
+  POST_MEDIA_TYPES,
+  POST_UPLOAD_MAX_SIZE_BYTES,
+} from "@acme/config/posts";
+import { createStorageKeyPrefix } from "@acme/config/storage";
 
 import type { Doc, Id } from "../../_generated/dataModel";
 import { storageEnv } from "../../storage.env";
-import { MAX_UPLOAD_SIZE_BYTES } from "./constants";
 
 export function getMediaType(contentType: string) {
-  if (contentType.startsWith("image/")) return "image";
-  if (contentType.startsWith("video/")) return "video";
+  const mediaType = POST_MEDIA_TYPES.find((type) =>
+    contentType.startsWith(`${type}/`),
+  );
+  if (mediaType) return mediaType;
   throw new ConvexError("Only image and video uploads are supported");
 }
 
@@ -35,7 +40,7 @@ export function getUploadUrl(args: { fileId: Id<"files">; token: string }) {
 }
 
 export function validateUploadSize(size: number) {
-  if (size <= 0 || size > MAX_UPLOAD_SIZE_BYTES) {
+  if (size <= 0 || size > POST_UPLOAD_MAX_SIZE_BYTES) {
     throw new ConvexError("File is too large");
   }
 }

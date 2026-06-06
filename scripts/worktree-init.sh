@@ -17,12 +17,12 @@ fi
 
 WORKTREE_ID="$("$NEW_WT/scripts/worktree-id.sh")"
 
-cat > shared/app-config/src/overrides.ts <<EOF
+cat > shared/config/src/overrides.ts <<EOF
 export const convexCloudUrl: string | undefined = undefined;
 export const worktreeId: string | undefined = "${WORKTREE_ID}";
 EOF
 echo "generated overrides.ts (worktreeId=${WORKTREE_ID})"
-git update-index --skip-worktree shared/app-config/src/overrides.ts
+git update-index --skip-worktree shared/config/src/overrides.ts
 echo "marked overrides.ts as skip-worktree"
 
 pnpm install

@@ -1,10 +1,9 @@
 import { ConvexError } from "convex/values";
 
+import { POST_CAPTION_MAX_LENGTH, POST_MAX_FILES } from "@acme/config/posts";
+
 import type { Id } from "../../_generated/dataModel";
 import type { AuthedMutationCtx } from "../../utils";
-
-const MAX_CAPTION_LENGTH = 2_200;
-const MAX_POST_FILES = 20;
 
 export function validatePostInput(
   rawCaption: string | undefined,
@@ -14,10 +13,10 @@ export function validatePostInput(
   if (!caption && fileIds.length === 0) {
     throw new ConvexError("Add media or a caption before posting");
   }
-  if (caption && caption.length > MAX_CAPTION_LENGTH) {
+  if (caption && caption.length > POST_CAPTION_MAX_LENGTH) {
     throw new ConvexError("Caption is too long");
   }
-  if (fileIds.length > MAX_POST_FILES) {
+  if (fileIds.length > POST_MAX_FILES) {
     throw new ConvexError("Too many files");
   }
   if (new Set(fileIds).size !== fileIds.length) {

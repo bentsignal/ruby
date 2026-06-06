@@ -6,11 +6,14 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 
+import {
+  POST_UPLOAD_MAX_SIZE_BYTES,
+  POST_UPLOAD_MAX_SIZE_LABEL,
+} from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
 import type { ComposerItem } from "../types";
 import { useColor } from "~/hooks/use-color";
-import { MAX_UPLOAD_SIZE_BYTES } from "../utils/upload-files";
 import { useMediaReorder } from "./use-media-reorder";
 import { useUploadItem } from "./use-upload-item";
 
@@ -53,7 +56,7 @@ export function useCreateComposer() {
     setError(null);
     const validFiles = result.assets.filter(isAllowedFileSize);
     if (validFiles.length !== result.assets.length) {
-      setError("Files must be 10 MB or smaller.");
+      setError(`Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`);
     }
     setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
     void Haptics.selectionAsync();
@@ -130,7 +133,9 @@ function getErrorMessage(caughtError: unknown, fallback: string) {
 }
 
 function isAllowedFileSize(file: ImagePicker.ImagePickerAsset) {
-  return file.fileSize === undefined || file.fileSize <= MAX_UPLOAD_SIZE_BYTES;
+  return (
+    file.fileSize === undefined || file.fileSize <= POST_UPLOAD_MAX_SIZE_BYTES
+  );
 }
 
 function patchItem({

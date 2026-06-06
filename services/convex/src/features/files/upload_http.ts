@@ -1,10 +1,11 @@
 import { ConvexError } from "convex/values";
 
+import { POST_UPLOAD_MAX_SIZE_BYTES } from "@acme/config/posts";
+
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { ActionCtx } from "../../_generated/server";
 import { internal } from "../../_generated/api";
 import { uploadToBunny } from "../../bunny";
-import { MAX_UPLOAD_SIZE_BYTES } from "./constants";
 
 type UploadActionCtx = Pick<ActionCtx, "auth" | "runMutation" | "runQuery">;
 type UploadPermission =
@@ -67,7 +68,7 @@ export async function storeUpload(
 ) {
   try {
     const body = await request.arrayBuffer();
-    if (body.byteLength > MAX_UPLOAD_SIZE_BYTES) {
+    if (body.byteLength > POST_UPLOAD_MAX_SIZE_BYTES) {
       return jsonResponse({ error: "File is too large" }, 413);
     }
     const uploadedSize = body.byteLength;

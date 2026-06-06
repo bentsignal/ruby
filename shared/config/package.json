@@ -1,8 +1,9 @@
 {
-  "name": "@acme/app-config",
+  "name": "@acme/config",
   "private": true,
   "type": "module",
   "exports": {
+    "./posts": "./src/posts.ts",
     "./storage": "./src/storage.ts",
     "./urls": "./src/urls.ts"
   },

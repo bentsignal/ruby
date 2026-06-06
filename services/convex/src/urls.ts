@@ -1,4 +1,4 @@
-import { createUrls } from "@acme/app-config/urls";
+import { createUrls } from "@acme/config/urls";
 
 import { env } from "./convex.env";
 

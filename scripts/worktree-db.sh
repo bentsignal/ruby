@@ -73,15 +73,15 @@ export const sharedAuthJwksUri: string | undefined = "${SHARED_AUTH_JWKS_URI}";
 EOF
 echo "generated auth.shared.ts (sharedAuthIssuer=${SHARED_AUTH_JWT_ISSUER})"
 
-# Generate the app-config overrides with worktree-specific values
+# Generate the config overrides with worktree-specific values
 NEW_CONVEX_URL="$(grep '^CONVEX_URL=' services/convex/.env.local | cut -d= -f2-)"
 
-cat > shared/app-config/src/overrides.ts <<EOF
+cat > shared/config/src/overrides.ts <<EOF
 export const convexCloudUrl: string | undefined = "${NEW_CONVEX_URL}";
 export const worktreeId: string | undefined = "${PORTLESS_WORKTREE_ID}";
 EOF
 echo "generated overrides.ts (convexCloudUrl=${NEW_CONVEX_URL}, worktreeId=${PORTLESS_WORKTREE_ID})"
-git update-index --skip-worktree shared/app-config/src/overrides.ts
+git update-index --skip-worktree shared/config/src/overrides.ts
 echo "marked overrides.ts as skip-worktree"
 
 cd "$NEW_WT"

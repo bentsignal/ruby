@@ -1,9 +1,10 @@
 import { v } from "convex/values";
 
+import { POST_UPLOAD_MAX_SIZE_BYTES } from "@acme/config/posts";
+
 import type { Id } from "./_generated/dataModel";
 import { httpAction } from "./_generated/server";
 import { createPublicUrl } from "./bunny";
-import { MAX_UPLOAD_SIZE_BYTES } from "./features/files/constants";
 import {
   corsHeaders,
   getSizeFromRequest,
@@ -83,7 +84,7 @@ export const upload = httpAction(async (ctx, request) => {
   if (!fileId || !token) {
     return jsonResponse({ error: "Missing upload session" }, 401);
   }
-  if (size !== undefined && size > MAX_UPLOAD_SIZE_BYTES) {
+  if (size !== undefined && size > POST_UPLOAD_MAX_SIZE_BYTES) {
     return jsonResponse({ error: "File is too large" }, 413);
   }
 

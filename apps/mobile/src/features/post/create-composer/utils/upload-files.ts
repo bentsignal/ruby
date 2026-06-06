@@ -3,8 +3,6 @@ import type { UIFile } from "@acme/convex/types";
 import type { PickedFile } from "../types";
 import { authClient } from "~/features/auth/lib/auth-client";
 
-export const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
-
 export function getFallbackContentType(file: PickedFile) {
   if (file.type === "video") return "video/mp4";
 

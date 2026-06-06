@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 
+import { POST_UPLOAD_MAX_SIZE_BYTES } from "@acme/config/posts";
+
 import type { ComposerItem } from "../types";
 import {
   createComposerItem,
   getFileValidationError,
   isMediaFile,
-  MAX_UPLOAD_SIZE_BYTES,
   reorderItems,
 } from "../lib/composer-items";
 
@@ -21,7 +22,7 @@ export function useComposerItems({
     const files = Array.from(fileList);
     const mediaFiles = files.filter(isMediaFile);
     const validFiles = mediaFiles.filter(
-      (file) => file.size <= MAX_UPLOAD_SIZE_BYTES,
+      (file) => file.size <= POST_UPLOAD_MAX_SIZE_BYTES,
     );
 
     setError(getFileValidationError(files, mediaFiles));

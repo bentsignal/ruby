@@ -14,7 +14,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@acme/app-config": "workspace:*",
+    "@acme/config": "workspace:*",
     "@acme/convex": "workspace:*",
     "@acme/features": "workspace:*",
     "@acme/std": "workspace:*",

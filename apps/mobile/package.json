@@ -16,7 +16,7 @@
     "install:ios-sim": "xcrun simctl install booted ./Ruby.app"
   },
   "dependencies": {
-    "@acme/app-config": "workspace:*",
+    "@acme/config": "workspace:*",
     "@acme/convex": "workspace:*",
     "@acme/features": "workspace:*",
     "@acme/std": "workspace:*",

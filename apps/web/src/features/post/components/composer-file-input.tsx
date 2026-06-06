@@ -1,5 +1,7 @@
 import type { RefObject } from "react";
 
+import { POST_UPLOAD_ACCEPT } from "@acme/config/posts";
+
 export function ComposerFileInput({
   inputRef,
   onFiles,
@@ -10,7 +12,7 @@ export function ComposerFileInput({
   return (
     <input
       ref={inputRef}
-      accept="image/*,video/*"
+      accept={POST_UPLOAD_ACCEPT}
       className="sr-only"
       multiple
       type="file"

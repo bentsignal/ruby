@@ -1,19 +1,26 @@
 import { arrayMove } from "@dnd-kit/sortable";
 
+import {
+  POST_MEDIA_TYPES,
+  POST_UPLOAD_ALLOWED_MEDIA_LABEL,
+  POST_UPLOAD_MAX_SIZE_BYTES,
+  POST_UPLOAD_MAX_SIZE_LABEL,
+} from "@acme/config/posts";
+
 import type { ComposerItem } from "../types";
 
-export const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
-
 export function isMediaFile(file: File) {
-  return file.type.startsWith("image/") || file.type.startsWith("video/");
+  return POST_MEDIA_TYPES.some((mediaType) =>
+    file.type.startsWith(`${mediaType}/`),
+  );
 }
 
 export function getFileValidationError(files: File[], mediaFiles: File[]) {
   if (mediaFiles.length !== files.length) {
-    return "Only photos and videos can be added to a post.";
+    return `Only ${POST_UPLOAD_ALLOWED_MEDIA_LABEL} can be added to a post.`;
   }
-  if (mediaFiles.some((file) => file.size > MAX_UPLOAD_SIZE_BYTES)) {
-    return "Files must be 10 MB or smaller.";
+  if (mediaFiles.some((file) => file.size > POST_UPLOAD_MAX_SIZE_BYTES)) {
+    return `Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`;
   }
   return null;
 }

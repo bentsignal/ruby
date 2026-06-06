@@ -1,5 +1,9 @@
 import { useConvexMutation } from "@convex-dev/react-query";
 
+import {
+  POST_UPLOAD_MAX_SIZE_BYTES,
+  POST_UPLOAD_MAX_SIZE_LABEL,
+} from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
 import type { ComposerItem } from "../types";
@@ -8,7 +12,6 @@ import {
   getFallbackFileName,
   getUploadHeaders,
   getUploadResult,
-  MAX_UPLOAD_SIZE_BYTES,
 } from "../utils/upload-files";
 
 export function useUploadItem({
@@ -45,8 +48,10 @@ export function useUploadItem({
     const fileName = item.file.fileName ?? getFallbackFileName(item.file);
     const fileResponse = await fetch(item.file.uri);
     const body = await fileResponse.blob();
-    if (body.size > MAX_UPLOAD_SIZE_BYTES) {
-      throw new Error("Files must be 10 MB or smaller.");
+    if (body.size > POST_UPLOAD_MAX_SIZE_BYTES) {
+      throw new Error(
+        `Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`,
+      );
     }
 
     const { uploadUrl } = await createUpload({

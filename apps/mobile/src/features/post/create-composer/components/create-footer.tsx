@@ -1,6 +1,8 @@
 import { Pressable, Text, TextInput, View } from "react-native";
 import { Plus } from "lucide-react-native";
 
+import { POST_CAPTION_MAX_LENGTH } from "@acme/config/posts";
+
 export function CreateFooter({
   caption,
   error,
@@ -73,7 +75,7 @@ function CaptionInput({
       <Text className="text-foreground text-sm font-bold">Caption</Text>
       <TextInput
         className="bg-card border-border text-foreground min-h-40 rounded-lg border p-4 text-base leading-6"
-        maxLength={2200}
+        maxLength={POST_CAPTION_MAX_LENGTH}
         multiline
         placeholder="Tell the story behind this stop."
         placeholderTextColor={mutedForeground}
@@ -82,7 +84,7 @@ function CaptionInput({
         onChangeText={setCaption}
       />
       <Text className="text-muted-foreground self-end text-xs">
-        {caption.length}/2200
+        {caption.length}/{POST_CAPTION_MAX_LENGTH}
       </Text>
     </View>
   );
