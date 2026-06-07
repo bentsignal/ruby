@@ -45,8 +45,7 @@
     "better-auth": "catalog:",
     "convex": "catalog:",
     "convex-env": "^2.3.0",
-    "convex-helpers": "^0.1.108",
-    "uploadthing": "^7.7.4"
+    "convex-helpers": "^0.1.108"
   },
   "peerDependencies": {
     "react": "catalog:react19"

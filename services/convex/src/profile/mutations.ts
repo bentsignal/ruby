@@ -1,7 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
 import type { MutationCtx } from "../_generated/server";
-import { internal } from "../_generated/api";
 import { internalMutation, mutation } from "../_generated/server";
 
 async function generateUsername(ctx: MutationCtx, name: string) {
@@ -43,12 +42,6 @@ export const ensureProfileExists = mutation({
       searchTerm: `${username} ${name}`,
     });
 
-    if (user.pictureUrl) {
-      await ctx.scheduler.runAfter(0, internal.files.uploadthing.uploadPFP, {
-        profileId,
-        url: user.pictureUrl,
-      });
-    }
     const profile = await ctx.db.get("profiles", profileId);
     if (!profile) {
       throw new ConvexError("Failed to create new profile");
