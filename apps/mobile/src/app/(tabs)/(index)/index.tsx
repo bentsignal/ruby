@@ -1,41 +1,58 @@
-// import { useQuery } from "@tanstack/react-query";
-// import { useConvex } from "convex/react";
+import type { LegendListRenderItemProps } from "@legendapp/list";
+import { Image, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+// eslint-disable-next-line no-restricted-imports -- Expo Router tab screens fetch after auth context is mounted.
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { LegendList } from "@legendapp/list";
 
-// import { api } from "@acme/convex/api";
+import type { UIPost } from "@acme/convex/posts/types";
+import { api } from "@acme/convex/api";
 
-import { Platform, Text } from "react-native";
-import { router } from "expo-router";
-
-import { Button, ButtonText } from "@acme/ui-mobile/button";
-
-import { SafeAreaView } from "~/components/safe-area-view";
-
-// import { PostList } from "~/features/post/molecules/post-list";
+import { Post } from "~/features/post/components/post";
+import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
-  // const convex = useConvex();
+  const { data } = useQuery({
+    ...convexQuery(api.posts.queries.getAll, {}),
+    select: (posts) => posts,
+  });
 
-  // const { data } = useQuery({
-  //   queryKey: ["posts"],
-  //   queryFn: async () => await convex.query(api.posts.getAll),
-  // });
+  const posts = data ?? [];
 
-  // const posts = data ?? [];
+  const inset = useSafeAreaInsets();
 
-  // return <PostList posts={posts} />;
-  // return <PostList posts={[]} />;
   return (
-    <SafeAreaView>
-      {__DEV__ && (
-        <Button onPress={() => router.push("/_sitemap")}>
-          <ButtonText>Sitemap</ButtonText>
-        </Button>
-      )}
-      {__DEV__ && Platform.OS === "android" && (
-        <Text className="bg-card border-border m-3 rounded-lg border p-3 text-center text-red-500">
-          Make sure to run `nr android:forward` before trying to sign in.
-        </Text>
-      )}
-    </SafeAreaView>
+    <LegendList
+      data={posts}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      style={{ flex: 1 }}
+      ListHeaderComponent={<ListHeader topPadding={inset.top} />}
+      contentContainerStyle={{
+        paddingBottom: inset.bottom + 24,
+      }}
+      recycleItems={true}
+    />
   );
+}
+
+function ListHeader({ topPadding }: { topPadding: number }) {
+  return (
+    <View className="items-center pb-6" style={{ paddingTop: topPadding }}>
+      <Image
+        accessibilityLabel="Ruby"
+        source={roundedIcon}
+        style={{ borderRadius: 24, height: 48, width: 48 }}
+      />
+    </View>
+  );
+}
+
+function renderItem(props: LegendListRenderItemProps<UIPost>) {
+  return <Post post={props.item} />;
+}
+
+function keyExtractor(post: UIPost) {
+  return post._id;
 }

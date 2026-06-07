@@ -6,7 +6,7 @@ import { usePaginatedQuery } from "convex/react";
 import { Loader } from "lucide-react";
 import { z } from "zod/v4";
 
-import type { UIProfile } from "@acme/convex/types";
+import type { UIProfile } from "@acme/convex/profile/types";
 import { api } from "@acme/convex/api";
 
 import { QuickLink } from "~/components/quick-link";
@@ -63,7 +63,7 @@ function useSearchResults() {
     status: loadingStatus,
     loadMore,
   } = usePaginatedQuery(
-    api.profile.search,
+    api.profile.queries.search,
     debouncedSearchTerm.length > 0
       ? { searchTerm: debouncedSearchTerm }
       : "skip",

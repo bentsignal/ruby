@@ -10,11 +10,7 @@ if [ "$git_dir" = "$git_common_dir" ]; then
   exit 1
 fi
 
-if [ -n "$branch" ] && [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
-  raw_id="${branch##*/}"
-else
-  raw_id="$(basename "$git_dir")"
-fi
+raw_id="$(basename "$git_dir")"
 
 worktree_id="$(printf '%s\n' "$raw_id" \
   | tr '[:upper:]' '[:lower:]' \

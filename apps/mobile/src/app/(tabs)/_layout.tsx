@@ -1,16 +1,15 @@
-import { Pressable } from "react-native";
+import type { ComponentType } from "react";
 import { Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
-import { useColor } from "~/hooks/use-color";
-import { useRedirect } from "~/hooks/use-redirect";
+import { MobileTabBar } from "~/components/mobile-tab-bar";
 
 function TabIcon({
   icon: Icon,
   color,
   focused,
 }: {
-  icon: React.ElementType;
+  icon: ComponentType<{ color: string; size: number; strokeWidth: number }>;
   color: string;
   focused: boolean;
 }) {
@@ -18,49 +17,20 @@ function TabIcon({
 }
 
 export default function TabLayout() {
-  const sidebar = useColor("sidebar");
-  const sidebarActiveColor = useColor("sidebar-accent-foreground");
-  const sidebarInactiveColor = useColor("sidebar-foreground");
-  const sidebarBorder = useColor("sidebar-border");
-
-  const { redirectIfNotSignedIn } = useRedirect();
-
   return (
     <Tabs
+      tabBar={(props) => <MobileTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: "transparent" },
-        tabBarStyle: {
-          backgroundColor: sidebar,
-          borderTopWidth: 1,
-          paddingTop: 4,
-          borderTopColor: sidebarBorder,
-        },
-        tabBarActiveTintColor: sidebarActiveColor,
-        tabBarInactiveTintColor: sidebarInactiveColor,
         tabBarShowLabel: false,
-        tabBarButton: (props) => {
-          const { onPress, children, ref: _ref, href, ...rest } = props;
-          return (
-            <Pressable
-              {...rest}
-              onPress={(e) => {
-                redirectIfNotSignedIn({
-                  redirectURL: href,
-                  ifSignedIn: () => onPress?.(e),
-                });
-              }}
-            >
-              {children}
-            </Pressable>
-          );
-        },
       }}
     >
       <Tabs.Screen
         name="(index)"
         options={{
           tabBarLabel: "Home",
+          tabBarAccessibilityLabel: "Home",
           animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={House} color={color} focused={focused} />
@@ -71,6 +41,7 @@ export default function TabLayout() {
         name="(search)"
         options={{
           tabBarLabel: "Search",
+          tabBarAccessibilityLabel: "Search",
           animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={SearchIcon} color={color} focused={focused} />
@@ -81,6 +52,7 @@ export default function TabLayout() {
         name="(notifications)"
         options={{
           tabBarLabel: "Notifications",
+          tabBarAccessibilityLabel: "Notifications",
           animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={BellIcon} color={color} focused={focused} />
@@ -91,10 +63,19 @@ export default function TabLayout() {
         name="(my-profile)"
         options={{
           tabBarLabel: "Profile",
+          tabBarAccessibilityLabel: "Profile",
           animation: "none",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon icon={UserRound} color={color} focused={focused} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="create"
+        options={{
+          tabBarLabel: "Create",
+          tabBarAccessibilityLabel: "Create post",
+          animation: "none",
         }}
       />
     </Tabs>

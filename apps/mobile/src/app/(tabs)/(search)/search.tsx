@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LegendList } from "@legendapp/list";
 
-import type { UIProfile } from "@acme/convex/types";
+import type { UIProfile } from "@acme/convex/profile/types";
 
 import { LoadingSpinner } from "~/components/loading-spinner";
 import { SafeAreaView } from "~/components/safe-area-view";
@@ -28,11 +28,13 @@ export default function SearchPage() {
 
 function SearchBar() {
   return (
-    <Container className="absolute bottom-0 left-0 mx-4 mb-4">
-      <Icon />
-      <Input />
-      <ClearButton />
-    </Container>
+    <SafeAreaView className="absolute top-0 right-0 left-0 z-10">
+      <Container className="mx-4 mt-3">
+        <Icon />
+        <Input />
+        <ClearButton />
+      </Container>
+    </SafeAreaView>
   );
 }
 
@@ -73,10 +75,10 @@ function SearchPageResults() {
       onEndReachedThreshold={0.75}
       maintainVisibleContentPosition={true}
       contentContainerStyle={{
-        paddingBottom: insets.bottom + 36,
+        paddingBottom: insets.bottom + 96,
       }}
       recycleItems={true}
-      ListHeaderComponent={<View style={{ height: insets.top }} />}
+      ListHeaderComponent={<View style={{ height: insets.top + 64 }} />}
       ListFooterComponent={
         showLoadingSpinner ? (
           <View className="my-2 h-10 w-full items-center justify-center">

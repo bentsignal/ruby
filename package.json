@@ -15,7 +15,7 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "git clean -xdf node_modules .turbo",
-    "clean:workspaces": "turbo run clean",
+    "clean:all": "turbo run clean",
     "dev": "portless proxy start && turbo run dev --parallel --continue",
     "dev:next": "portless proxy start && turbo run dev --parallel --continue -F @acme/web...",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",

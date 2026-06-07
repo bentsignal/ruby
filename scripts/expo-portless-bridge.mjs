@@ -47,7 +47,8 @@ const metroPort = await getFreePort();
 const metroOrigin = `http://127.0.0.1:${metroPort}`;
 
 function rewriteBody(body) {
-  return body
+  return normalizeNativeBundleUrls(
+    body
     .replaceAll(`https://127.0.0.1:${metroPort}`, publicOrigin)
     .replaceAll(`http://127.0.0.1:${metroPort}`, publicOrigin)
     .replaceAll(`https://localhost:${metroPort}`, publicOrigin)
@@ -56,7 +57,24 @@ function rewriteBody(body) {
     .replaceAll(`http://${publicHost}:${metroPort}`, publicOrigin)
     .replaceAll(`${publicHost}:${metroPort}`, publicHost)
     .replaceAll(`127.0.0.1:${metroPort}`, publicHost)
-    .replaceAll(`localhost:${metroPort}`, publicHost);
+      .replaceAll(`localhost:${metroPort}`, publicHost),
+  );
+}
+
+function normalizeNativeBundleUrls(body) {
+  return body.replaceAll(
+    /https?:\/\/[^\s"'<>\\]+?\.bundle\?[^\s"'<>\\]+/g,
+    (value) => {
+      const url = new URL(value);
+      const platform = url.searchParams.get("platform");
+
+      if (platform === "ios" || platform === "android") {
+        url.searchParams.set("lazy", "false");
+      }
+
+      return url.toString();
+    },
+  );
 }
 
 function getMetroRequestPath(req) {
@@ -79,6 +97,7 @@ function proxyRequest(req, res) {
   headers["x-forwarded-host"] = publicHost;
   headers["x-forwarded-proto"] = publicProto;
   headers["x-forwarded-port"] = publicProto === "https" ? "443" : "80";
+  delete headers["accept-encoding"];
 
   const proxyReq = http.request(
     {
@@ -109,6 +128,7 @@ function proxyRequest(req, res) {
 
         const rewritten = Buffer.from(rewriteBody(body.toString("utf8")));
         delete responseHeaders["content-length"];
+        delete responseHeaders["content-encoding"];
         res.writeHead(proxyRes.statusCode ?? 502, responseHeaders);
         res.end(rewritten);
       });

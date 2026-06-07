@@ -10,7 +10,11 @@
     "./model": {
       "types": "./src/_generated/dataModel.d.ts"
     },
-    "./types": "./src/types.ts"
+    "./files/types": "./src/files/types.ts",
+    "./friends/types": "./src/friends/types.ts",
+    "./images/types": "./src/images/types.ts",
+    "./posts/types": "./src/posts/types.ts",
+    "./profile/types": "./src/profile/types.ts"
   },
   "scripts": {
     "build": "convex deploy",
@@ -34,7 +38,7 @@
   },
   "prettier": "@acme/prettier-config",
   "dependencies": {
-    "@acme/app-config": "workspace:*",
+    "@acme/config": "workspace:*",
     "@better-auth/expo": "catalog:",
     "@convex-dev/better-auth": "catalog:",
     "@convex-dev/rate-limiter": "^0.3.2",

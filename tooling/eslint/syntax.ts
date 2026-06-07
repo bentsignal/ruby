@@ -135,10 +135,29 @@ const reactImportRestrictions = [
   },
 ] as const;
 
+const mobileSyntaxSelectors = [
+  {
+    selector:
+      "CallExpression[callee.object.name='StyleSheet'][callee.property.name='create']",
+    message:
+      "Do not use StyleSheet.create in the mobile app. Use Tailwind/Uniwind className styles instead.",
+  },
+] as const;
+
+const mobileImportRestrictions = [
+  {
+    name: "react-native",
+    importNames: ["StyleSheet"],
+    message:
+      "Do not use StyleSheet in the mobile app. Use Tailwind/Uniwind className styles instead.",
+  },
+] as const;
+
 export function createStrictSyntax(options: {
   ts?: boolean;
   react?: boolean;
   env?: boolean;
+  mobile?: boolean;
 }) {
   const syntaxSelectors = [];
   const importPaths = [];
@@ -155,6 +174,11 @@ export function createStrictSyntax(options: {
   if (options.env) {
     syntaxSelectors.push(envSyntaxSelector);
     importPaths.push(envImportRestriction);
+  }
+
+  if (options.mobile) {
+    syntaxSelectors.push(...mobileSyntaxSelectors);
+    importPaths.push(...mobileImportRestrictions);
   }
 
   const rules: Partial<Record<string, Linter.RuleEntry>> = {};

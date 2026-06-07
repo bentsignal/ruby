@@ -11,5 +11,5 @@ export const getAuth = createServerFn({ method: "GET" }).handler(async () => {
 export const ensureProfileExists = createServerFn({
   method: "GET",
 }).handler(async () => {
-  return await fetchAuthMutation(api.profile.ensureProfileExists, {});
+  return await fetchAuthMutation(api.profile.mutations.ensureProfileExists, {});
 });

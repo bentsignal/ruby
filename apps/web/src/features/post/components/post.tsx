@@ -1,61 +1,33 @@
-import { Image } from "@unpic/react";
-import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
-
-import type { UIPost } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/posts/types";
 
 import { Name } from "~/features/profile/components/info/name";
 import { PFP } from "~/features/profile/components/info/pfp";
 import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
+import { PostStore } from "../store";
+import { PostActions } from "./post-actions";
+import { PostCaption } from "./post-caption";
+import { PostDate } from "./post-date";
+import { PostMediaGrid } from "./post-media-grid";
 
 export function Post({ post }: { post: UIPost }) {
   return (
-    <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
-      <ProfileStore profile={post.creator}>
-        <div className="flex items-center gap-3">
-          <PFP variant="sm" />
-          <div className="flex flex-col">
-            <Name className="text-sm font-bold" />
-            <Username className="text-muted-foreground text-xs font-semibold" />
+    <PostStore post={post}>
+      <article className="border-border bg-card flex flex-col gap-3 rounded-xl border p-4">
+        <ProfileStore profile={post.creator}>
+          <div className="flex items-center gap-3">
+            <PFP variant="sm" />
+            <div className="flex flex-col">
+              <Name className="text-sm font-bold" />
+              <Username className="text-muted-foreground text-xs font-semibold" />
+            </div>
+            <PostDate />
           </div>
-          <span className="text-muted-foreground ml-auto text-xs">
-            {new Date(post._creationTime).toLocaleDateString()}
-          </span>
-        </div>
-      </ProfileStore>
-
-      {post.images.length > 0 && post.images[0] && (
-        <div className="bg-muted relative w-full overflow-hidden rounded-lg">
-          <Image
-            src={post.images[0].url}
-            alt={post.images[0].alt ?? post.caption ?? ""}
-            width={800}
-            height={600}
-            layout="constrained"
-            className="object-cover"
-          />
-        </div>
-      )}
-
-      {post.caption && (
-        <p className="text-sm leading-relaxed">{post.caption}</p>
-      )}
-
-      <div className="flex items-center gap-6">
-        <button className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2">
-          <Heart className="h-5 w-5" />
-        </button>
-        <button className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2">
-          <MessageCircle className="h-5 w-5" />
-        </button>
-        <button className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2">
-          <Bookmark className="h-5 w-5" />
-        </button>
-        <div className="flex-1" />
-        <button className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2">
-          <Share className="h-5 w-5" />
-        </button>
-      </div>
-    </article>
+        </ProfileStore>
+        <PostMediaGrid />
+        <PostCaption />
+        <PostActions />
+      </article>
+    </PostStore>
   );
 }

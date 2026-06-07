@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
@@ -37,42 +38,44 @@ export default function RootLayout() {
   return (
     <ConvexProvider>
       <AuthStore>
-        <SafeAreaProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          >
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="login"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [loginDrawerHeightPercentage],
-                sheetGrabberVisible: true,
-                contentStyle: {
-                  backgroundColor: liquidGlassIsAvailable
-                    ? "transparent"
-                    : backgroundColor,
-                },
+        <GestureHandlerRootView className="flex-1">
+          <SafeAreaProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "transparent" },
               }}
-            />
-            <Stack.Screen
-              name="edit-profile"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [1],
-                sheetGrabberVisible: true,
-                contentStyle: {
-                  backgroundColor: liquidGlassIsAvailable
-                    ? "transparent"
-                    : backgroundColor,
-                },
-              }}
-            />
-          </Stack>
-        </SafeAreaProvider>
+            >
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="login"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [loginDrawerHeightPercentage],
+                  sheetGrabberVisible: true,
+                  contentStyle: {
+                    backgroundColor: liquidGlassIsAvailable
+                      ? "transparent"
+                      : backgroundColor,
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="edit-profile"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [1],
+                  sheetGrabberVisible: true,
+                  contentStyle: {
+                    backgroundColor: liquidGlassIsAvailable
+                      ? "transparent"
+                      : backgroundColor,
+                  },
+                }}
+              />
+            </Stack>
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
         <StatusBar />
       </AuthStore>
     </ConvexProvider>

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "pnpm with-env vite build",
     "clean": "git clean -xdf .cache .vinxi dist .turbo node_modules",
-    "dev": "pnpm with-env portless",
+    "dev": "pnpm with-env portless \"$(../../scripts/portless-app-name.sh www.ruby)\" vite dev",
     "dev:app": "pnpm with-env vite dev",
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
     "lint": "eslint --flag unstable_native_nodejs_ts_config",
@@ -14,13 +14,16 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@acme/app-config": "workspace:*",
+    "@acme/config": "workspace:*",
     "@acme/convex": "workspace:*",
     "@acme/features": "workspace:*",
     "@acme/std": "workspace:*",
     "@acme/ui-web": "workspace:*",
     "@convex-dev/better-auth": "catalog:",
     "@convex-dev/react-query": "^0.1.0",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@fontsource-variable/geist": "^5.2.7",
     "@fontsource-variable/geist-mono": "^5.2.7",
     "@fontsource-variable/roboto": "^5.2.9",

@@ -3,14 +3,14 @@ import { useMutation } from "convex/react";
 import { api } from "@acme/convex/api";
 
 export function useSendFriendRequest({ username }: { username: string }) {
-  return useMutation(api.friends.sendRequest).withOptimisticUpdate(
+  return useMutation(api.friends.mutations.sendRequest).withOptimisticUpdate(
     (localStore) => {
-      const result = localStore.getQuery(api.profile.getByUsername, {
+      const result = localStore.getQuery(api.profile.queries.getByUsername, {
         username,
       });
       if (!result) return;
       localStore.setQuery(
-        api.profile.getByUsername,
+        api.profile.queries.getByUsername,
         {
           username,
         },
