@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LegendList } from "@legendapp/list";
 
-import type { UIPost } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
 
 import { BackButton } from "~/components/back-button";
@@ -31,11 +31,11 @@ export default function ProfileByUsername() {
   const router = useRouter();
   const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
   const { data: result } = useQuery({
-    ...convexQuery(api.profile.getByUsername, { username }),
+    ...convexQuery(api.profile.queries.getByUsername, { username }),
     select: (profile) => profile,
   });
   const { data: posts } = useQuery({
-    ...convexQuery(api.posts.getByUsername, { username }),
+    ...convexQuery(api.posts.queries.getByUsername, { username }),
     enabled: !!username,
     select: (profilePosts) => profilePosts,
   });

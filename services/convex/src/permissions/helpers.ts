@@ -1,26 +1,11 @@
 import type { Infer } from "convex/values";
-import { ConvexError, v } from "convex/values";
+import { ConvexError } from "convex/values";
 
-import type { Doc } from "./_generated/dataModel";
-import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { internalQuery } from "./_generated/server";
-import { vPermission } from "./features/permissions/validators";
+import type { Doc } from "../_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
+import type { vPermission } from "./validators";
 
-type UserPermission = Infer<typeof vPermission>;
-
-export const ensureForUser = internalQuery({
-  args: {
-    permissions: v.array(vPermission),
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ensureUserPermissionsForUserId(
-      ctx,
-      args.userId,
-      args.permissions,
-    );
-  },
-});
+export type UserPermission = Infer<typeof vPermission>;
 
 export async function ensureUserPermissions(
   ctx: QueryCtx | MutationCtx,
@@ -38,7 +23,7 @@ export async function ensureUserPermissions(
   return { user, myProfile };
 }
 
-async function ensureUserPermissionsForUserId(
+export async function ensureUserPermissionsForUserId(
   ctx: QueryCtx | MutationCtx,
   userId: string,
   permissions: UserPermission[],
@@ -66,5 +51,3 @@ function ensureProfilePermissions(
     throw new ConvexError("Permission denied");
   }
 }
-
-export type { UserPermission };

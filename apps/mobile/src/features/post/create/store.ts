@@ -19,7 +19,7 @@ import { useMediaReorder } from "./hooks/use-media-reorder";
 import { useUploadItem } from "./hooks/use-upload-item";
 
 function useInternalStore() {
-  const createPost = useConvexMutation(api.posts.create);
+  const createPost = useConvexMutation(api.posts.mutations.create);
   const foreground = useColor("foreground");
   const mutedForeground = useColor("muted-foreground");
   const [items, setItems] = useState<ComposerItem[]>([]);

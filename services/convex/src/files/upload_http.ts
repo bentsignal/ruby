@@ -2,10 +2,10 @@ import { ConvexError } from "convex/values";
 
 import { POST_UPLOAD_MAX_SIZE_BYTES } from "@acme/config/posts";
 
-import type { Doc, Id } from "../../_generated/dataModel";
-import type { ActionCtx } from "../../_generated/server";
-import { internal } from "../../_generated/api";
-import { uploadToBunny } from "../../bunny";
+import type { Doc, Id } from "../_generated/dataModel";
+import type { ActionCtx } from "../_generated/server";
+import { internal } from "../_generated/api";
+import { uploadToBunny } from "./bunny";
 
 type UploadActionCtx = Pick<ActionCtx, "auth" | "runMutation" | "runQuery">;
 type UploadPermission =
@@ -75,7 +75,7 @@ export async function storeUpload(
     await uploadToBunny({
       body,
       contentType: args.contentType,
-      key: await ctx.runMutation(internal.fileMutations.verifyUpload, {
+      key: await ctx.runMutation(internal.files.internal.verifyUpload, {
         contentType: args.contentType,
         fileId: args.fileId,
         profileId: args.profileId,
@@ -84,7 +84,7 @@ export async function storeUpload(
       }),
     });
 
-    const file = await ctx.runMutation(internal.fileMutations.completeUpload, {
+    const file = await ctx.runMutation(internal.files.internal.completeUpload, {
       contentType: args.contentType,
       fileId: args.fileId,
       profileId: args.profileId,
@@ -101,9 +101,12 @@ export async function storeUpload(
 async function ensureCanPostFromAction(ctx: UploadActionCtx) {
   const user = await ctx.auth.getUserIdentity();
   if (!user) throw new ConvexError("Unauthenticated");
-  const profile = await ctx.runQuery(internal.permissions.ensureForUser, {
-    permissions: ["can-post"],
-    userId: user.subject,
-  });
+  const profile = await ctx.runQuery(
+    internal.permissions.queries.ensureForUser,
+    {
+      permissions: ["can-post"],
+      userId: user.subject,
+    },
+  );
   return { profile };
 }

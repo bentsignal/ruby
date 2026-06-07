@@ -18,7 +18,7 @@ function useInternalStore() {
   const imSignedOut = !imSignedIn;
 
   const { data: myProfile } = useQuery({
-    ...convexQuery(api.profile.getMine, {}),
+    ...convexQuery(api.profile.queries.getMine, {}),
     enabled: imSignedIn,
     select: (profile) => profile,
   });

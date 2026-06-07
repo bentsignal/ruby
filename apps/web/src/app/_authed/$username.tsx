@@ -18,10 +18,14 @@ export const Route = createFileRoute("/_authed/$username")({
   loader: async ({ context, params }) => {
     await Promise.all([
       context.queryClient.ensureQueryData(
-        convexQuery(api.profile.getByUsername, { username: params.username }),
+        convexQuery(api.profile.queries.getByUsername, {
+          username: params.username,
+        }),
       ),
       context.queryClient.ensureQueryData(
-        convexQuery(api.posts.getByUsername, { username: params.username }),
+        convexQuery(api.posts.queries.getByUsername, {
+          username: params.username,
+        }),
       ),
     ]);
   },
@@ -30,7 +34,7 @@ export const Route = createFileRoute("/_authed/$username")({
 
 function ProfilePage() {
   const result = useSuspenseQuery({
-    ...convexQuery(api.profile.getByUsername, {
+    ...convexQuery(api.profile.queries.getByUsername, {
       username: Route.useParams({ select: (p) => p.username }),
     }),
     select: (data) => data,
@@ -64,7 +68,7 @@ function ProfilePage() {
 
 function ProfilePostList() {
   const { data: posts } = useSuspenseQuery({
-    ...convexQuery(api.posts.getByUsername, {
+    ...convexQuery(api.posts.queries.getByUsername, {
       username: Route.useParams({ select: (p) => p.username }),
     }),
     select: (data) => data,

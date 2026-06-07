@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LegendList } from "@legendapp/list";
 
-import type { UIProfile } from "@acme/convex/types";
+import type { UIProfile } from "@acme/convex/profile/types";
 
 import { LoadingSpinner } from "~/components/loading-spinner";
 import { SafeAreaView } from "~/components/safe-area-view";

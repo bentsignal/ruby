@@ -3,9 +3,9 @@
 import { ConvexError, v } from "convex/values";
 import { UTApi, UTFile } from "uploadthing/server";
 
-import { internal } from "./_generated/api";
-import { internalAction } from "./_generated/server";
-import { env } from "./convex.env";
+import { internal } from "../_generated/api";
+import { internalAction } from "../_generated/server";
+import { env } from "../convex.env";
 
 export const utapi = new UTApi({
   token: env.UPLOADTHING_TOKEN,
@@ -20,7 +20,7 @@ export const uploadPFP = internalAction({
     const image = await downloadImage(args.url);
     const fileName = `${args.profileId.toString()}-pfp`;
     const key = await uploadImage(image, fileName);
-    await ctx.runMutation(internal.profile.updatePFP, {
+    await ctx.runMutation(internal.profile.mutations.updatePFP, {
       profileId: args.profileId,
       image: getFileURL(key),
     });

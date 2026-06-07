@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LegendList } from "@legendapp/list";
 
-import type { UIPost } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
 
 import { Post } from "~/features/post/components/post";
@@ -14,7 +14,7 @@ import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
   const { data } = useQuery({
-    ...convexQuery(api.posts.getAll, {}),
+    ...convexQuery(api.posts.queries.getAll, {}),
     select: (posts) => posts,
   });
 

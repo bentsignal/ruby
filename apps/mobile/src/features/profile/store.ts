@@ -1,6 +1,7 @@
 import { createStore } from "rostra";
 
-import type { Relationship, UIProfile } from "@acme/convex/types";
+import type { Relationship } from "@acme/convex/friends/types";
+import type { UIProfile } from "@acme/convex/profile/types";
 
 interface StoreProps {
   profile: UIProfile;

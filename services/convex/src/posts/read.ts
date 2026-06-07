@@ -1,7 +1,7 @@
-import type { Doc } from "../../_generated/dataModel";
-import type { UIImage } from "../../types";
-import type { AuthedQueryCtx } from "../../utils";
-import { DeletedProfile, getPublicProfile } from "../../profile";
+import type { Doc } from "../_generated/dataModel";
+import type { UIImage } from "../images/types";
+import type { AuthedQueryCtx } from "../utils";
+import { DeletedProfile, getPublicProfile } from "../profile/helpers";
 
 export async function getUIPosts(ctx: AuthedQueryCtx, posts: Doc<"posts">[]) {
   return await Promise.all(

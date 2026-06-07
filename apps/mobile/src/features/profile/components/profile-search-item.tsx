@@ -2,7 +2,7 @@ import type { LegendListRenderItemProps } from "@legendapp/list";
 import { Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
 
-import type { UIProfile } from "@acme/convex/types";
+import type { UIProfile } from "@acme/convex/profile/types";
 
 import { ProfileStore } from "../store";
 import { Name } from "./info/name";

@@ -1,6 +1,6 @@
 import type { ImagePickerAsset } from "expo-image-picker";
 
-import type { UIFile } from "@acme/convex/types";
+import type { UIFile } from "@acme/convex/files/types";
 
 export type PickedFile = ImagePickerAsset;
 

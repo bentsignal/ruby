@@ -1,5 +1,5 @@
+import type { UIFile } from "@acme/convex/files/types";
 import type { Id } from "@acme/convex/model";
-import type { UIFile } from "@acme/convex/types";
 
 import { authClient } from "~/features/auth/lib/client";
 

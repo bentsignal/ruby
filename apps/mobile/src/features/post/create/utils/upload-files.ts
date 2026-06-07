@@ -1,4 +1,4 @@
-import type { UIFile } from "@acme/convex/types";
+import type { UIFile } from "@acme/convex/files/types";
 
 import type { PickedFile } from "../types";
 import { authClient } from "~/features/auth/lib/auth-client";

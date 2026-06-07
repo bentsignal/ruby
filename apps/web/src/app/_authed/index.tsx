@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convexQuery } from "@convex-dev/react-query";
 import { Image } from "@unpic/react";
 
-import type { UIPost } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
 
 import logoSmall from "~/assets/logo-small.webp";
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authed/")({
 
 function HomePage() {
   const { data: posts } = useQuery({
-    ...convexQuery(api.posts.getAll, {}),
+    ...convexQuery(api.posts.queries.getAll, {}),
     select: (data) => data,
   });
 

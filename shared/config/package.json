@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./auth": "./src/auth.ts",
     "./posts": "./src/posts.ts",
     "./storage": "./src/storage.ts",
     "./urls": "./src/urls.ts"

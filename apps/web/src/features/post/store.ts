@@ -1,6 +1,6 @@
 import { createStore } from "rostra";
 
-import type { UIPost } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/posts/types";
 
 interface PostStoreProps {
   post: UIPost;

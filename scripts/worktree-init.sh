@@ -17,6 +17,14 @@ fi
 
 WORKTREE_ID="$("$NEW_WT/scripts/worktree-id.sh")"
 
+cat > shared/config/src/auth.ts <<EOF
+export const sharedAuthIssuer: string | undefined = undefined;
+export const sharedAuthJwksUri: string | undefined = undefined;
+EOF
+echo "generated auth.ts"
+git update-index --skip-worktree shared/config/src/auth.ts
+echo "marked auth.ts as skip-worktree"
+
 cat > shared/config/src/overrides.ts <<EOF
 export const convexCloudUrl: string | undefined = undefined;
 export const worktreeId: string | undefined = "${WORKTREE_ID}";

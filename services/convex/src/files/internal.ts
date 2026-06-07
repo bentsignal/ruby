@@ -1,10 +1,7 @@
 import { ConvexError, v } from "convex/values";
 
-import { internalMutation } from "./_generated/server";
-import {
-  publicFile,
-  validateUploadSession,
-} from "./features/files/upload_session";
+import { internalMutation } from "../_generated/server";
+import { publicFile, validateUploadSession } from "./upload_session";
 
 export const completeUpload = internalMutation({
   args: {

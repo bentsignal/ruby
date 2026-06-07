@@ -2,8 +2,8 @@ import { ConvexError } from "convex/values";
 
 import { POST_CAPTION_MAX_LENGTH, POST_MAX_FILES } from "@acme/config/posts";
 
-import type { Id } from "../../_generated/dataModel";
-import type { AuthedMutationCtx } from "../../utils";
+import type { Id } from "../_generated/dataModel";
+import type { AuthedMutationCtx } from "../utils";
 
 export function validatePostInput(
   rawCaption: string | undefined,

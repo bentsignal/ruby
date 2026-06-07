@@ -1,7 +1,7 @@
 import { httpRouter } from "convex/server";
 
 import { authComponent, authCorsAllowedOrigins, createAuth } from "./auth";
-import { upload } from "./files";
+import { upload } from "./files/http";
 import { urls } from "./urls";
 
 const http = httpRouter();

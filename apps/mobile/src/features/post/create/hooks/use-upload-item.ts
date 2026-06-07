@@ -19,7 +19,7 @@ export function useUploadItem({
 }: {
   updateItem: (itemId: string, patch: Partial<ComposerItem>) => void;
 }) {
-  const createUpload = useConvexMutation(api.files.createUpload);
+  const createUpload = useConvexMutation(api.files.mutations.createUpload);
 
   async function uploadItem(item: ComposerItem) {
     if (item.status === "uploaded" && item.uploadedFile) {

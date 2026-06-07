@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { usePaginatedQuery } from "convex/react";
 
-import type { UIProfile } from "@acme/convex/types";
+import type { UIProfile } from "@acme/convex/profile/types";
 import { api } from "@acme/convex/api";
 
 import { useSearchStore } from "~/features/search/store";
@@ -19,7 +19,7 @@ function useSearchResults() {
     status: loadingStatus,
     loadMore,
   } = usePaginatedQuery(
-    api.profile.search,
+    api.profile.queries.search,
     debouncedSearchTerm.length > 0
       ? { searchTerm: debouncedSearchTerm }
       : "skip",

@@ -10,8 +10,8 @@ import { useComposerItems } from "./hooks/use-composer-items";
 import { uploadComposerFile } from "./lib/composer-upload";
 
 function useInternalStore() {
-  const createUpload = useConvexMutation(api.files.createUpload);
-  const createPost = useConvexMutation(api.posts.create);
+  const createUpload = useConvexMutation(api.files.mutations.createUpload);
+  const createPost = useConvexMutation(api.posts.mutations.create);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -58,7 +58,7 @@ function useInternalStore() {
         fileIds: uploadedFiles.map((file) => file._id),
       });
       await queryClient.invalidateQueries({
-        queryKey: convexQuery(api.posts.getAll, {}).queryKey,
+        queryKey: convexQuery(api.posts.queries.getAll, {}).queryKey,
       });
       revokeItemPreviewUrls(items);
       setIsConfirmOpen(false);

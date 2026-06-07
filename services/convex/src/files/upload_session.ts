@@ -6,8 +6,8 @@ import {
 } from "@acme/config/posts";
 import { createStorageKeyPrefix } from "@acme/config/storage";
 
-import type { Doc, Id } from "../../_generated/dataModel";
-import { env } from "../../convex.env";
+import type { Doc, Id } from "../_generated/dataModel";
+import { env } from "../convex.env";
 
 export function getMediaType(contentType: string) {
   const mediaType = POST_MEDIA_TYPES.find((type) =>

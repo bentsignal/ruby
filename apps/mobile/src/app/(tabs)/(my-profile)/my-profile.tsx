@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LegendList } from "@legendapp/list";
 
-import type { UIPost } from "@acme/convex/types";
+import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
 
 import { SafeAreaView } from "~/components/safe-area-view";
@@ -24,7 +24,7 @@ import { ProfileStore } from "~/features/profile/store";
 export default function MyProfile() {
   const myProfile = useAuthStore((s) => s.myProfile);
   const { data: posts } = useQuery({
-    ...convexQuery(api.posts.getByUsername, {
+    ...convexQuery(api.posts.queries.getByUsername, {
       username: myProfile?.username ?? "",
     }),
     enabled: !!myProfile?.username,
