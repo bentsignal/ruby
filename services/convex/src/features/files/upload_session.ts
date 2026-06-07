@@ -7,7 +7,7 @@ import {
 import { createStorageKeyPrefix } from "@acme/config/storage";
 
 import type { Doc, Id } from "../../_generated/dataModel";
-import { storageEnv } from "../../storage.env";
+import { env } from "../../convex.env";
 
 export function getMediaType(contentType: string) {
   const mediaType = POST_MEDIA_TYPES.find((type) =>
@@ -33,7 +33,7 @@ export function getUploadKey(args: {
 }
 
 export function getUploadUrl(args: { fileId: Id<"files">; token: string }) {
-  const uploadUrl = new URL("/api/files/upload", storageEnv.CONVEX_SITE_URL);
+  const uploadUrl = new URL("/api/files/upload", env.CONVEX_SITE_URL);
   uploadUrl.searchParams.set("fileId", args.fileId);
   uploadUrl.searchParams.set("token", args.token);
   return uploadUrl.toString();

@@ -34,7 +34,6 @@ import type * as types from "../types.js";
 import type * as uploadthing from "../uploadthing.js";
 import type * as urls from "../urls.js";
 import type * as utils from "../utils.js";
-import type * as validators from "../validators.js";
 
 import type {
   ApiFromModules,
@@ -69,7 +68,6 @@ declare const fullApi: ApiFromModules<{
   uploadthing: typeof uploadthing;
   urls: typeof urls;
   utils: typeof utils;
-  validators: typeof validators;
 }>;
 
 /**

@@ -1,6 +1,6 @@
 import { ConvexError } from "convex/values";
 
-import { storageEnv } from "./storage.env";
+import { env } from "./convex.env";
 
 function normalizePublicUrl(publicUrl: string) {
   return publicUrl.replace(/\/+$/, "");
@@ -13,11 +13,11 @@ function requireEnv(value: string | undefined, name: string) {
 
 function createStorageUrl(key: string) {
   const zoneName = requireEnv(
-    storageEnv.BUNNY_STORAGE_ZONE_NAME,
+    env.BUNNY_STORAGE_ZONE_NAME,
     "BUNNY_STORAGE_ZONE_NAME",
   );
   const endpoint = requireEnv(
-    storageEnv.BUNNY_STORAGE_HOSTNAME,
+    env.BUNNY_STORAGE_HOSTNAME,
     "BUNNY_STORAGE_HOSTNAME",
   );
   const url = new URL(
@@ -30,7 +30,7 @@ function createStorageUrl(key: string) {
 
 export function createPublicUrl(key: string) {
   const publicUrl = requireEnv(
-    storageEnv.BUNNY_STORAGE_PUBLIC_URL,
+    env.BUNNY_STORAGE_PUBLIC_URL,
     "BUNNY_STORAGE_PUBLIC_URL",
   );
   return `${normalizePublicUrl(publicUrl)}/${key}`;
@@ -49,7 +49,7 @@ export async function uploadToBunny({
     method: "PUT",
     headers: {
       AccessKey: requireEnv(
-        storageEnv.BUNNY_STORAGE_ACCESS_KEY,
+        env.BUNNY_STORAGE_ACCESS_KEY,
         "BUNNY_STORAGE_ACCESS_KEY",
       ),
       "Content-Type": contentType,
