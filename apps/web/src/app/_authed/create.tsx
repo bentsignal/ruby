@@ -6,7 +6,6 @@ import { CreatePostButton } from "~/features/post/create/components/create-post-
 import { MediaDropzone } from "~/features/post/create/components/media-dropzone";
 import { MediaFileInput } from "~/features/post/create/components/media-file-input";
 import { MediaGrid } from "~/features/post/create/components/media-grid";
-import { MobileCreatePostBar } from "~/features/post/create/components/mobile-create-post-bar";
 import { PostConfirmationDialog } from "~/features/post/create/components/post-confirmation-dialog";
 import { CreateStore } from "~/features/post/create/store";
 
@@ -22,14 +21,13 @@ function Create() {
           <h1 className="text-foreground text-2xl font-bold">
             Create a new post
           </h1>
-          <CreatePostButton className="hidden sm:inline-flex" />
+          <CreatePostButton />
         </div>
         <MediaFileInput />
         <MediaDropzone />
         <MediaGrid />
         <CaptionField />
         <ComposerError />
-        <MobileCreatePostBar />
         <PostConfirmationDialog />
       </div>
     </CreateStore>

@@ -2,7 +2,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { convexQuery } from "@convex-dev/react-query";
 
-import type { UIPost } from "@acme/convex/types";
 import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui-web/separator";
 
@@ -30,22 +29,17 @@ export const Route = createFileRoute("/_authed/$username")({
 });
 
 function ProfilePage() {
-  const params = Route.useParams();
   const result = useSuspenseQuery({
     ...convexQuery(api.profile.getByUsername, {
-      username: params.username,
+      username: Route.useParams({ select: (p) => p.username }),
     }),
     select: (data) => data,
   });
-  const { data: posts } = useSuspenseQuery({
-    ...convexQuery(api.posts.getByUsername, {
-      username: params.username,
-    }),
-    select: (data) => data,
-  });
+
   if (result.data === null) {
     throw notFound();
   }
+
   const { info: profile, relationship } = result.data;
   return (
     <div className="max-w-auto mx-auto flex flex-col gap-4 px-4 pt-8 sm:max-w-md sm:pt-12 lg:max-w-xl">
@@ -63,12 +57,18 @@ function ProfilePage() {
         <PrimaryButton className="flex lg:hidden" />
         <Separator />
       </ProfileStore>
-      <ProfilePostList posts={posts} />
+      <ProfilePostList />
     </div>
   );
 }
 
-function ProfilePostList({ posts }: { posts: UIPost[] }) {
+function ProfilePostList() {
+  const { data: posts } = useSuspenseQuery({
+    ...convexQuery(api.posts.getByUsername, {
+      username: Route.useParams({ select: (p) => p.username }),
+    }),
+    select: (data) => data,
+  });
   return (
     <div className="flex min-h-screen flex-col gap-6 pb-28">
       {posts.length === 0 && (
