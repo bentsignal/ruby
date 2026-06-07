@@ -1,19 +1,15 @@
-import type { RefObject } from "react";
 import { useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { cn } from "@acme/std/cn";
 
-export function ComposerDropzone({
-  inputRef,
-  isVisible,
-  onFiles,
-}: {
-  inputRef: RefObject<HTMLInputElement | null>;
-  isVisible: boolean;
-  onFiles: (files: FileList) => void;
-}) {
+import { useCreateStore } from "../store";
+
+export function MediaDropzone() {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const addFiles = useCreateStore((store) => store.addFiles);
+  const inputRef = useCreateStore((store) => store.inputRef);
+  const isVisible = useCreateStore((store) => store.items.length === 0);
 
   if (!isVisible) return null;
 
@@ -33,7 +29,7 @@ export function ComposerDropzone({
       onDrop={(event) => {
         event.preventDefault();
         setIsDraggingOver(false);
-        onFiles(event.dataTransfer.files);
+        addFiles(event.dataTransfer.files);
       }}
     >
       <span className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full">

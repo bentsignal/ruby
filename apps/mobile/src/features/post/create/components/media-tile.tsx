@@ -7,34 +7,24 @@ import { GripVertical, Trash2 } from "lucide-react-native";
 
 import { cn } from "@acme/std/cn";
 
-import type { ComposerItem } from "../types";
+import { useCreateStore } from "../store";
 import { MediaPreview } from "./media-preview";
 import { MediaStatusOverlay } from "./media-status-overlay";
 
 export function MediaTile({
-  activeDragItemId,
-  beginReorder,
-  endReorder,
-  foreground,
   index,
-  item,
-  removeItem,
-  retryItem,
-  updateReorder,
+  itemId,
 }: {
-  activeDragItemId: string | null;
-  beginReorder: (itemId: string, index: number) => void;
-  endReorder: () => void;
-  foreground: string;
   index: number;
-  item: ComposerItem;
-  removeItem: (itemId: string) => void;
-  retryItem: (item: ComposerItem) => void;
-  updateReorder: (gestureState: PanResponderGestureState) => void;
+  itemId: string;
 }) {
+  const activeDragItemId = useCreateStore((store) => store.activeDragItemId);
+  const beginReorder = useCreateStore((store) => store.beginReorder);
+  const endReorder = useCreateStore((store) => store.endReorder);
+  const updateReorder = useCreateStore((store) => store.updateReorder);
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => beginReorder(item.id, index),
+    onPanResponderGrant: () => beginReorder(itemId, index),
     onPanResponderMove: (
       _event: GestureResponderEvent,
       gestureState: PanResponderGestureState,
@@ -49,11 +39,11 @@ export function MediaTile({
       <View
         className={cn(
           "bg-card border-border aspect-[4/5] overflow-hidden rounded-lg border",
-          activeDragItemId === item.id && "border-primary opacity-80",
+          activeDragItemId === itemId && "border-primary opacity-80",
         )}
       >
         <View className="size-full items-center justify-center bg-black">
-          <MediaPreview foreground={foreground} item={item} />
+          <MediaPreview itemId={itemId} />
         </View>
         <View className="absolute inset-x-0 top-0 flex-row items-center justify-between bg-black/45 p-2">
           <View
@@ -63,15 +53,23 @@ export function MediaTile({
             <GripVertical className="size-4" color="white" />
             <Text className="text-xs font-black text-white">{index + 1}</Text>
           </View>
-          <Pressable
-            className="size-8 items-center justify-center rounded-full bg-black/45"
-            onPress={() => removeItem(item.id)}
-          >
-            <Trash2 className="size-4" size={16} color="white" />
-          </Pressable>
+          <RemoveMediaButton itemId={itemId} />
         </View>
-        <MediaStatusOverlay item={item} retryItem={retryItem} />
+        <MediaStatusOverlay itemId={itemId} />
       </View>
     </View>
+  );
+}
+
+function RemoveMediaButton({ itemId }: { itemId: string }) {
+  const removeItem = useCreateStore((store) => store.removeItem);
+
+  return (
+    <Pressable
+      className="size-8 items-center justify-center rounded-full bg-black/45"
+      onPress={() => removeItem(itemId)}
+    >
+      <Trash2 className="size-4" size={16} color="white" />
+    </Pressable>
   );
 }

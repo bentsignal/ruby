@@ -1,5 +1,5 @@
 import type { DragEndEvent } from "@dnd-kit/core";
-import type { RefObject } from "react";
+import type { HTMLAttributes } from "react";
 import { useState } from "react";
 import {
   closestCenter,
@@ -21,14 +21,11 @@ import { GripVertical, LoaderCircle, Plus, Trash2, X } from "lucide-react";
 import { cn } from "@acme/std/cn";
 import * as Tooltip from "@acme/ui-web/tooltip";
 
-import type { ComposerItem } from "../types";
+import { useCreateStore } from "../store";
 
-export function ComposerMediaGrid(props: {
-  inputRef: RefObject<HTMLInputElement | null>;
-  items: ComposerItem[];
-  moveItem: (itemId: string, targetId: string) => void;
-  removeItem: (itemId: string) => void;
-}) {
+export function MediaGrid() {
+  const items = useCreateStore((store) => store.items);
+  const moveItem = useCreateStore((store) => store.moveItem);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
@@ -39,11 +36,11 @@ export function ComposerMediaGrid(props: {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      props.moveItem(String(active.id), String(over.id));
+      moveItem(String(active.id), String(over.id));
     }
   }
 
-  if (props.items.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <DndContext
@@ -52,30 +49,23 @@ export function ComposerMediaGrid(props: {
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={props.items.map((item) => item.id)}
+        items={items.map((item) => item.id)}
         strategy={rectSortingStrategy}
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {props.items.map((item, index) => (
-            <PreviewTile
-              index={index}
-              item={item}
-              key={item.id}
-              removeItem={props.removeItem}
-            />
+          {items.map((item, index) => (
+            <PreviewTile index={index} itemId={item.id} key={item.id} />
           ))}
-          <AddMoreTile inputRef={props.inputRef} />
+          <AddMoreMediaTile />
         </div>
       </SortableContext>
     </DndContext>
   );
 }
 
-function AddMoreTile({
-  inputRef,
-}: {
-  inputRef: RefObject<HTMLInputElement | null>;
-}) {
+function AddMoreMediaTile() {
+  const inputRef = useCreateStore((store) => store.inputRef);
+
   return (
     <button
       type="button"
@@ -88,15 +78,7 @@ function AddMoreTile({
   );
 }
 
-function PreviewTile({
-  index,
-  item,
-  removeItem,
-}: {
-  index: number;
-  item: ComposerItem;
-  removeItem: (itemId: string) => void;
-}) {
+function PreviewTile({ index, itemId }: { index: number; itemId: string }) {
   const {
     attributes,
     isDragging,
@@ -104,7 +86,7 @@ function PreviewTile({
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: item.id });
+  } = useSortable({ id: itemId });
 
   return (
     <div
@@ -118,20 +100,22 @@ function PreviewTile({
         transition,
       }}
     >
-      <PreviewMedia item={item} />
+      <PreviewMedia itemId={itemId} />
       <PreviewToolbar
         attributes={attributes}
         index={index}
-        itemId={item.id}
+        itemId={itemId}
         listeners={listeners}
-        removeItem={removeItem}
       />
-      <UploadState item={item} />
+      <UploadState itemId={itemId} />
     </div>
   );
 }
 
-function PreviewMedia({ item }: { item: ComposerItem }) {
+function PreviewMedia({ itemId }: { itemId: string }) {
+  const item = useComposerItem(itemId);
+  if (!item) return null;
+
   if (item.file.type.startsWith("video/")) {
     return (
       <video
@@ -157,13 +141,11 @@ function PreviewToolbar({
   index,
   itemId,
   listeners,
-  removeItem,
 }: {
-  attributes: React.HTMLAttributes<HTMLElement>;
+  attributes: HTMLAttributes<HTMLElement>;
   index: number;
   itemId: string;
-  listeners?: React.HTMLAttributes<HTMLElement>;
-  removeItem: (itemId: string) => void;
+  listeners?: HTMLAttributes<HTMLElement>;
 }) {
   const [isConfirming, setIsConfirming] = useState(false);
 
@@ -182,7 +164,6 @@ function PreviewToolbar({
       <RemoveMediaButton
         isConfirming={isConfirming}
         itemId={itemId}
-        removeItem={removeItem}
         setIsConfirming={setIsConfirming}
       />
     </div>
@@ -192,9 +173,10 @@ function PreviewToolbar({
 function RemoveMediaButton(props: {
   isConfirming: boolean;
   itemId: string;
-  removeItem: (itemId: string) => void;
   setIsConfirming: (isConfirming: boolean) => void;
 }) {
+  const removeItem = useCreateStore((store) => store.removeItem);
+
   if (props.isConfirming) {
     return (
       <div className="flex items-center gap-2">
@@ -218,7 +200,7 @@ function RemoveMediaButton(props: {
               type="button"
               aria-label="Remove media"
               className="flex size-8 items-center justify-center rounded-full bg-red-500 transition-colors hover:bg-red-600"
-              onClick={() => props.removeItem(props.itemId)}
+              onClick={() => removeItem(props.itemId)}
             >
               <Trash2 className="size-4" />
             </button>
@@ -241,7 +223,10 @@ function RemoveMediaButton(props: {
   );
 }
 
-function UploadState({ item }: { item: ComposerItem }) {
+function UploadState({ itemId }: { itemId: string }) {
+  const item = useComposerItem(itemId);
+  if (!item) return null;
+
   if (item.status === "uploading") {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-black/50 p-4 text-center text-sm font-semibold text-white">
@@ -262,4 +247,10 @@ function UploadState({ item }: { item: ComposerItem }) {
   }
 
   return null;
+}
+
+function useComposerItem(itemId: string) {
+  return useCreateStore((store) =>
+    store.items.find((item) => item.id === itemId),
+  );
 }

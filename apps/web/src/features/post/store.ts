@@ -1,0 +1,36 @@
+import { createStore } from "rostra";
+
+import type { UIPost } from "@acme/convex/types";
+
+interface PostStoreProps {
+  post: UIPost;
+}
+
+export type PostMediaItem = ReturnType<typeof getPostMediaItems>[number];
+
+function useInternalStore({ post }: PostStoreProps) {
+  return {
+    caption: post.caption,
+    createdAt: post._creationTime,
+    creator: post.creator,
+    mediaItems: getPostMediaItems(post),
+  };
+}
+
+function getPostMediaItems(post: UIPost) {
+  return [
+    ...post.files.map((file) => ({
+      alt: post.caption ?? file.fileName,
+      mediaType: file.mediaType,
+      url: file.url,
+    })),
+    ...post.images.map((image) => ({
+      alt: image.alt ?? post.caption ?? "",
+      mediaType: "image" as const,
+      url: image.url,
+    })),
+  ];
+}
+
+export const { Store: PostStore, useStore: usePostStore } =
+  createStore(useInternalStore);

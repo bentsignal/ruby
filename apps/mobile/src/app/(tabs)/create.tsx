@@ -1,68 +1,36 @@
-import { ScrollView, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 import { SafeAreaView } from "~/components/safe-area-view";
-import { CreateFooter } from "~/features/post/create-composer/components/create-footer";
-import { CreateHeader } from "~/features/post/create-composer/components/create-header";
-import { EmptyMediaPicker } from "~/features/post/create-composer/components/empty-media-picker";
-import { MediaTile } from "~/features/post/create-composer/components/media-tile";
-import { useCreateComposer } from "~/features/post/create-composer/hooks/use-create-composer";
+import { CaptionField } from "~/features/post/create/components/caption-field";
+import { ComposerError } from "~/features/post/create/components/composer-error";
+import { CreatePostButton } from "~/features/post/create/components/create-post-button";
+import { MediaGrid } from "~/features/post/create/components/media-grid";
+import { MediaPicker } from "~/features/post/create/components/media-picker";
+import { CreateStore } from "~/features/post/create/store";
 
 export default function Create() {
-  const composer = useCreateComposer();
-
   return (
-    <SafeAreaView className="bg-background flex-1">
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 px-4 pt-4 pb-32"
-        keyboardShouldPersistTaps="handled"
-      >
-        <CreateHeader
-          canPost={composer.canPost}
-          hasUploadingItems={composer.hasUploadingItems}
-          isPosting={composer.isPosting}
-          onPost={composer.confirmPost}
+    <CreateStore>
+      <SafeAreaView className="bg-background flex-1">
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="gap-5 px-4 pt-4 pb-32"
+          keyboardShouldPersistTaps="handled"
         >
-          {composer.items.length === 0 && (
-            <EmptyMediaPicker
-              foreground={composer.foreground}
-              onPress={composer.pickFiles}
-            />
-          )}
-        </CreateHeader>
-
-        {composer.items.length > 0 && (
-          <View
-            className="-mx-1.5 flex-row flex-wrap"
-            onLayout={composer.handleGridLayout}
-          >
-            {composer.items.map((item, index) => (
-              <MediaTile
-                activeDragItemId={composer.activeDragItemId}
-                beginReorder={composer.beginReorder}
-                endReorder={composer.endReorder}
-                foreground={composer.foreground}
-                index={index}
-                item={item}
-                key={item.id}
-                removeItem={composer.removeItem}
-                retryItem={composer.retryItem}
-                updateReorder={composer.updateReorder}
-              />
-            ))}
+          <View className="flex-row items-center justify-between gap-4 px-2 pb-3">
+            <Text className="text-foreground text-3xl font-black tracking-normal">
+              Create
+            </Text>
+            <CreatePostButton />
           </View>
-        )}
-
-        <CreateFooter
-          caption={composer.caption}
-          error={composer.error}
-          foreground={composer.foreground}
-          hasItems={composer.items.length > 0}
-          mutedForeground={composer.mutedForeground}
-          onAddMedia={composer.pickFiles}
-          setCaption={composer.setCaption}
-        />
-      </ScrollView>
-    </SafeAreaView>
+          <MediaPicker />
+          <MediaGrid />
+          <View className="gap-5 px-2 pt-3">
+            <CaptionField />
+            <ComposerError />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </CreateStore>
   );
 }

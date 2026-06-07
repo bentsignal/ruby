@@ -2,14 +2,14 @@ import { Image, Text, View } from "react-native";
 import { Clapperboard, Play } from "lucide-react-native";
 
 import type { ComposerItem } from "../types";
+import { useComposerItem, useCreateStore } from "../store";
 
-export function MediaPreview({
-  foreground,
-  item,
-}: {
-  foreground: string;
-  item: ComposerItem;
-}) {
+export function MediaPreview({ itemId }: { itemId: string }) {
+  const foreground = useCreateStore((store) => store.foreground);
+  const item = useComposerItem(itemId);
+
+  if (!item) return null;
+
   if (item.file.type === "video") {
     return <VideoPreview foreground={foreground} item={item} />;
   }

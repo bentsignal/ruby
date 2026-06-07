@@ -2,30 +2,24 @@ import { Pressable, Text, View } from "react-native";
 import { CircleAlert, LoaderCircle } from "lucide-react-native";
 
 import type { ComposerItem } from "../types";
+import { useComposerItem, useCreateStore } from "../store";
 
-export function MediaStatusOverlay({
-  item,
-  retryItem,
-}: {
-  item: ComposerItem;
-  retryItem: (item: ComposerItem) => void;
-}) {
+export function MediaStatusOverlay({ itemId }: { itemId: string }) {
+  const item = useComposerItem(itemId);
+
+  if (!item) return null;
   if (item.status === "ready" || item.status === "uploaded") return null;
 
   return (
     <View className="absolute inset-0 items-center justify-center bg-black/55 px-6">
-      <StatusContent item={item} retryItem={retryItem} />
+      <StatusContent item={item} />
     </View>
   );
 }
 
-function StatusContent({
-  item,
-  retryItem,
-}: {
-  item: ComposerItem;
-  retryItem: (item: ComposerItem) => void;
-}) {
+function StatusContent({ item }: { item: ComposerItem }) {
+  const retryItem = useCreateStore((store) => store.retryItem);
+
   if (item.status === "uploading") {
     return (
       <View className="items-center gap-3">

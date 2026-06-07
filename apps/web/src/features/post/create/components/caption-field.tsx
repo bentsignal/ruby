@@ -1,12 +1,11 @@
 import { POST_CAPTION_MAX_LENGTH } from "@acme/config/posts";
 
-export function ComposerCaptionField({
-  caption,
-  setCaption,
-}: {
-  caption: string;
-  setCaption: (caption: string) => void;
-}) {
+import { useCreateStore } from "../store";
+
+export function CaptionField() {
+  const caption = useCreateStore((store) => store.caption);
+  const setCaption = useCreateStore((store) => store.setCaption);
+
   return (
     <label className="flex flex-col gap-2">
       <span className="text-sm font-semibold">Caption</span>

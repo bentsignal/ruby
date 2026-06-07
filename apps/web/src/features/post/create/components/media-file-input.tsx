@@ -1,14 +1,11 @@
-import type { RefObject } from "react";
-
 import { POST_UPLOAD_ACCEPT } from "@acme/config/posts";
 
-export function ComposerFileInput({
-  inputRef,
-  onFiles,
-}: {
-  inputRef: RefObject<HTMLInputElement | null>;
-  onFiles: (files: FileList) => void;
-}) {
+import { useCreateStore } from "../store";
+
+export function MediaFileInput() {
+  const addFiles = useCreateStore((store) => store.addFiles);
+  const inputRef = useCreateStore((store) => store.inputRef);
+
   return (
     <input
       ref={inputRef}
@@ -17,7 +14,7 @@ export function ComposerFileInput({
       multiple
       type="file"
       onChange={(event) => {
-        if (event.target.files) onFiles(event.target.files);
+        if (event.target.files) addFiles(event.target.files);
         event.target.value = "";
       }}
     />

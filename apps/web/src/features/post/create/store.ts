@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
 
-import { uploadComposerFile } from "../lib/composer-upload";
-import { useComposerItems } from "./use-composer-items";
+import { useComposerItems } from "./hooks/use-composer-items";
+import { uploadComposerFile } from "./lib/composer-upload";
 
-export function useCreateComposer() {
+function useInternalStore() {
   const createUpload = useConvexMutation(api.files.createUpload);
   const createPost = useConvexMutation(api.posts.create);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [caption, setCaption] = useState("");
@@ -75,6 +77,7 @@ export function useCreateComposer() {
     caption,
     error,
     hasUploadingItems,
+    inputRef,
     isConfirmOpen,
     isPosting,
     items,
@@ -91,3 +94,6 @@ function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) return error.message;
   return fallback;
 }
+
+export const { Store: CreateStore, useStore: useCreateStore } =
+  createStore(useInternalStore);

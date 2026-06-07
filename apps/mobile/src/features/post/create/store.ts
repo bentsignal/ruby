@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useConvexMutation } from "@convex-dev/react-query";
+import { createStore } from "rostra";
 
 import {
   POST_UPLOAD_MAX_SIZE_BYTES,
@@ -12,12 +13,12 @@ import {
 } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
-import type { ComposerItem } from "../types";
+import type { ComposerItem } from "./types";
 import { useColor } from "~/hooks/use-color";
-import { useMediaReorder } from "./use-media-reorder";
-import { useUploadItem } from "./use-upload-item";
+import { useMediaReorder } from "./hooks/use-media-reorder";
+import { useUploadItem } from "./hooks/use-upload-item";
 
-export function useCreateComposer() {
+function useInternalStore() {
   const createPost = useConvexMutation(api.posts.create);
   const foreground = useColor("foreground");
   const mutedForeground = useColor("muted-foreground");
@@ -38,6 +39,7 @@ export function useCreateComposer() {
       current.map((item) => patchItem({ item, itemId, patch })),
     );
   }
+
   const { uploadItem } = useUploadItem({ updateItem });
   const reorder = useMediaReorder({
     gridWidth,
@@ -150,4 +152,13 @@ function patchItem({
   if (item.id !== itemId) return item;
 
   return { ...item, ...patch };
+}
+
+export const { Store: CreateStore, useStore: useCreateStore } =
+  createStore(useInternalStore);
+
+export function useComposerItem(itemId: string) {
+  return useCreateStore((store) =>
+    store.items.find((item) => item.id === itemId),
+  );
 }
