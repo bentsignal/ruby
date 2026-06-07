@@ -7,6 +7,7 @@ import { ProfileStore } from "~/features/profile/store";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
+import { PostDate } from "./post-date";
 import { PostMediaGrid } from "./post-media-grid";
 
 export function Post({ post }: { post: UIPost }) {
@@ -20,9 +21,7 @@ export function Post({ post }: { post: UIPost }) {
               <Name className="text-sm font-bold" />
               <Username className="text-muted-foreground text-xs font-semibold" />
             </div>
-            <span className="text-muted-foreground ml-auto text-xs">
-              {new Date(post._creationTime).toLocaleDateString()}
-            </span>
+            <PostDate />
           </div>
         </ProfileStore>
         <PostMediaGrid />

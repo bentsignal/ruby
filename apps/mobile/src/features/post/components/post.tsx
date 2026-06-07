@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import type { UIPost } from "@acme/convex/types";
 
@@ -9,6 +9,7 @@ import { ProfileStore } from "~/features/profile/store";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
+import { PostDate } from "./post-date";
 import { PostMediaPager } from "./post-media-pager";
 
 export function Post({ post }: { post: UIPost }) {
@@ -22,9 +23,7 @@ export function Post({ post }: { post: UIPost }) {
               <Name className="text-base" />
               <Username className="text-foreground text-xs" />
             </View>
-            <Text className="text-muted-foreground ml-auto text-xs">
-              {new Date(post._creationTime).toLocaleDateString()}
-            </Text>
+            <PostDate />
           </View>
         </ProfileStore>
         <PostMediaPager />
