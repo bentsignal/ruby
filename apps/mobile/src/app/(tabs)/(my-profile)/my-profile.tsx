@@ -34,6 +34,7 @@ export default function MyProfile() {
   if (!myProfile) {
     return <ProfileLoading />;
   }
+
   return (
     <SafeAreaView className="flex-1">
       <ProfileStore profile={myProfile} relationship={"my-profile"}>

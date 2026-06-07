@@ -20,10 +20,6 @@ export default function Home() {
 
   const posts = data ?? [];
 
-  return <HomePostList posts={posts} />;
-}
-
-function HomePostList({ posts }: { posts: UIPost[] }) {
   const inset = useSafeAreaInsets();
 
   return (
@@ -32,7 +28,7 @@ function HomePostList({ posts }: { posts: UIPost[] }) {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       style={{ flex: 1 }}
-      ListHeaderComponent={<HomePostListHeader topPadding={inset.top} />}
+      ListHeaderComponent={<ListHeader topPadding={inset.top} />}
       contentContainerStyle={{
         paddingBottom: inset.bottom + 24,
       }}
@@ -41,7 +37,7 @@ function HomePostList({ posts }: { posts: UIPost[] }) {
   );
 }
 
-function HomePostListHeader({ topPadding }: { topPadding: number }) {
+function ListHeader({ topPadding }: { topPadding: number }) {
   return (
     <View className="items-center pb-6" style={{ paddingTop: topPadding }}>
       <Image

@@ -80,12 +80,12 @@ export default function ProfileByUsername() {
           <View className="bg-border h-px" />
         </View>
       </ProfileStore>
-      <ProfilePostList posts={posts ?? []} />
+      <PostList posts={posts ?? []} />
     </SafeAreaView>
   );
 }
 
-function ProfilePostList({ posts }: { posts: UIPost[] }) {
+function PostList({ posts }: { posts: UIPost[] }) {
   const inset = useSafeAreaInsets();
 
   return (

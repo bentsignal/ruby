@@ -11,7 +11,6 @@
 import type * as auth from "../auth.js";
 import type * as auth_shared from "../auth_shared.js";
 import type * as bunny from "../bunny.js";
-import type * as features_files_constants from "../features/files/constants.js";
 import type * as features_files_upload_http from "../features/files/upload_http.js";
 import type * as features_files_upload_session from "../features/files/upload_session.js";
 import type * as features_files_validators from "../features/files/validators.js";
@@ -47,7 +46,6 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   auth_shared: typeof auth_shared;
   bunny: typeof bunny;
-  "features/files/constants": typeof features_files_constants;
   "features/files/upload_http": typeof features_files_upload_http;
   "features/files/upload_session": typeof features_files_upload_session;
   "features/files/validators": typeof features_files_validators;
