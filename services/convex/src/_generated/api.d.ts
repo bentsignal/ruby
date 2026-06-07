@@ -16,7 +16,6 @@ import type * as files_mutations from "../files/mutations.js";
 import type * as files_types from "../files/types.js";
 import type * as files_upload_http from "../files/upload_http.js";
 import type * as files_upload_session from "../files/upload_session.js";
-import type * as files_uploadthing from "../files/uploadthing.js";
 import type * as files_validators from "../files/validators.js";
 import type * as friends_helpers from "../friends/helpers.js";
 import type * as friends_mutations from "../friends/mutations.js";
@@ -59,7 +58,6 @@ declare const fullApi: ApiFromModules<{
   "files/types": typeof files_types;
   "files/upload_http": typeof files_upload_http;
   "files/upload_session": typeof files_upload_session;
-  "files/uploadthing": typeof files_uploadthing;
   "files/validators": typeof files_validators;
   "friends/helpers": typeof friends_helpers;
   "friends/mutations": typeof friends_mutations;
