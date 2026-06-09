@@ -17,7 +17,7 @@ const TAB_BAR_SHADOW_STYLE = {
 function getTabHref(routeName: string) {
   switch (routeName) {
     case "(index)":
-      return "/";
+      return "/home";
     case "(search)":
       return "/search";
     case "(notifications)":

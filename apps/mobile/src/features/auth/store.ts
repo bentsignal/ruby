@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- Mobile auth state is client-only, so it cannot be route-preloaded.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth, useMutation } from "convex/react";
 import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
@@ -14,13 +14,23 @@ import { authClient } from "~/features/auth/lib/auth-client";
 function useInternalStore() {
   const { isLoading, run } = useLoading();
   const router = useRouter();
-  const { isAuthenticated: imSignedIn } = useConvexAuth();
-  const imSignedOut = !imSignedIn;
+  const { isAuthenticated: imSignedIn, isLoading: authIsLoading } =
+    useConvexAuth();
+  const imSignedOut = !authIsLoading && !imSignedIn;
+  const ensureProfileExists = useMutation(
+    api.profile.mutations.ensureProfileExists,
+  );
 
   const { data: myProfile } = useQuery({
-    ...convexQuery(api.profile.queries.getMine, {}),
+    queryKey: ["auth", "profile"],
+    queryFn: async () => await ensureProfileExists(),
     enabled: imSignedIn,
     select: (profile) => profile,
+  });
+  const waitlistStatusQuery = useQuery({
+    ...convexQuery(api.waitlist.queries.getMyStatus, {}),
+    enabled: imSignedIn && !!myProfile,
+    select: (status) => status,
   });
 
   const [redirectURL, setRedirectURL] = useState("/");
@@ -56,7 +66,10 @@ function useInternalStore() {
 
   return {
     myProfile,
+    waitlistStatus: waitlistStatusQuery.data,
+    waitlistStatusIsLoaded: waitlistStatusQuery.status === "success",
     isLoading,
+    authIsLoading,
     imSignedIn,
     signInWithGoogle,
     signOut,

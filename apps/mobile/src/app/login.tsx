@@ -1,43 +1,23 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
-import { LoadingSpinner } from "~/components/loading-spinner";
+import { SafeAreaView } from "~/components/safe-area-view";
 import { SignInButton } from "~/features/auth/components/sign-in-button";
-import { useAuthDrawerSize } from "~/features/auth/hooks/use-auth-drawer-size";
 import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
-import { useAuthStore } from "~/features/auth/store";
+import logo from "../../assets/rounded-icon.png";
 
 export default function Login() {
   useRedirectIfSignedIn();
-  const { height: drawerHeight } = useAuthDrawerSize();
 
   return (
-    <View style={{ height: drawerHeight }} className="relative">
-      <LoadingOverlay />
-      <View className="h-full w-full flex-col justify-center gap-4 px-6 py-8">
-        <Text className="text-foreground text-center text-2xl font-bold">
-          Welcome to Ruby!
-        </Text>
-        <Text className="text-muted-foreground text-center">
-          Please choose your preferred sign in method
-        </Text>
+    <SafeAreaView className="bg-background relative flex-1" bottom>
+      <View className="bg-muted/20 absolute inset-0" />
+      <View className="h-full w-full flex-col items-center justify-center gap-3 px-6 py-10">
+        <Image source={logo} className="mb-2 size-20 rounded-[22px]" />
         <SignInButton />
-        <Text className="text-muted-foreground text-center text-xs">
-          By continuing, you agree to our Terms of Service, and acknowledge that
-          you have read our Privacy Policy.
+        <Text className="text-muted-foreground max-w-[320px] text-center text-sm leading-6">
+          By continuing you agree to our Terms & Privacy Policy
         </Text>
       </View>
-    </View>
-  );
-}
-
-function LoadingOverlay() {
-  const isLoading = useAuthStore((s) => s.isLoading);
-
-  if (!isLoading) return null;
-
-  return (
-    <View className="bg-background/60 absolute top-0 right-0 z-1 h-full w-full items-center justify-center">
-      <LoadingSpinner className="h-10 w-10 shadow-xl" />
-    </View>
+    </SafeAreaView>
   );
 }

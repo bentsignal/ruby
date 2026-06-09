@@ -14,9 +14,11 @@ import { useColor } from "~/hooks/use-color";
 export function LoadingSpinner({
   color = "foreground",
   className,
+  size = 20,
 }: {
   color?: string;
   className?: string;
+  size?: number;
 }) {
   const cssColor = useColor(color);
   const rotation = useSharedValue(0);
@@ -37,7 +39,7 @@ export function LoadingSpinner({
   }));
   return (
     <Animated.View style={animatedStyle}>
-      <Loader color={cssColor} className={className} />
+      <Loader color={cssColor} className={className} size={size} />
     </Animated.View>
   );
 }

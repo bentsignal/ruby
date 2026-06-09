@@ -83,7 +83,7 @@ function useInternalStore() {
         fileIds: uploadedFiles.map((file) => file._id),
       });
       setIsPosting(false);
-      router.replace("/");
+      router.replace("/home");
     } catch (caughtError) {
       setError(getErrorMessage(caughtError, "Post failed"));
       setIsPosting(false);

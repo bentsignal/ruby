@@ -42,6 +42,9 @@ import type * as profile_validators from "../profile/validators.js";
 import type * as trips_validators from "../trips/validators.js";
 import type * as urls from "../urls.js";
 import type * as utils from "../utils.js";
+import type * as waitlist_mutations from "../waitlist/mutations.js";
+import type * as waitlist_queries from "../waitlist/queries.js";
+import type * as waitlist_validators from "../waitlist/validators.js";
 
 import type {
   ApiFromModules,
@@ -84,6 +87,9 @@ declare const fullApi: ApiFromModules<{
   "trips/validators": typeof trips_validators;
   urls: typeof urls;
   utils: typeof utils;
+  "waitlist/mutations": typeof waitlist_mutations;
+  "waitlist/queries": typeof waitlist_queries;
+  "waitlist/validators": typeof waitlist_validators;
 }>;
 
 /**

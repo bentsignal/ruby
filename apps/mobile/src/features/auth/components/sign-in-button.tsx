@@ -1,13 +1,14 @@
 import { Pressable, Text } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
-import { cn } from "@acme/std/cn";
-
+import { LoadingSpinner } from "~/components/loading-spinner";
 import { useAuthStore } from "../store";
 
 export function SignInButton() {
   const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);
-  const disabled = useAuthStore((s) => s.isLoading || s.imSignedIn);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const imSignedIn = useAuthStore((s) => s.imSignedIn);
+  const disabled = isLoading || imSignedIn;
   return (
     <Pressable
       onPress={signInWithGoogle}
@@ -15,19 +16,21 @@ export function SignInButton() {
         height: 44,
       }}
       disabled={disabled}
-      className={cn(
-        "flex-row items-center justify-center rounded-full border disabled:opacity-50",
-        "border-[#747775] bg-white",
-        "dark:border-[#8E918F] dark:bg-[#131314]",
-      )}
+      className="w-full max-w-[340px] flex-row items-center justify-center rounded-full border border-[#747775] bg-white disabled:opacity-50 dark:border-[#8E918F] dark:bg-[#131314]"
     >
-      <GoogleIcon />
-      <Text
-        style={{ fontFamily: "Roboto_500Medium" }}
-        className="text-[#1F1F1F] dark:text-[#E3E3E3]"
-      >
-        Sign in with Google
-      </Text>
+      {isLoading ? (
+        <LoadingSpinner color="foreground" />
+      ) : (
+        <>
+          <GoogleIcon />
+          <Text
+            style={{ fontFamily: "Roboto_500Medium" }}
+            className="text-[#1F1F1F] dark:text-[#E3E3E3]"
+          >
+            Sign in with Google
+          </Text>
+        </>
+      )}
     </Pressable>
   );
 }

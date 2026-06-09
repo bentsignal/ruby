@@ -1,12 +1,8 @@
-import { useState } from "react";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { Loader } from "lucide-react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { useScreen } from "@acme/std/use-screen";
-import * as Dialog from "@acme/ui-web/dialog";
-import * as Drawer from "@acme/ui-web/drawer";
-
+import logo from "~/assets/logo-small.webp";
+import { Image } from "~/components/image";
 import { SignInButton } from "~/features/auth/components/sign-in-button";
 import { useAuthStore } from "~/features/auth/store";
 
@@ -23,79 +19,22 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const navigate = useNavigate();
-  const screen = useScreen();
-
-  const [isOpen, _setIsOpen] = useState(true);
-
   const imLoggedIn = useAuthStore((s) => s.imSignedIn);
   if (imLoggedIn) {
     return null;
   }
 
-  function handleOpenChange(open: boolean) {
-    if (!open) {
-      void navigate({
-        to: "/",
-      });
-    }
-  }
-
-  if (screen?.size.closestTo === "mobile") {
-    return (
-      <Drawer.Container open={isOpen} onOpenChange={handleOpenChange}>
-        <Drawer.Content className="my-4">
-          <LoadingOverlay />
-          <Drawer.Header className="text-left">
-            <Drawer.Title className="text-center text-xl">
-              Welcome to Ruby!
-            </Drawer.Title>
-            <Drawer.Description>
-              Please choose your preferred sign in method
-            </Drawer.Description>
-          </Drawer.Header>
-          <div className="mx-4 mt-2 mb-3 flex flex-col gap-4">
-            <SignInButton />
-          </div>
-          <Drawer.Footer className="pt-2">
-            <span className="text-muted-foreground text-center text-sm">
-              By continuing, you agree to our Terms of Service, and acknowledge
-              that you have read our Privacy Policy.
-            </span>
-          </Drawer.Footer>
-        </Drawer.Content>
-      </Drawer.Container>
-    );
-  }
-
   return (
-    <Dialog.Container open={isOpen} onOpenChange={handleOpenChange}>
-      <Dialog.Content className="sm:max-w-[425px]">
-        <LoadingOverlay />
-        <Dialog.Header>
-          <Dialog.Title>Welcome to Ruby!</Dialog.Title>
-          <Dialog.Description>
-            Please choose your preferred sign in method
-          </Dialog.Description>
-          <div className="mx-4 mt-3 mb-2 flex flex-col gap-4">
-            <SignInButton />
-          </div>
-          <span className="text-muted-foreground text-center text-sm">
-            By continuing, you agree to our Terms of Service, and acknowledge
-            that you have read our Privacy Policy.
-          </span>
-        </Dialog.Header>
-      </Dialog.Content>
-    </Dialog.Container>
-  );
-}
-
-function LoadingOverlay() {
-  const isLoading = useAuthStore((s) => s.isLoading);
-  if (!isLoading) return null;
-  return (
-    <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center">
-      <Loader className="h-5 w-5 animate-spin" />
-    </div>
+    <main className="relative grid min-h-screen place-items-center overflow-hidden px-5 py-10">
+      <div className="from-background via-background to-muted/40 absolute inset-0 bg-linear-to-br" />
+      <div className="bg-primary/5 absolute top-[-20%] left-1/2 h-96 w-96 -translate-x-1/2 rounded-full blur-3xl" />
+      <section className="relative flex w-full max-w-[340px] flex-col items-center">
+        <Image src={logo} alt="Ruby" className="size-16 rounded-[18px]" />
+        <SignInButton />
+        <p className="text-muted-foreground mt-3 w-56 text-center text-sm leading-6">
+          By continuing you agree to our Terms & Privacy Policy
+        </p>
+      </section>
+    </main>
   );
 }
