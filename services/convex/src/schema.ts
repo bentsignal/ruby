@@ -6,6 +6,7 @@ import { vImage } from "./images/validators";
 import { vPost } from "./posts/validators";
 import { vProfile } from "./profile/validators";
 import { vTrip } from "./trips/validators";
+import { vWaitlistEntry } from "./waitlist/validators";
 
 export default defineSchema(
   {
@@ -22,6 +23,7 @@ export default defineSchema(
     friends: defineTable(vFriendship)
       .index("by_profileA", ["profileIdA"])
       .index("by_profileB", ["profileIdB"]),
+    waitlist: defineTable(vWaitlistEntry).index("by_userId", ["userId"]),
   },
   { schemaValidation: true },
 );

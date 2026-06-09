@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './app/login'
 import { Route as AuthedRouteImport } from './app/_authed'
 import { Route as AuthedIndexRouteImport } from './app/_authed/index'
 import { Route as AuthCallbackRouteImport } from './app/auth.callback'
+import { Route as AuthedWaitlistRouteImport } from './app/_authed/waitlist'
 import { Route as AuthedSearchRouteImport } from './app/_authed/search'
 import { Route as AuthedNotificationsRouteImport } from './app/_authed/notifications'
 import { Route as AuthedEditProfileRouteImport } from './app/_authed/edit-profile'
@@ -38,6 +39,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedWaitlistRoute = AuthedWaitlistRouteImport.update({
+  id: '/waitlist',
+  path: '/waitlist',
+  getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedSearchRoute = AuthedSearchRouteImport.update({
   id: '/search',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/edit-profile': typeof AuthedEditProfileRoute
   '/notifications': typeof AuthedNotificationsRoute
   '/search': typeof AuthedSearchRoute
+  '/waitlist': typeof AuthedWaitlistRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/edit-profile': typeof AuthedEditProfileRoute
   '/notifications': typeof AuthedNotificationsRoute
   '/search': typeof AuthedSearchRoute
+  '/waitlist': typeof AuthedWaitlistRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/_authed/edit-profile': typeof AuthedEditProfileRoute
   '/_authed/notifications': typeof AuthedNotificationsRoute
   '/_authed/search': typeof AuthedSearchRoute
+  '/_authed/waitlist': typeof AuthedWaitlistRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/_authed/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/edit-profile'
     | '/notifications'
     | '/search'
+    | '/waitlist'
     | '/auth/callback'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/edit-profile'
     | '/notifications'
     | '/search'
+    | '/waitlist'
     | '/auth/callback'
     | '/'
     | '/api/auth/$'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/_authed/edit-profile'
     | '/_authed/notifications'
     | '/_authed/search'
+    | '/_authed/waitlist'
     | '/auth/callback'
     | '/_authed/'
     | '/api/auth/$'
@@ -178,6 +190,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/waitlist': {
+      id: '/_authed/waitlist'
+      path: '/waitlist'
+      fullPath: '/waitlist'
+      preLoaderRoute: typeof AuthedWaitlistRouteImport
+      parentRoute: typeof AuthedRoute
     }
     '/_authed/search': {
       id: '/_authed/search'
@@ -230,6 +249,7 @@ interface AuthedRouteChildren {
   AuthedEditProfileRoute: typeof AuthedEditProfileRoute
   AuthedNotificationsRoute: typeof AuthedNotificationsRoute
   AuthedSearchRoute: typeof AuthedSearchRoute
+  AuthedWaitlistRoute: typeof AuthedWaitlistRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
 }
 
@@ -239,6 +259,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedEditProfileRoute: AuthedEditProfileRoute,
   AuthedNotificationsRoute: AuthedNotificationsRoute,
   AuthedSearchRoute: AuthedSearchRoute,
+  AuthedWaitlistRoute: AuthedWaitlistRoute,
   AuthedIndexRoute: AuthedIndexRoute,
 }
 

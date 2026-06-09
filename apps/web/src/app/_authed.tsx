@@ -1,5 +1,4 @@
 import type { LucideIcon } from "lucide-react";
-import { queryOptions } from "@tanstack/react-query";
 import {
   createFileRoute,
   linkOptions,
@@ -7,25 +6,17 @@ import {
   redirect,
   useLocation,
 } from "@tanstack/react-router";
-import { convert } from "great-time";
 import { Bell, Home, PlusIcon, Search, UserRound } from "lucide-react";
 
+import { api } from "@acme/convex/api";
 import { cn } from "@acme/std/cn";
 import { buttonVariants } from "@acme/ui-web/button";
 import * as HoverCard from "@acme/ui-web/hover-card";
 
 import { QuickLink } from "~/components/quick-link";
 import { SignOutLink } from "~/features/auth/components/sign-out-link";
-import { ensureProfileExists } from "~/features/auth/lib/auth.functions";
 import { SmallProfilePreview } from "~/features/profile/components/small-profile-preview";
 import { ThemeToggle } from "~/features/theme/components/theme-toggle";
-
-const profileEnsureQuery = queryOptions({
-  queryKey: ["auth", "profile"],
-  queryFn: async () => await ensureProfileExists(),
-  staleTime: convert(50, "minutes", "to ms"),
-  gcTime: Infinity,
-});
 
 export const Route = createFileRoute("/_authed")({
   component: TabsLayout,
@@ -36,20 +27,34 @@ export const Route = createFileRoute("/_authed")({
         search: { redirect_uri: location.pathname },
       });
     }
-    const profile =
-      await context.queryClient.ensureQueryData(profileEnsureQuery);
+    const profile = await context.convexHttpClient.mutation(
+      api.profile.mutations.ensureProfileExists,
+      {},
+    );
+    const waitlistStatus = await context.convexHttpClient.query(
+      api.waitlist.queries.getMyStatus,
+      {},
+    );
+    if (waitlistStatus !== "has-access" && location.pathname !== "/waitlist") {
+      throw redirect({
+        to: "/waitlist",
+      });
+    }
     return {
       isAuthenticated: true,
       profile,
+      waitlistStatus,
     };
   },
 });
 
 function TabsLayout() {
+  const pathname = useLocation({ select: (location) => location.pathname });
+
   return (
     <>
       <Outlet />
-      <TabBar />
+      {pathname === "/waitlist" ? null : <TabBar />}
     </>
   );
 }

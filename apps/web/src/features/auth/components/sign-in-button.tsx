@@ -1,12 +1,12 @@
 import { useSearch } from "@tanstack/react-router";
-
-import { cn } from "@acme/std/cn";
+import { Loader } from "lucide-react";
 
 import { useAuthStore } from "../store";
 
-export function SignInButton({ className }: { className?: string }) {
+export function SignInButton() {
   const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);
-  const disabled = useAuthStore((s) => s.isLoading || s.imSignedIn);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const disabled = useAuthStore((s) => isLoading || s.imSignedIn);
 
   const redirectUri = useSearch({
     from: "/login",
@@ -17,21 +17,21 @@ export function SignInButton({ className }: { className?: string }) {
     <button
       onClick={() => signInWithGoogle(redirectUri)}
       disabled={disabled}
-      className={cn(
-        className,
-        "cursor-pointer disabled:cursor-not-allowed",
-        "flex h-11 w-full flex-row items-center justify-center rounded-full border disabled:opacity-50",
-        "border-[#747775] bg-white",
-        "dark:border-[#8E918F] dark:bg-[#131314]",
-      )}
+      className="mt-5 flex h-11 w-full cursor-pointer flex-row items-center justify-center rounded-full border border-[#8E918F] bg-[#131314] text-[#E3E3E3] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#747775] dark:bg-white dark:text-[#1F1F1F]"
     >
-      <GoogleIcon />
-      <span
-        style={{ fontFamily: "var(--font-roboto)" }}
-        className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]"
-      >
-        Sign in with Google
-      </span>
+      {isLoading ? (
+        <Loader className="size-4 animate-spin" />
+      ) : (
+        <>
+          <GoogleIcon />
+          <span
+            style={{ fontFamily: "var(--font-roboto)" }}
+            className="font-medium"
+          >
+            Sign in with Google
+          </span>
+        </>
+      )}
     </button>
   );
 }

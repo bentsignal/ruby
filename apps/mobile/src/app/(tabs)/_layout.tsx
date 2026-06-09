@@ -1,8 +1,9 @@
 import type { ComponentType } from "react";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
 import { MobileTabBar } from "~/components/mobile-tab-bar";
+import { useAuthStore } from "~/features/auth/store";
 
 function TabIcon({
   icon: Icon,
@@ -17,6 +18,24 @@ function TabIcon({
 }
 
 export default function TabLayout() {
+  const imSignedIn = useAuthStore((s) => s.imSignedIn);
+  const myProfile = useAuthStore((s) => s.myProfile);
+  const waitlistStatus = useAuthStore((s) => s.waitlistStatus);
+  const waitlistStatusIsLoaded = useAuthStore((s) => s.waitlistStatusIsLoaded);
+  const hasAccess = waitlistStatus === "has-access";
+
+  if (!imSignedIn) {
+    return <Redirect href="/login" />;
+  }
+
+  if (!myProfile || !waitlistStatusIsLoaded) {
+    return null;
+  }
+
+  if (!hasAccess) {
+    return <Redirect href="/waitlist" />;
+  }
+
   return (
     <Tabs
       tabBar={(props) => <MobileTabBar {...props} />}
