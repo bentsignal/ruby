@@ -46,3 +46,5 @@ Before removing it, verify with a clean prebuild/build/install cycle on an iOS 2
 5. Confirm deep links / universal links still work.
 
 If Expo's generated native project includes equivalent scene lifecycle support, delete the local plugin file too.
+
+Commit where we added this stuff: 2a1a3dfadda7dd973ae7d860342bfdc09f5b3167
