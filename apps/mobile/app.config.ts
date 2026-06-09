@@ -43,6 +43,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-web-browser",
     "expo-system-ui",
     [
+      "expo-build-properties",
+      {
+        ios: {
+          deploymentTarget: "15.1",
+        },
+      },
+    ],
+    "./expo-plugins/with-ios-scene-lifecycle.cjs",
+    "./expo-plugins/with-ios-pods-deployment-target.cjs",
+    [
       "expo-image-picker",
       {
         photosPermission:
