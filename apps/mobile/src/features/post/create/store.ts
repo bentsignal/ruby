@@ -1,4 +1,3 @@
-import type { LayoutChangeEvent } from "react-native";
 import { useState } from "react";
 import { Alert } from "react-native";
 import * as Haptics from "expo-haptics";
@@ -15,17 +14,32 @@ import { api } from "@acme/convex/api";
 
 import type { ComposerItem } from "./types";
 import { useColor } from "~/hooks/use-color";
-import { useMediaReorder } from "./hooks/use-media-reorder";
 import { useUploadItem } from "./hooks/use-upload-item";
+
+let captionDraft = "";
+
+function readCaptionDraft() {
+  return captionDraft;
+}
+
+function resetCaptionDraft() {
+  captionDraft = "";
+}
+
+function writeCaptionDraft(nextCaption: string) {
+  captionDraft = nextCaption;
+}
 
 function useInternalStore() {
   const createPost = useConvexMutation(api.posts.mutations.create);
   const foreground = useColor("foreground");
   const mutedForeground = useColor("muted-foreground");
   const [items, setItems] = useState<ComposerItem[]>([]);
-  const [caption, setCaption] = useState("");
+  const [caption, setCaptionState] = useState(() => {
+    captionDraft = "";
+    return "";
+  });
   const [error, setError] = useState<string | null>(null);
-  const [gridWidth, setGridWidth] = useState(0);
   const [isPosting, setIsPosting] = useState(false);
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
@@ -41,11 +55,15 @@ function useInternalStore() {
   }
 
   const { uploadItem } = useUploadItem({ updateItem });
-  const reorder = useMediaReorder({
-    gridWidth,
-    itemCount: items.length,
-    setItems,
-  });
+
+  function setCaption(nextCaption: string) {
+    writeCaptionDraft(nextCaption);
+    setCaptionState(nextCaption);
+  }
+
+  function setCaptionDraft(nextCaption: string) {
+    writeCaptionDraft(nextCaption);
+  }
 
   async function pickFiles() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -69,6 +87,11 @@ function useInternalStore() {
     void Haptics.selectionAsync();
   }
 
+  function replaceItems(nextItems: ComposerItem[]) {
+    setItems(nextItems);
+    void Haptics.selectionAsync();
+  }
+
   function retryItem(item: ComposerItem) {
     updateItem(item.id, { error: undefined, status: "ready" });
   }
@@ -78,10 +101,12 @@ function useInternalStore() {
     setError(null);
     try {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
+      const latestCaption = readCaptionDraft().trim();
       await createPost({
-        caption: caption.trim() || undefined,
+        caption: latestCaption || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
       });
+      resetCaptionDraft();
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
@@ -98,25 +123,21 @@ function useInternalStore() {
   }
 
   return {
-    activeDragItemId: reorder.activeDragItemId,
-    beginReorder: reorder.beginReorder,
     canPost,
     caption,
     confirmPost,
-    endReorder: reorder.endReorder,
     error,
     foreground,
-    handleGridLayout: (event: LayoutChangeEvent) =>
-      setGridWidth(event.nativeEvent.layout.width),
     hasUploadingItems,
     isPosting,
     items,
     mutedForeground,
     pickFiles,
+    replaceItems,
     removeItem,
     retryItem,
     setCaption,
-    updateReorder: reorder.updateReorder,
+    setCaptionDraft,
   };
 }
 

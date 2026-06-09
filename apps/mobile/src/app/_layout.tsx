@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
@@ -55,32 +56,38 @@ function AppShell({
   return (
     <>
       <GestureHandlerRootView className="flex-1">
-        <SafeAreaProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          >
-            <Stack.Screen name="index" options={{ animation: "fade" }} />
-            <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
-            <Stack.Screen name="login" options={{ animation: "fade" }} />
-            <Stack.Screen name="waitlist" options={{ animation: "fade" }} />
-            <Stack.Screen
-              name="edit-profile"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [1],
-                sheetGrabberVisible: true,
-                contentStyle: {
-                  backgroundColor: liquidGlassIsAvailable
-                    ? "transparent"
-                    : backgroundColor,
-                },
+        <KeyboardProvider
+          navigationBarTranslucent
+          preserveEdgeToEdge
+          statusBarTranslucent
+        >
+          <SafeAreaProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "transparent" },
               }}
-            />
-          </Stack>
-        </SafeAreaProvider>
+            >
+              <Stack.Screen name="index" options={{ animation: "fade" }} />
+              <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
+              <Stack.Screen name="login" options={{ animation: "fade" }} />
+              <Stack.Screen name="waitlist" options={{ animation: "fade" }} />
+              <Stack.Screen
+                name="edit-profile"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [1],
+                  sheetGrabberVisible: true,
+                  contentStyle: {
+                    backgroundColor: liquidGlassIsAvailable
+                      ? "transparent"
+                      : backgroundColor,
+                  },
+                }}
+              />
+            </Stack>
+          </SafeAreaProvider>
+        </KeyboardProvider>
       </GestureHandlerRootView>
       <StatusBar />
     </>

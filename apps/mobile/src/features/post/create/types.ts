@@ -11,8 +11,3 @@ export interface ComposerItem {
   uploadedFile?: UIFile;
   error?: string;
 }
-
-export interface DragState {
-  itemId: string;
-  startIndex: number;
-}
