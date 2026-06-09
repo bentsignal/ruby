@@ -10,7 +10,7 @@ The desired mobile URL was a stable `mobile.ruby.local` style address rather tha
 
 Portless LAN mode can expose routes as `.local` hostnames that simulators and devices can reach over the local network. That solved the discovery/name part of the problem.
 
-For iOS, once the Portless local CA was trusted by the simulator, the app could load through the stable Portless URL.
+For iOS, once the Portless local CA was trusted by the simulator, the app could load through the stable Portless URL. Physical iOS devices need the same CA installed and fully trusted: install `~/.portless/ca.pem` on the device, then enable it in Settings -> General -> About -> Certificate Trust Settings. Installing the profile alone is not enough.
 
 For Android, the app also needed to trust the Portless local CA. Android does not generally trust user-installed certificates for app network traffic unless the app opts into that in its network security config, so the Android development build needed a config plugin that allows user certificate authorities.
 
@@ -44,7 +44,7 @@ After this config changes, Android needs a rebuilt development client. Merely re
 If mobile Portless loading breaks again, check these areas first:
 
 - Is the Portless proxy running in LAN mode so `.local` names are active?
-- Does the device or simulator trust the Portless local CA?
+- Does the device or simulator trust the Portless local CA? On physical iOS, confirm full trust is enabled in Certificate Trust Settings, not just that the profile is installed.
 - For Android, was the dev client rebuilt after any network security config change?
 - Does the Expo manifest shown to the device contain only the stable Portless hostname, or does it leak an internal Metro port?
 - Are Expo-specific JSON responses being rewritten, including content types ending in `+json`?
