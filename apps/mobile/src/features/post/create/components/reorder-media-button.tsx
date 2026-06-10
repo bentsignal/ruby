@@ -20,12 +20,12 @@ import { useSafeAreaInsets } from "~/components/safe-area-view";
 import { useCreateStore } from "../store";
 import { MediaPreview } from "./media-preview";
 
-export function ReorderMediaButton() {
+export function ManageMediaButton() {
   const foreground = useCreateStore((store) => store.foreground);
   const items = useCreateStore((store) => store.items);
   const [isVisible, setIsVisible] = useState(false);
 
-  if (items.length < 2) return null;
+  if (items.length === 0) return null;
 
   return (
     <>
@@ -34,10 +34,10 @@ export function ReorderMediaButton() {
         onPress={() => setIsVisible(true)}
       >
         <GripVertical className="size-4" color={foreground} />
-        <Text className="text-foreground text-sm font-bold">Reorder media</Text>
+        <Text className="text-foreground text-sm font-bold">Manage media</Text>
       </Pressable>
       {isVisible ? (
-        <ReorderMediaModal
+        <ManageMediaModal
           isVisible={isVisible}
           onClose={() => setIsVisible(false)}
         />
@@ -46,7 +46,7 @@ export function ReorderMediaButton() {
   );
 }
 
-function ReorderMediaModal({
+function ManageMediaModal({
   isVisible,
   onClose,
 }: {
@@ -82,7 +82,7 @@ function ReorderMediaModal({
         className="bg-background flex-1"
         style={{ paddingBottom: insets.bottom, paddingTop: insets.top }}
       >
-        <ReorderMediaHeader foreground={foreground} onClose={onClose} />
+        <ManageMediaHeader foreground={foreground} onClose={onClose} />
         <Host style={{ flex: 1 }}>
           <List
             modifiers={[
@@ -105,7 +105,7 @@ function ReorderMediaModal({
                   ]}
                 >
                   <RNHostView matchContents>
-                    <NativeReorderMediaRow item={item} />
+                    <NativeManageMediaRow item={item} />
                   </RNHostView>
                 </HStack>
               ))}
@@ -117,7 +117,7 @@ function ReorderMediaModal({
   );
 }
 
-function ReorderMediaHeader({
+function ManageMediaHeader({
   foreground,
   onClose,
 }: {
@@ -127,7 +127,7 @@ function ReorderMediaHeader({
   return (
     <View className="border-border h-14 flex-row items-center justify-between border-b px-4">
       <View className="w-14" />
-      <Text className="text-foreground text-base font-bold">Reorder Media</Text>
+      <Text className="text-foreground text-base font-bold">Manage Media</Text>
       <Pressable
         className="min-h-10 min-w-14 items-end justify-center"
         onPress={onClose}
@@ -140,13 +140,13 @@ function ReorderMediaHeader({
   );
 }
 
-function NativeReorderMediaRow({ item }: { item: ComposerItem }) {
+function NativeManageMediaRow({ item }: { item: ComposerItem }) {
   const mutedForeground = useCreateStore((store) => store.mutedForeground);
   const { width } = useWindowDimensions();
 
   return (
     <View
-      className="h-20 flex-row items-center gap-3"
+      className="h-20 flex-row items-center gap-3 pl-3"
       style={{ width: Math.max(width - 112, 220) }}
     >
       <View className="size-16 overflow-hidden rounded-md bg-black">
