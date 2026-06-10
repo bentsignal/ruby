@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { StrictMode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
@@ -29,12 +28,8 @@ convexQueryClient.connect(queryClient);
 
 export function Provider({ children }: { children: ReactNode }) {
   return (
-    <StrictMode>
-      <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </ConvexBetterAuthProvider>
-    </StrictMode>
+    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </ConvexBetterAuthProvider>
   );
 }

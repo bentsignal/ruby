@@ -23,11 +23,13 @@ export default function Startup() {
   // eslint-disable-next-line no-restricted-syntax -- Startup route should never be able to strand the user indefinitely.
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.replace("/login");
+      if (authIsLoading || !imSignedIn) {
+        router.replace("/login");
+      }
     }, STARTUP_FALLBACK_TIMEOUT_MS);
 
     return () => clearTimeout(timeout);
-  }, [router]);
+  }, [authIsLoading, imSignedIn, router]);
 
   // eslint-disable-next-line no-restricted-syntax -- Startup route owns the first navigation after auth state resolves.
   useEffect(() => {

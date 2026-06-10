@@ -1,8 +1,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { withDangerousMod } = require("@expo/config-plugins");
+const { withDangerousMod } = require("expo/config-plugins");
 
-const DEPLOYMENT_TARGET = "15.1";
+const DEPLOYMENT_TARGET = "16.4";
 const MARKER = "Ruby force iOS pods deployment target";
 
 function createPostInstallSnippet() {

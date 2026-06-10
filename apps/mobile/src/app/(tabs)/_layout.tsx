@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { ColorValue } from "react-native";
 import { Redirect, Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
@@ -11,10 +12,12 @@ function TabIcon({
   focused,
 }: {
   icon: ComponentType<{ color: string; size: number; strokeWidth: number }>;
-  color: string;
+  color: ColorValue;
   focused: boolean;
 }) {
-  return <Icon strokeWidth={focused ? 3 : 1.75} color={color} size={24} />;
+  return (
+    <Icon strokeWidth={focused ? 3 : 1.75} color={String(color)} size={24} />
+  );
 }
 
 export default function TabLayout() {

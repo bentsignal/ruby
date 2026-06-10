@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { StrictMode, useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
@@ -56,12 +55,8 @@ function AppShell({
   return (
     <>
       <GestureHandlerRootView className="flex-1">
-        <KeyboardProvider
-          navigationBarTranslucent
-          preserveEdgeToEdge
-          statusBarTranslucent
-        >
-          <SafeAreaProvider>
+        <SafeAreaProvider>
+          <StrictMode>
             <Stack
               screenOptions={{
                 headerShown: false,
@@ -86,8 +81,8 @@ function AppShell({
                 }}
               />
             </Stack>
-          </SafeAreaProvider>
-        </KeyboardProvider>
+          </StrictMode>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
       <StatusBar />
     </>

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- Mobile auth state is client-only, so it cannot be route-preloaded.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvexAuth, useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { createStore } from "rostra";
 
 import { api } from "@acme/convex/api";
@@ -21,12 +22,13 @@ function useInternalStore() {
     api.profile.mutations.ensureProfileExists,
   );
 
-  const { data: myProfile } = useQuery({
+  const profileQuery = useQuery({
     queryKey: ["auth", "profile"],
     queryFn: async () => await ensureProfileExists(),
     enabled: imSignedIn,
     select: (profile) => profile,
   });
+  const { data: myProfile } = profileQuery;
   const waitlistStatusQuery = useQuery({
     ...convexQuery(api.waitlist.queries.getMyStatus, {}),
     enabled: imSignedIn && !!myProfile,
@@ -34,6 +36,21 @@ function useInternalStore() {
   });
 
   const [redirectURL, setRedirectURL] = useState("/");
+
+  // eslint-disable-next-line no-restricted-syntax -- Recover stale local auth tokens that Convex no longer accepts.
+  useEffect(() => {
+    if (!imSignedIn) return;
+    const authError =
+      profileQuery.error instanceof ConvexError
+        ? profileQuery.error
+        : waitlistStatusQuery.error instanceof ConvexError
+          ? waitlistStatusQuery.error
+          : undefined;
+    if (authError?.data !== "Unauthenticated") return;
+
+    router.replace("/login");
+    void authClient.signOut();
+  }, [imSignedIn, profileQuery.error, router, waitlistStatusQuery.error]);
 
   function signInWithGoogle() {
     if (imSignedIn) return;

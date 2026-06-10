@@ -3,7 +3,7 @@ const path = require("node:path");
 const {
   withAndroidManifest,
   withDangerousMod,
-} = require("@expo/config-plugins");
+} = require("expo/config-plugins");
 
 const NETWORK_SECURITY_CONFIG = `<?xml version="1.0" encoding="utf-8"?>
 <network-security-config>

@@ -31,18 +31,18 @@ catalog:
   rostra: ^1.0.2
   tailwindcss: ^4.1.16
   tailwind-merge: ^3.3.1
-  typescript: ^5.9.3
+  typescript: ~6.0.3
   uniwind: ^1.2.2
   vite: 7.1.12
   zod: ^4.1.12
 
 catalogs:
   react19:
-    "@types/react": ~19.1.0
-    "@types/react-dom": ~19.1.0
-    react: ~19.1.4
-    react-dom: ~19.1.4
-    react-native: ~0.81.5
+    "@types/react": ~19.2.14
+    "@types/react-dom": ~19.2.3
+    react: 19.2.3
+    react-dom: 19.2.3
+    react-native: 0.85.3
 
 linkWorkspacePackages: true
 

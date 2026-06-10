@@ -4,7 +4,7 @@ const {
   IOSConfig,
   withInfoPlist,
   withXcodeProject,
-} = require("@expo/config-plugins");
+} = require("expo/config-plugins");
 
 const SCENE_DELEGATE_FILE = "SceneDelegate.swift";
 

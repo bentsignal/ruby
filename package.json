@@ -9,7 +9,12 @@
   "pnpm": {
     "overrides": {
       "@better-fetch/fetch": "1.1.21",
-      "lightningcss": "1.30.1"
+      "lightningcss": "1.30.1",
+      "react": "19.2.3",
+      "react-dom": "19.2.3"
+    },
+    "patchedDependencies": {
+      "expo-modules-jsi@56.0.8": "patches/expo-modules-jsi@56.0.8.patch"
     }
   },
   "scripts": {
