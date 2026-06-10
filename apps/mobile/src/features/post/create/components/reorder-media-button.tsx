@@ -1,22 +1,24 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
-  Animated,
   Modal,
-  PanResponder,
   Pressable,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { GripVertical, X } from "lucide-react-native";
+import { Host, HStack, List, RNHostView } from "@expo/ui/swift-ui";
+import {
+  environment,
+  listRowInsets,
+  listStyle,
+  tag,
+} from "@expo/ui/swift-ui/modifiers";
+import { GripVertical } from "lucide-react-native";
 
 import type { ComposerItem } from "../types";
 import { useSafeAreaInsets } from "~/components/safe-area-view";
 import { useCreateStore } from "../store";
 import { MediaPreview } from "./media-preview";
-
-const ROW_HEIGHT = 92;
-const ROW_GAP = 12;
-const ROW_STEP = ROW_HEIGHT + ROW_GAP;
 
 export function ReorderMediaButton() {
   const foreground = useCreateStore((store) => store.foreground);
@@ -56,39 +58,17 @@ function ReorderMediaModal({
   const items = useCreateStore((store) => store.items);
   const replaceItems = useCreateStore((store) => store.replaceItems);
   const [orderedItems, setOrderedItems] = useState(items);
-  const [activeItemId, setActiveItemId] = useState<string | null>(null);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const activeIndexRef = useRef(0);
-  const hoverIndexRef = useRef(0);
 
-  function startDrag(itemId: string, index: number) {
-    activeIndexRef.current = index;
-    hoverIndexRef.current = index;
-    setActiveItemId(itemId);
-    setActiveIndex(index);
-    setHoverIndex(index);
-  }
-
-  function updateHoverIndex(index: number) {
-    if (index === hoverIndexRef.current) return;
-
-    hoverIndexRef.current = index;
-    setHoverIndex(index);
-  }
-
-  function finishDrag() {
-    const nextItems = moveItem(
-      orderedItems,
-      activeIndexRef.current,
-      hoverIndexRef.current,
-    );
-
+  function handleMove(sourceIndices: number[], destination: number) {
+    const nextItems = moveItems(orderedItems, sourceIndices, destination);
     setOrderedItems(nextItems);
-    replaceItems(nextItems);
-    setActiveItemId(null);
-    setActiveIndex(null);
-    setHoverIndex(null);
+    deferReplaceItems(replaceItems, nextItems);
+  }
+
+  function handleDelete(indices: number[]) {
+    const nextItems = deleteItems(orderedItems, indices);
+    setOrderedItems(nextItems);
+    deferReplaceItems(replaceItems, nextItems);
   }
 
   return (
@@ -103,17 +83,35 @@ function ReorderMediaModal({
         style={{ paddingBottom: insets.bottom, paddingTop: insets.top }}
       >
         <ReorderMediaHeader foreground={foreground} onClose={onClose} />
-        <ReorderMediaList
-          activeIndex={activeIndex}
-          activeItemId={activeItemId}
-          foreground={foreground}
-          hoverIndex={hoverIndex}
-          itemCount={orderedItems.length}
-          items={orderedItems}
-          onDragFinish={finishDrag}
-          onDragStart={startDrag}
-          onHoverIndexChange={updateHoverIndex}
-        />
+        <Host style={{ flex: 1 }}>
+          <List
+            modifiers={[
+              environment("editMode", "active"),
+              listStyle("insetGrouped"),
+            ]}
+          >
+            <List.ForEach onDelete={handleDelete} onMove={handleMove}>
+              {orderedItems.map((item) => (
+                <HStack
+                  key={item.id}
+                  modifiers={[
+                    tag(item.id),
+                    listRowInsets({
+                      bottom: 8,
+                      leading: 16,
+                      top: 8,
+                      trailing: 16,
+                    }),
+                  ]}
+                >
+                  <RNHostView matchContents>
+                    <NativeReorderMediaRow item={item} />
+                  </RNHostView>
+                </HStack>
+              ))}
+            </List.ForEach>
+          </List>
+        </Host>
       </View>
     </Modal>
   );
@@ -127,189 +125,79 @@ function ReorderMediaHeader({
   onClose: () => void;
 }) {
   return (
-    <View className="border-border flex-row items-center justify-between border-b px-4 py-3">
-      <Text className="text-foreground text-xl font-black">Reorder media</Text>
+    <View className="border-border h-14 flex-row items-center justify-between border-b px-4">
+      <View className="w-14" />
+      <Text className="text-foreground text-base font-bold">Reorder Media</Text>
       <Pressable
-        className="bg-card size-10 items-center justify-center rounded-full"
+        className="min-h-10 min-w-14 items-end justify-center"
         onPress={onClose}
       >
-        <X className="size-5" color={foreground} />
+        <Text className="text-base font-bold" style={{ color: foreground }}>
+          Done
+        </Text>
       </Pressable>
     </View>
   );
 }
 
-function ReorderMediaList({
-  activeIndex,
-  activeItemId,
-  foreground,
-  hoverIndex,
-  itemCount,
-  items,
-  onDragFinish,
-  onDragStart,
-  onHoverIndexChange,
-}: {
-  activeIndex: number | null;
-  activeItemId: string | null;
-  foreground: string;
-  hoverIndex: number | null;
-  itemCount: number;
-  items: ComposerItem[];
-  onDragFinish: () => void;
-  onDragStart: (itemId: string, index: number) => void;
-  onHoverIndexChange: (index: number) => void;
-}) {
+function NativeReorderMediaRow({ item }: { item: ComposerItem }) {
+  const mutedForeground = useCreateStore((store) => store.mutedForeground);
+  const { width } = useWindowDimensions();
+
   return (
-    <View className="flex-1 px-4 py-4">
-      {items.map((item, index) => (
-        <ReorderMediaRow
-          activeIndex={activeIndex}
-          activeItemId={activeItemId}
-          foreground={foreground}
-          hoverIndex={hoverIndex}
-          index={index}
-          item={item}
-          itemCount={itemCount}
-          key={item.id}
-          onDragFinish={onDragFinish}
-          onDragStart={onDragStart}
-          onHoverIndexChange={onHoverIndexChange}
-        />
-      ))}
+    <View
+      className="h-20 flex-row items-center gap-3"
+      style={{ width: Math.max(width - 112, 220) }}
+    >
+      <View className="size-16 overflow-hidden rounded-md bg-black">
+        <MediaPreview itemId={item.id} />
+      </View>
+      <View className="min-w-0 flex-1">
+        <Text className="text-foreground text-sm font-bold" numberOfLines={1}>
+          {getMediaTitle(item)}
+        </Text>
+        <Text
+          className="mt-1 text-xs font-semibold"
+          numberOfLines={1}
+          style={{ color: mutedForeground }}
+        >
+          {item.file.type === "video" ? "Video" : "Photo"}
+        </Text>
+      </View>
     </View>
   );
 }
 
-function ReorderMediaRow({
-  activeIndex,
-  activeItemId,
-  foreground,
-  hoverIndex,
-  index,
-  item,
-  itemCount,
-  onDragFinish,
-  onDragStart,
-  onHoverIndexChange,
-}: {
-  activeIndex: number | null;
-  activeItemId: string | null;
-  foreground: string;
-  hoverIndex: number | null;
-  index: number;
-  item: ComposerItem;
-  itemCount: number;
-  onDragFinish: () => void;
-  onDragStart: (itemId: string, index: number) => void;
-  onHoverIndexChange: (index: number) => void;
-}) {
-  const [dragY] = useState(() => new Animated.Value(0));
-  const isActive = activeItemId === item.id;
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponderCapture: () => true,
-    onPanResponderGrant: () => {
-      dragY.setValue(0);
-      onDragStart(item.id, index);
-    },
-    onPanResponderMove: (_, gesture) => {
-      dragY.setValue(gesture.dy);
-      onHoverIndexChange(
-        clamp(index + Math.round(gesture.dy / ROW_STEP), 0, itemCount - 1),
-      );
-    },
-    onPanResponderRelease: () => {
-      dragY.setValue(0);
-      onDragFinish();
-    },
-    onPanResponderTerminate: () => {
-      dragY.setValue(0);
-      onDragFinish();
-    },
-    onStartShouldSetPanResponder: () => true,
-    onStartShouldSetPanResponderCapture: () => true,
-  });
-  const transform = getRowTransform({
-    activeIndex,
-    dragY,
-    hoverIndex,
-    index,
-    isActive,
-  });
-
-  return (
-    <Animated.View
-      style={{
-        marginBottom: ROW_GAP,
-        transform,
-        zIndex: isActive ? 1 : 0,
-      }}
-    >
-      <View className="bg-card border-border h-[92px] flex-row items-center gap-3 rounded-lg border p-2">
-        <View className="aspect-square h-full overflow-hidden rounded-md bg-black">
-          <MediaPreview itemId={item.id} />
-        </View>
-        <View className="min-w-0 flex-1" />
-        <View
-          className="h-full w-14 items-center justify-center rounded-md"
-          hitSlop={8}
-          {...panResponder.panHandlers}
-        >
-          <GripVertical className="size-6" color={foreground} />
-        </View>
-      </View>
-    </Animated.View>
-  );
+function getMediaTitle(item: ComposerItem) {
+  return item.file.fileName ?? (item.file.type === "video" ? "Video" : "Photo");
 }
 
-function getRowTransform({
-  activeIndex,
-  dragY,
-  hoverIndex,
-  index,
-  isActive,
-}: {
-  activeIndex: number | null;
-  dragY: Animated.Value;
-  hoverIndex: number | null;
-  index: number;
-  isActive: boolean;
-}) {
-  if (isActive) return [{ translateY: dragY }];
-  if (activeIndex === null || hoverIndex === null) return [];
-
-  const translateY = getInactiveRowTranslateY(activeIndex, hoverIndex, index);
-  return translateY === 0 ? [] : [{ translateY }];
-}
-
-function getInactiveRowTranslateY(
-  activeIndex: number,
-  hoverIndex: number,
-  index: number,
+function moveItems(
+  items: ComposerItem[],
+  sourceIndices: number[],
+  destination: number,
 ) {
-  const activeRowMovedDown = activeIndex < hoverIndex;
-  const rowIsBetweenDownMove = index > activeIndex && index <= hoverIndex;
-  if (activeRowMovedDown && rowIsBetweenDownMove) return -ROW_STEP;
-
-  const activeRowMovedUp = activeIndex > hoverIndex;
-  const rowIsBetweenUpMove = index >= hoverIndex && index < activeIndex;
-  if (activeRowMovedUp && rowIsBetweenUpMove) return ROW_STEP;
-
-  return 0;
-}
-
-function moveItem(items: ComposerItem[], fromIndex: number, toIndex: number) {
-  if (fromIndex === toIndex) return items;
+  const sourceIndex = sourceIndices[0];
+  if (sourceIndex === undefined) return items;
 
   const nextItems = [...items];
-  const [movedItem] = nextItems.splice(fromIndex, 1);
+  const [movedItem] = nextItems.splice(sourceIndex, 1);
   if (!movedItem) return items;
 
-  nextItems.splice(toIndex, 0, movedItem);
+  const adjustedDestination =
+    sourceIndex < destination ? destination - 1 : destination;
+  nextItems.splice(adjustedDestination, 0, movedItem);
   return nextItems;
 }
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
+function deleteItems(items: ComposerItem[], indices: number[]) {
+  const indicesToDelete = new Set(indices);
+  return items.filter((_, index) => !indicesToDelete.has(index));
+}
+
+function deferReplaceItems(
+  replaceItems: (nextItems: ComposerItem[]) => void,
+  nextItems: ComposerItem[],
+) {
+  setTimeout(() => replaceItems(nextItems), 0);
 }
