@@ -2,6 +2,20 @@
 
 This document is the follow-up plan for improving create-page media reorder and related list UI after the Expo SDK 56 upgrade lands. Do not start this work until the SDK 56 branch is merged and the mobile app is building cleanly on iOS and Android.
 
+## Current Thread Handoff
+
+As of June 10, 2026, the SDK 56 upgrade is building on iOS simulator and iOS physical device with Xcode beta / iOS 27.
+
+Keep this context in mind before changing list/reorder code:
+
+- Root `pnpm.overrides` currently pins `react` and `react-dom` to `19.2.3`. Keep those pins unless replacing them with an equivalent workspace-wide fix, because they prevent the React / `react-native-renderer` version mismatch seen during Android bundling.
+- `patches/expo-modules-jsi@56.0.8.patch` is required for current Xcode 27 beta builds. It fixes an ExpoModulesJSI Swift/C++ interop compiler issue and suppresses warnings only for the nested ExpoModulesJSI xcframework build, which Xcode 27 otherwise treated as a physical-device archive failure.
+- `.notes/ios-27-scene-lifecycle-shim.md` is the central removal checklist for temporary iOS 27 / Xcode 27 compatibility patches.
+- `react-native-keyboard-controller` was removed during the SDK 56 cleanup. The create page now uses React Native primitives for keyboard avoidance and should keep the current caption keyboard behavior.
+- React StrictMode remains enabled. Do not disable StrictMode to hide list/gesture warnings.
+- A physical-device `development:client` local build succeeded and was installed on Shawn's iPhone from `apps/mobile/build-1781097541407.ipa`.
+- The last runtime issues were caused by native dependencies not being fully ready for React 19 / React Native 0.85 / StrictMode / Xcode 27. Prefer dependency updates, Expo/RN primitives, or scoped native implementation over broad patches.
+
 ## Goal
 
 Replace the current working-but-janky reorder UI with a more native-feeling implementation, using SDK 56's stable `@expo/ui` primitives where they actually fit.
