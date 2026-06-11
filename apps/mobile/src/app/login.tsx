@@ -2,12 +2,9 @@ import { Image, Text, View } from "react-native";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import { SignInButton } from "~/features/auth/components/sign-in-button";
-import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
 import logo from "../../assets/rounded-icon.png";
 
 export default function Login() {
-  useRedirectIfSignedIn();
-
   return (
     <SafeAreaView className="bg-background relative flex-1" bottom>
       <View className="bg-muted/20 absolute inset-0" />

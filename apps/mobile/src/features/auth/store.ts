@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- Mobile auth state is client-only, so it cannot be route-preloaded.
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { useConvexAuth, useMutation } from "convex/react";
+import { useQuery as useTanStackQuery } from "@tanstack/react-query";
+/* eslint-disable no-restricted-imports -- Startup auth gating must avoid the TanStack Convex adapter path that intermittently leaves waitlist status fetching forever on mobile. */
+import {
+  useConvexAuth,
+  useQuery as useConvexQuery,
+  useMutation,
+} from "convex/react";
+/* eslint-enable no-restricted-imports */
 import { ConvexError } from "convex/values";
 import { createStore } from "rostra";
 
@@ -22,18 +27,20 @@ function useInternalStore() {
     api.profile.mutations.ensureProfileExists,
   );
 
-  const profileQuery = useQuery({
+  const profileQuery = useTanStackQuery({
     queryKey: ["auth", "profile"],
     queryFn: async () => await ensureProfileExists(),
     enabled: imSignedIn,
     select: (profile) => profile,
   });
   const { data: myProfile } = profileQuery;
-  const waitlistStatusQuery = useQuery({
-    ...convexQuery(api.waitlist.queries.getMyStatus, {}),
-    enabled: imSignedIn && !!myProfile,
-    select: (status) => status,
-  });
+  const waitlistStatusQueryEnabled = imSignedIn && !!myProfile;
+  const waitlistStatus = useConvexQuery(
+    api.waitlist.queries.getMyStatus,
+    waitlistStatusQueryEnabled ? {} : "skip",
+  );
+  const waitlistStatusIsLoaded =
+    waitlistStatusQueryEnabled && waitlistStatus !== undefined;
 
   const [redirectURL, setRedirectURL] = useState("/");
 
@@ -43,14 +50,12 @@ function useInternalStore() {
     const authError =
       profileQuery.error instanceof ConvexError
         ? profileQuery.error
-        : waitlistStatusQuery.error instanceof ConvexError
-          ? waitlistStatusQuery.error
-          : undefined;
+        : undefined;
     if (authError?.data !== "Unauthenticated") return;
 
     router.replace("/login");
     void authClient.signOut();
-  }, [imSignedIn, profileQuery.error, router, waitlistStatusQuery.error]);
+  }, [imSignedIn, profileQuery.error, router]);
 
   function signInWithGoogle() {
     if (imSignedIn) return;
@@ -83,8 +88,8 @@ function useInternalStore() {
 
   return {
     myProfile,
-    waitlistStatus: waitlistStatusQuery.data,
-    waitlistStatusIsLoaded: waitlistStatusQuery.status === "success",
+    waitlistStatus,
+    waitlistStatusIsLoaded,
     isLoading,
     authIsLoading,
     imSignedIn,

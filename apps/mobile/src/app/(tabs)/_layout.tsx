@@ -1,10 +1,12 @@
 import type { ComponentType } from "react";
 import type { ColorValue } from "react-native";
+import { View } from "react-native";
 import { Redirect, Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
 import { MobileTabBar } from "~/components/mobile-tab-bar";
 import { useAuthStore } from "~/features/auth/store";
+import { useColor } from "~/hooks/use-color";
 
 function TabIcon({
   icon: Icon,
@@ -21,18 +23,24 @@ function TabIcon({
 }
 
 export default function TabLayout() {
+  const backgroundColor = useColor("background");
+  const authIsLoading = useAuthStore((s) => s.authIsLoading);
   const imSignedIn = useAuthStore((s) => s.imSignedIn);
   const myProfile = useAuthStore((s) => s.myProfile);
   const waitlistStatus = useAuthStore((s) => s.waitlistStatus);
   const waitlistStatusIsLoaded = useAuthStore((s) => s.waitlistStatusIsLoaded);
   const hasAccess = waitlistStatus === "has-access";
 
+  if (authIsLoading) {
+    return <View className="flex-1" style={{ backgroundColor }} />;
+  }
+
   if (!imSignedIn) {
     return <Redirect href="/login" />;
   }
 
   if (!myProfile || !waitlistStatusIsLoaded) {
-    return null;
+    return <View className="flex-1" style={{ backgroundColor }} />;
   }
 
   if (!hasAccess) {
@@ -44,7 +52,7 @@ export default function TabLayout() {
       tabBar={(props) => <MobileTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: "transparent" },
+        sceneStyle: { backgroundColor },
         tabBarShowLabel: false,
       }}
     >

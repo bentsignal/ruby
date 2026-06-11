@@ -7,7 +7,6 @@ import { Button, ButtonText } from "@acme/ui-mobile/button";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 // import { SignOutButton } from "~/features/auth/components/sign-out-button";
-import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
 import { useAuthStore } from "~/features/auth/store";
 import { useColor } from "~/hooks/use-color";
 import logo from "../../assets/rounded-icon.png";
@@ -20,8 +19,6 @@ export default function Waitlist() {
   ).withOptimisticUpdate((localStore) => {
     localStore.setQuery(api.waitlist.queries.getMyStatus, {}, "on-waitlist");
   });
-
-  useRedirectIfSignedIn();
 
   return (
     <SafeAreaView className="bg-background relative flex-1" bottom>

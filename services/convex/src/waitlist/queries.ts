@@ -8,7 +8,7 @@ export const getMyStatus = authedQuery({
       .withIndex("by_userId", (q) => q.eq("userId", ctx.user.subject))
       .first();
 
-    if (!entry) return undefined;
+    if (!entry) return null;
     if (entry.hasAccess) return "has-access" as const;
     return "on-waitlist" as const;
   },

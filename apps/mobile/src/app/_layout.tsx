@@ -14,43 +14,33 @@ import "../styles.css";
 
 import { useInitApp } from "~/hooks/use-init-app";
 
+SplashScreen.setOptions({ duration: 200, fade: true });
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { backgroundColorsAreLoaded, fontsAreLoaded } = useInitApp();
+  useInitApp();
 
   return (
     <ConvexProvider>
       <AuthStore>
-        <AppShell
-          backgroundColorsAreLoaded={backgroundColorsAreLoaded}
-          fontsAreLoaded={fontsAreLoaded}
-        />
+        <AppShell />
       </AuthStore>
     </ConvexProvider>
   );
 }
 
-function AppShell({
-  backgroundColorsAreLoaded,
-  fontsAreLoaded,
-}: {
-  backgroundColorsAreLoaded: boolean;
-  fontsAreLoaded: boolean;
-}) {
+function AppShell() {
   const backgroundColor = useColor("background");
   const liquidGlassIsAvailable = isLiquidGlassAvailable();
 
-  // eslint-disable-next-line no-restricted-syntax -- Native splash hands off to the startup route after app assets initialize.
+  // eslint-disable-next-line no-restricted-syntax -- Native splash must never stay up if the startup route fails to hide it.
   useEffect(() => {
-    if (!fontsAreLoaded || !backgroundColorsAreLoaded) {
-      return;
-    }
     const timeout = setTimeout(() => {
       void SplashScreen.hideAsync();
-    }, 100);
+    }, 4_000);
+
     return () => clearTimeout(timeout);
-  }, [backgroundColorsAreLoaded, fontsAreLoaded]);
+  }, []);
 
   return (
     <>
@@ -60,13 +50,17 @@ function AppShell({
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: "transparent" },
+                contentStyle: { backgroundColor },
               }}
             >
               <Stack.Screen name="index" options={{ animation: "fade" }} />
               <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
               <Stack.Screen name="login" options={{ animation: "fade" }} />
               <Stack.Screen name="waitlist" options={{ animation: "fade" }} />
+              <Stack.Screen
+                name="startup-error"
+                options={{ animation: "fade" }}
+              />
               <Stack.Screen
                 name="edit-profile"
                 options={{

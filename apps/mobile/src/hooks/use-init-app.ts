@@ -28,7 +28,7 @@ export function useInitApp() {
       setBackgroundColorsAreLoaded(true);
     }
     void init();
-  }, [backgroundColor, backgroundColorsAreLoaded]);
+  }, [backgroundColor, backgroundColorsAreLoaded, colorScheme]);
 
   // eslint-disable-next-line no-restricted-syntax -- Native system background follows color-scheme changes.
   useEffect(() => {
