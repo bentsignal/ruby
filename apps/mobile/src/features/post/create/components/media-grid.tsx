@@ -1,11 +1,16 @@
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
+import { isPreviewableImage } from "../lib/media-type";
 import { useCreateStore } from "../store";
+import { ImageViewerModal } from "./image-viewer-modal";
 import { MediaTile } from "./media-tile";
 import { ManageMediaButton } from "./reorder-media-button";
 
 export function MediaGrid() {
   const items = useCreateStore((store) => store.items);
+  const imageItems = items.filter(isPreviewableImage);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   if (items.length === 0) return null;
 
@@ -17,11 +22,34 @@ export function MediaGrid() {
         contentContainerClassName="gap-3 px-4"
         showsHorizontalScrollIndicator={false}
       >
-        {items.map((item, index) => (
-          <MediaTile index={index} itemId={item.id} key={item.id} />
-        ))}
+        {items.map((item, index) => {
+          const imageIndex = imageItems.findIndex(
+            (current) => current.id === item.id,
+          );
+
+          return (
+            <MediaTile
+              index={index}
+              itemId={item.id}
+              key={item.id}
+              onImagePress={
+                imageIndex === -1
+                  ? undefined
+                  : () => setPreviewIndex(imageIndex)
+              }
+            />
+          );
+        })}
       </ScrollView>
       <ManageMediaButton />
+      {previewIndex !== null ? (
+        <ImageViewerModal
+          initialIndex={previewIndex}
+          isVisible
+          items={imageItems}
+          onClose={() => setPreviewIndex(null)}
+        />
+      ) : null}
     </View>
   );
 }
