@@ -43,7 +43,7 @@ export function EmptyMediaPicker() {
         <ImagePlus className="size-8" color={foreground} />
       </View>
       <Text className="text-foreground text-center text-base font-bold">
-        Tap to add photos or videos
+        Tap to add photos
       </Text>
     </Pressable>
   );

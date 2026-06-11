@@ -1,16 +1,16 @@
 import { arrayMove } from "@dnd-kit/sortable";
 
 import {
-  POST_MEDIA_TYPES,
   POST_UPLOAD_ALLOWED_MEDIA_LABEL,
   POST_UPLOAD_MAX_SIZE_BYTES,
   POST_UPLOAD_MAX_SIZE_LABEL,
+  POST_UPLOAD_MEDIA_TYPES,
 } from "@acme/config/posts";
 
 import type { ComposerItem } from "../types";
 
 export function isMediaFile(file: File) {
-  return POST_MEDIA_TYPES.some((mediaType) =>
+  return POST_UPLOAD_MEDIA_TYPES.some((mediaType) =>
     file.type.startsWith(`${mediaType}/`),
   );
 }

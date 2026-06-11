@@ -68,7 +68,7 @@ function useInternalStore() {
   async function pickFiles() {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsMultipleSelection: true,
-      mediaTypes: ["images", "videos"],
+      mediaTypes: ["images"],
       quality: 1,
     });
     if (result.canceled) return;

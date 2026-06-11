@@ -53,7 +53,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-image-picker",
       {
         photosPermission:
-          "Allow Ruby to access your photos and videos so you can share travel updates.",
+          "Allow Ruby to access your photos so you can share travel updates.",
       },
     ],
     "./expo-plugins/with-android-user-certs.cjs",
