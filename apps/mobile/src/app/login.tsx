@@ -1,10 +1,24 @@
 import { Image, Text, View } from "react-native";
+import { Redirect } from "expo-router";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import { SignInButton } from "~/features/auth/components/sign-in-button";
+import {
+  AUTH_DESTINATION,
+  useAuthDestination,
+} from "~/features/auth/hooks/use-auth-destination";
 import logo from "../../assets/rounded-icon.png";
 
 export default function Login() {
+  const destination = useAuthDestination();
+
+  if (
+    destination === AUTH_DESTINATION.home ||
+    destination === AUTH_DESTINATION.waitlist
+  ) {
+    return <Redirect href={destination} />;
+  }
+
   return (
     <SafeAreaView className="bg-background relative flex-1" bottom>
       <View className="bg-muted/20 absolute inset-0" />

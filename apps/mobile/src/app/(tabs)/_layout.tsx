@@ -5,7 +5,10 @@ import { Redirect, Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
 import { MobileTabBar } from "~/components/mobile-tab-bar";
-import { useAuthStore } from "~/features/auth/store";
+import {
+  AUTH_DESTINATION,
+  useAuthDestination,
+} from "~/features/auth/hooks/use-auth-destination";
 import { useColor } from "~/hooks/use-color";
 
 function TabIcon({
@@ -24,27 +27,14 @@ function TabIcon({
 
 export default function TabLayout() {
   const backgroundColor = useColor("background");
-  const authIsLoading = useAuthStore((s) => s.authIsLoading);
-  const imSignedIn = useAuthStore((s) => s.imSignedIn);
-  const myProfile = useAuthStore((s) => s.myProfile);
-  const waitlistStatus = useAuthStore((s) => s.waitlistStatus);
-  const waitlistStatusIsLoaded = useAuthStore((s) => s.waitlistStatusIsLoaded);
-  const hasAccess = waitlistStatus === "has-access";
+  const destination = useAuthDestination();
 
-  if (authIsLoading) {
+  if (destination === AUTH_DESTINATION.pending) {
     return <View className="flex-1" style={{ backgroundColor }} />;
   }
 
-  if (!imSignedIn) {
-    return <Redirect href="/login" />;
-  }
-
-  if (!myProfile || !waitlistStatusIsLoaded) {
-    return <View className="flex-1" style={{ backgroundColor }} />;
-  }
-
-  if (!hasAccess) {
-    return <Redirect href="/waitlist" />;
+  if (destination !== AUTH_DESTINATION.home) {
+    return <Redirect href={destination} />;
   }
 
   return (
