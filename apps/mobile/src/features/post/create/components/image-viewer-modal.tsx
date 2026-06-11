@@ -162,7 +162,7 @@ function ViewerCounter({
     <Animated.View
       className="absolute right-0 left-0 items-center"
       pointerEvents={isVisible ? "auto" : "none"}
-      style={{ opacity, top }}
+      style={{ opacity, top, zIndex: 20 }}
     >
       <View className="rounded-full bg-black/55 px-4 py-2">
         <Text className="text-sm font-black text-white">
@@ -188,7 +188,7 @@ function CloseButton({
     <Animated.View
       className="absolute right-4 size-11 items-center justify-center rounded-full bg-black/65"
       pointerEvents={isVisible ? "auto" : "none"}
-      style={{ opacity, top }}
+      style={{ elevation: 30, opacity, top, zIndex: 30 }}
     >
       <Pressable
         accessibilityLabel="Close image preview"
@@ -223,7 +223,7 @@ function ThumbnailStrip({
     <Animated.View
       className="absolute right-0 left-0"
       pointerEvents={isVisible ? "auto" : "none"}
-      style={{ bottom, opacity }}
+      style={{ bottom, elevation: 20, opacity, zIndex: 20 }}
     >
       <ScrollView
         ref={scrollRef}

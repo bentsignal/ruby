@@ -22,10 +22,15 @@ import { cn } from "@acme/std/cn";
 import * as Tooltip from "@acme/ui-web/tooltip";
 
 import { useCreateStore } from "../store";
+import { ImagePreviewDialog } from "./image-preview-dialog";
 
 export function MediaGrid() {
   const items = useCreateStore((store) => store.items);
   const moveItem = useCreateStore((store) => store.moveItem);
+  const imageItems = items.filter(
+    (item) => !item.file.type.startsWith("video/"),
+  );
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
@@ -53,12 +58,35 @@ export function MediaGrid() {
         strategy={rectSortingStrategy}
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {items.map((item, index) => (
-            <PreviewTile index={index} itemId={item.id} key={item.id} />
-          ))}
+          {items.map((item, index) => {
+            const imageIndex = imageItems.findIndex(
+              (current) => current.id === item.id,
+            );
+
+            return (
+              <PreviewTile
+                index={index}
+                itemId={item.id}
+                key={item.id}
+                onPreview={
+                  imageIndex === -1
+                    ? undefined
+                    : () => setPreviewIndex(imageIndex)
+                }
+              />
+            );
+          })}
           <AddMoreMediaTile />
         </div>
       </SortableContext>
+      <ImagePreviewDialog
+        activeIndex={previewIndex}
+        items={imageItems}
+        onIndexChange={setPreviewIndex}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setPreviewIndex(null);
+        }}
+      />
     </DndContext>
   );
 }
@@ -78,7 +106,15 @@ function AddMoreMediaTile() {
   );
 }
 
-function PreviewTile({ index, itemId }: { index: number; itemId: string }) {
+function PreviewTile({
+  index,
+  itemId,
+  onPreview,
+}: {
+  index: number;
+  itemId: string;
+  onPreview?: () => void;
+}) {
   const {
     attributes,
     isDragging,
@@ -100,7 +136,7 @@ function PreviewTile({ index, itemId }: { index: number; itemId: string }) {
         transition,
       }}
     >
-      <PreviewMedia itemId={itemId} />
+      <PreviewMedia itemId={itemId} onPreview={onPreview} />
       <PreviewToolbar
         attributes={attributes}
         index={index}
@@ -112,7 +148,13 @@ function PreviewTile({ index, itemId }: { index: number; itemId: string }) {
   );
 }
 
-function PreviewMedia({ itemId }: { itemId: string }) {
+function PreviewMedia({
+  itemId,
+  onPreview,
+}: {
+  itemId: string;
+  onPreview?: () => void;
+}) {
   const item = useComposerItem(itemId);
   if (!item) return null;
 
@@ -129,9 +171,12 @@ function PreviewMedia({ itemId }: { itemId: string }) {
   }
 
   return (
-    <div
-      className="size-full bg-cover bg-center"
+    <button
+      type="button"
+      aria-label="Preview image"
+      className="size-full cursor-pointer bg-cover bg-center"
       style={{ backgroundImage: `url(${item.previewUrl})` }}
+      onClick={onPreview}
     />
   );
 }
