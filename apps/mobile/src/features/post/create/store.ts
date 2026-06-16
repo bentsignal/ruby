@@ -44,6 +44,12 @@ function useInternalStore() {
   const [error, setError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const { resetComposer, resetKey } = useComposerReset({
+    setCaptionState,
+    setError,
+    setItems,
+    setLocation,
+  });
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
   const canPost =
@@ -66,10 +72,6 @@ function useInternalStore() {
 
   function setCaptionDraft(nextCaption: string) {
     writeCaptionDraft(nextCaption);
-  }
-
-  async function pickFiles() {
-    await pickComposerFiles({ setError, setItems });
   }
 
   function removeItem(itemId: string) {
@@ -102,8 +104,7 @@ function useInternalStore() {
             }
           : undefined,
       });
-      resetCaptionDraft();
-      setLocation(null);
+      resetComposer();
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
@@ -130,8 +131,9 @@ function useInternalStore() {
     items,
     location,
     mutedForeground,
-    pickFiles,
+    pickFiles: () => pickComposerFiles({ setError, setItems }),
     replaceItems,
+    resetKey,
     removeItem,
     retryItem,
     clearLocation: () => setLocation(null),
@@ -170,6 +172,31 @@ async function pickComposerFiles({
   }
   setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
   void Haptics.selectionAsync();
+}
+
+function useComposerReset({
+  setCaptionState,
+  setError,
+  setItems,
+  setLocation,
+}: {
+  setCaptionState: (caption: string) => void;
+  setError: (error: string | null) => void;
+  setItems: Dispatch<SetStateAction<ComposerItem[]>>;
+  setLocation: (location: ResolvedLocation | null) => void;
+}) {
+  const [resetKey, setResetKey] = useState(0);
+
+  function resetComposer() {
+    resetCaptionDraft();
+    setItems([]);
+    setCaptionState("");
+    setError(null);
+    setLocation(null);
+    setResetKey((current) => current + 1);
+  }
+
+  return { resetComposer, resetKey };
 }
 
 function getErrorMessage(caughtError: unknown, fallback: string) {

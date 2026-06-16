@@ -10,8 +10,34 @@ const CAPTION_STORE_WRITE_DELAY_MS = 180;
 export function CaptionField({ onFocus }: { onFocus?: () => void }) {
   const caption = useCreateStore((store) => store.caption);
   const mutedForeground = useCreateStore((store) => store.mutedForeground);
+  const resetKey = useCreateStore((store) => store.resetKey);
   const setCaption = useCreateStore((store) => store.setCaption);
   const setCaptionDraft = useCreateStore((store) => store.setCaptionDraft);
+  return (
+    <CaptionInput
+      caption={caption}
+      key={resetKey}
+      mutedForeground={mutedForeground}
+      setCaption={setCaption}
+      setCaptionDraft={setCaptionDraft}
+      onFocus={onFocus}
+    />
+  );
+}
+
+function CaptionInput({
+  caption,
+  mutedForeground,
+  onFocus,
+  setCaption,
+  setCaptionDraft,
+}: {
+  caption: string;
+  mutedForeground: string;
+  onFocus?: () => void;
+  setCaption: (caption: string) => void;
+  setCaptionDraft: (caption: string) => void;
+}) {
   const [captionLength, setCaptionLength] = useState(caption.length);
   const latestCaptionRef = useRef(caption);
   const storeWriteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
