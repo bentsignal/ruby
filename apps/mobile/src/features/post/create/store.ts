@@ -13,6 +13,7 @@ import {
   POST_UPLOAD_MAX_SIZE_LABEL,
 } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
+import { getDisplayErrorMessage } from "@acme/std/display-error";
 
 import type { ComposerItem } from "./types";
 import { useColor } from "~/hooks/use-color";
@@ -103,7 +104,7 @@ function useInternalStore() {
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
-      setError(getErrorMessage(caughtError, "Post failed"));
+      setError(getDisplayErrorMessage(caughtError, "Post failed"));
       setIsPosting(false);
     }
   }
@@ -134,6 +135,7 @@ function useInternalStore() {
     clearLocation: () => setLocation(null),
     setCaption,
     setCaptionDraft,
+    setError,
     setLocation,
   };
 }
@@ -209,12 +211,6 @@ function useComposerReset({
   }
 
   return { resetComposer, resetKey };
-}
-
-function getErrorMessage(caughtError: unknown, fallback: string) {
-  if (caughtError instanceof Error) return caughtError.message;
-
-  return fallback;
 }
 
 function isAllowedFileSize(file: ImagePicker.ImagePickerAsset) {

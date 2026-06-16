@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     "./cn": "./src/cn.ts",
+    "./display-error": "./src/display-error.ts",
     "./use-loading": "./src/use-loading.ts",
     "./use-debounced-input": "./src/use-debounced-input.ts",
     "./use-screen": "./src/use-screen/index.ts"

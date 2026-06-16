@@ -52,10 +52,10 @@ export default function Create() {
             <View className="gap-5 px-2">
               <LocationField />
               <CaptionField onFocus={scrollToCaption} />
-              <ComposerError />
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
+        <ComposerError />
       </SafeAreaView>
     </CreateStore>
   );

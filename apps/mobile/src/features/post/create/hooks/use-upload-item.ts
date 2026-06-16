@@ -6,6 +6,7 @@ import {
   POST_UPLOAD_MAX_SIZE_LABEL,
 } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
+import { getDisplayErrorMessage } from "@acme/std/display-error";
 
 import type { ComposerItem } from "../types";
 import {
@@ -38,7 +39,7 @@ export function useUploadItem({
       updateItem(item.id, { status: "uploaded", uploadedFile: file });
       return file;
     } catch (caughtError) {
-      const message = getErrorMessage(caughtError, "Upload failed");
+      const message = getDisplayErrorMessage(caughtError, "Upload failed");
       updateItem(item.id, { error: message, status: "error" });
       throw new Error(message);
     }
@@ -89,12 +90,6 @@ async function getFileSize(item: ComposerItem) {
   if (info.exists) return info.size;
 
   throw new Error("Selected file could not be read");
-}
-
-function getErrorMessage(caughtError: unknown, fallback: string) {
-  if (caughtError instanceof Error) return caughtError.message;
-
-  return fallback;
 }
 
 function getUploadResultFromBody(body: string) {

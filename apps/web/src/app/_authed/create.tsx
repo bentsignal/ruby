@@ -30,8 +30,8 @@ function Create() {
           <MediaGrid />
           <LocationField />
           <CaptionField />
-          <ComposerError />
         </div>
+        <ComposerError />
         <PostConfirmationDialog />
       </div>
     </CreateStore>

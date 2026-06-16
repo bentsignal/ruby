@@ -6,6 +6,7 @@ import { createStore } from "rostra";
 
 import type { ResolvedLocation } from "@acme/convex/places/types";
 import { api } from "@acme/convex/api";
+import { getDisplayErrorMessage } from "@acme/std/display-error";
 
 import { useComposerItems } from "./hooks/use-composer-items";
 import { uploadComposerFile } from "./lib/composer-upload";
@@ -44,7 +45,7 @@ function useInternalStore() {
       updateItem(item.id, { status: "uploaded" });
       return file;
     } catch (caughtError) {
-      const message = getErrorMessage(caughtError, "Upload failed");
+      const message = getDisplayErrorMessage(caughtError, "Upload failed");
       updateItem(item.id, { error: message, status: "error" });
       throw new Error(message);
     }
@@ -69,7 +70,7 @@ function useInternalStore() {
       setIsPosting(false);
       await navigate({ to: "/" });
     } catch (caughtError) {
-      setError(getErrorMessage(caughtError, "Post failed"));
+      setError(getDisplayErrorMessage(caughtError, "Post failed"));
       setIsConfirmOpen(false);
       setIsPosting(false);
     }
@@ -92,6 +93,7 @@ function useInternalStore() {
     removeItem,
     clearLocation: () => setLocation(null),
     setCaption,
+    setError,
     setIsConfirmOpen,
     setLocation,
   };
@@ -112,11 +114,6 @@ function createPostLocation(location: ResolvedLocation | null) {
       ? {}
       : { longitude: location.longitude }),
   };
-}
-
-function getErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof Error) return error.message;
-  return fallback;
 }
 
 export const { Store: CreateStore, useStore: useCreateStore } =
