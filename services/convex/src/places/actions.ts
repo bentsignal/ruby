@@ -8,7 +8,7 @@ import {
   parseAutocompleteResponse,
   parseGoogleAutocompleteResponse,
   parseGoogleError,
-  parseGooglePlaceDetailsId,
+  parseGooglePlaceDetails,
 } from "./google";
 import { vLocationPrediction, vResolvedLocation } from "./validators";
 
@@ -87,28 +87,30 @@ export const resolve = action({
     });
     if (!ok) throw new ConvexError("Could not select location");
 
-    const resolvedPlaceId = await fetchGooglePlaceDetails({
+    const details = await fetchGooglePlaceDetails({
       placeId,
       sessionToken,
     });
+    const resolvedPlaceId = details.id;
     if (resolvedPlaceId !== placeId) {
       throw new ConvexError("Could not select location");
     }
 
-    if (!selectedSubtitle) {
-      return {
-        provider: "google",
-        googlePlaceId: resolvedPlaceId,
-        name: selectedName,
-      } satisfies ResolvedLocation;
-    }
-
-    return {
-      provider: "google",
+    const name = cleanOptional(
+      details.displayName.text,
+      LOCATION_NAME_MAX_LENGTH,
+    );
+    const formattedAddress = cleanOptional(
+      details.formattedAddress,
+      LOCATION_SUBTITLE_MAX_LENGTH,
+    );
+    return createResolvedLocation({
+      formattedAddress: formattedAddress ?? selectedSubtitle,
       googlePlaceId: resolvedPlaceId,
-      name: selectedName,
-      formattedAddress: selectedSubtitle,
-    } satisfies ResolvedLocation;
+      latitude: details.location.latitude,
+      longitude: details.location.longitude,
+      name: name ?? selectedName,
+    });
   },
 });
 
@@ -176,7 +178,7 @@ async function fetchGooglePlaceDetails({
   url.searchParams.set("sessionToken", sessionToken);
 
   const response = await fetch(url, {
-    headers: googleHeaders("id"),
+    headers: googleHeaders("id,displayName,formattedAddress,location"),
     method: "GET",
   });
   const body = await readGoogleResponseJson(response);
@@ -198,9 +200,9 @@ async function fetchGooglePlaceDetails({
     throw new ConvexError("Could not select location");
   }
 
-  const resolvedPlaceId = parseGooglePlaceDetailsId(body);
-  if (!resolvedPlaceId) throw new ConvexError("Could not select location");
-  return resolvedPlaceId;
+  const details = parseGooglePlaceDetails(body);
+  if (!details.id) throw new ConvexError("Could not select location");
+  return details;
 }
 
 async function readGoogleResponseJson(response: Response) {
@@ -267,4 +269,27 @@ function cleanOptional(value: string | undefined, maxLength: number) {
   const trimmed = value?.trim();
   if (!trimmed) return undefined;
   return trimmed.slice(0, maxLength);
+}
+
+function createResolvedLocation({
+  formattedAddress,
+  googlePlaceId,
+  latitude,
+  longitude,
+  name,
+}: {
+  formattedAddress?: string;
+  googlePlaceId: string;
+  latitude?: number;
+  longitude?: number;
+  name: string;
+}) {
+  return {
+    provider: "google",
+    googlePlaceId,
+    name,
+    ...(formattedAddress ? { formattedAddress } : {}),
+    ...(latitude === undefined ? {} : { latitude }),
+    ...(longitude === undefined ? {} : { longitude }),
+  } satisfies ResolvedLocation;
 }

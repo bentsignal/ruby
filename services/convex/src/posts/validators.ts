@@ -3,6 +3,10 @@ import { v } from "convex/values";
 export const vPostLocation = v.object({
   provider: v.literal("google"),
   googlePlaceId: v.string(),
+  name: v.optional(v.string()),
+  formattedAddress: v.optional(v.string()),
+  latitude: v.optional(v.number()),
+  longitude: v.optional(v.number()),
 });
 
 export const vPost = v.object({

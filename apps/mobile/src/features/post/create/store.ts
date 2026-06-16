@@ -97,12 +97,7 @@ function useInternalStore() {
       await createPost({
         caption: latestCaption || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
-        location: location
-          ? {
-              googlePlaceId: location.googlePlaceId,
-              provider: location.provider,
-            }
-          : undefined,
+        location: createPostLocation(location),
       });
       resetComposer();
       setIsPosting(false);
@@ -140,6 +135,23 @@ function useInternalStore() {
     setCaption,
     setCaptionDraft,
     setLocation,
+  };
+}
+
+function createPostLocation(location: ResolvedLocation | null) {
+  if (!location) return undefined;
+
+  return {
+    googlePlaceId: location.googlePlaceId,
+    name: location.name,
+    provider: location.provider,
+    ...(location.formattedAddress
+      ? { formattedAddress: location.formattedAddress }
+      : {}),
+    ...(location.latitude === undefined ? {} : { latitude: location.latitude }),
+    ...(location.longitude === undefined
+      ? {}
+      : { longitude: location.longitude }),
   };
 }
 

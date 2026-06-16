@@ -58,12 +58,7 @@ function useInternalStore() {
       await createPost({
         caption: caption.trim() || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
-        location: location
-          ? {
-              googlePlaceId: location.googlePlaceId,
-              provider: location.provider,
-            }
-          : undefined,
+        location: createPostLocation(location),
       });
       await queryClient.invalidateQueries({
         queryKey: convexQuery(api.posts.queries.getAll, {}).queryKey,
@@ -99,6 +94,23 @@ function useInternalStore() {
     setCaption,
     setIsConfirmOpen,
     setLocation,
+  };
+}
+
+function createPostLocation(location: ResolvedLocation | null) {
+  if (!location) return undefined;
+
+  return {
+    googlePlaceId: location.googlePlaceId,
+    name: location.name,
+    provider: location.provider,
+    ...(location.formattedAddress
+      ? { formattedAddress: location.formattedAddress }
+      : {}),
+    ...(location.latitude === undefined ? {} : { latitude: location.latitude }),
+    ...(location.longitude === undefined
+      ? {}
+      : { longitude: location.longitude }),
   };
 }
 

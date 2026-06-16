@@ -13,4 +13,6 @@ export const vResolvedLocation = v.object({
   googlePlaceId: v.string(),
   name: v.string(),
   formattedAddress: v.optional(v.string()),
+  latitude: v.optional(v.number()),
+  longitude: v.optional(v.number()),
 });

@@ -22,6 +22,18 @@ interface GooglePlacePrediction {
   };
 }
 
+interface GooglePlaceDetails {
+  displayName?: {
+    text?: string;
+  };
+  formattedAddress?: string;
+  id?: string;
+  location?: {
+    latitude?: number;
+    longitude?: number;
+  };
+}
+
 export function parseAutocompleteResponse({
   limit,
   nameMaxLength,
@@ -55,8 +67,18 @@ export function parseGoogleAutocompleteResponse(value: unknown) {
   };
 }
 
-export function parseGooglePlaceDetailsId(value: unknown) {
-  return readString(value, ["id"]);
+export function parseGooglePlaceDetails(value: unknown) {
+  return {
+    displayName: {
+      text: readString(value, ["displayName", "text"]),
+    },
+    formattedAddress: readString(value, ["formattedAddress"]),
+    id: readString(value, ["id"]),
+    location: {
+      latitude: readNumber(value, ["location", "latitude"]),
+      longitude: readNumber(value, ["location", "longitude"]),
+    },
+  } satisfies GooglePlaceDetails;
 }
 
 export function parseGoogleError(value: unknown) {

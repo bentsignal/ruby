@@ -7,6 +7,8 @@ import type { AuthedMutationCtx } from "../utils";
 import type { PostLocation } from "./types";
 
 const POST_LOCATION_PLACE_ID_MAX_LENGTH = 256;
+const POST_LOCATION_NAME_MAX_LENGTH = 160;
+const POST_LOCATION_ADDRESS_MAX_LENGTH = 280;
 
 export function validatePostInput(
   rawCaption: string | undefined,
@@ -55,8 +57,37 @@ export function validatePostLocation(rawLocation: PostLocation | undefined) {
     throw new ConvexError("Location is too long");
   }
 
+  const name = cleanOptional(rawLocation.name, POST_LOCATION_NAME_MAX_LENGTH);
+  const formattedAddress = cleanOptional(
+    rawLocation.formattedAddress,
+    POST_LOCATION_ADDRESS_MAX_LENGTH,
+  );
   return {
     provider: "google",
     googlePlaceId,
+    ...(name ? { name } : {}),
+    ...(formattedAddress ? { formattedAddress } : {}),
+    ...createCoordinatePatch("latitude", rawLocation.latitude),
+    ...createCoordinatePatch("longitude", rawLocation.longitude),
   } satisfies PostLocation;
+}
+
+function cleanOptional(value: string | undefined, maxLength: number) {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+  return trimmed.slice(0, maxLength);
+}
+
+function validateCoordinate(value: number | undefined) {
+  if (value === undefined) return undefined;
+  if (!Number.isFinite(value)) throw new ConvexError("Invalid location");
+  return value;
+}
+
+function createCoordinatePatch(
+  key: "latitude" | "longitude",
+  value: number | undefined,
+) {
+  const coordinate = validateCoordinate(value);
+  return coordinate === undefined ? {} : { [key]: coordinate };
 }

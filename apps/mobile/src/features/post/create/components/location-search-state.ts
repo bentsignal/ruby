@@ -257,12 +257,16 @@ function parseResolvedLocation(value: unknown) {
   const googlePlaceId = readString(value, ["googlePlaceId"]);
   const name = readString(value, ["name"]);
   const formattedAddress = readString(value, ["formattedAddress"]);
+  const latitude = readNumber(value, ["latitude"]);
+  const longitude = readNumber(value, ["longitude"]);
   if (provider !== "google" || !googlePlaceId || !name) {
     throw new Error("Invalid location");
   }
   return {
     formattedAddress,
     googlePlaceId,
+    latitude,
+    longitude,
     name,
     provider,
   } satisfies ResolvedLocation;
@@ -271,6 +275,12 @@ function parseResolvedLocation(value: unknown) {
 function readString(value: unknown, path: string[]) {
   const found = readPath(value, path);
   if (typeof found !== "string") return undefined;
+  return found;
+}
+
+function readNumber(value: unknown, path: string[]) {
+  const found = readPath(value, path);
+  if (typeof found !== "number") return undefined;
   return found;
 }
 
