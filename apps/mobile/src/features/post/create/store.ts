@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { Alert } from "react-native";
 import * as Haptics from "expo-haptics";
@@ -6,6 +7,7 @@ import { router } from "expo-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
+import type { ResolvedLocation } from "@acme/convex/places/types";
 import {
   POST_UPLOAD_MAX_SIZE_BYTES,
   POST_UPLOAD_MAX_SIZE_LABEL,
@@ -41,6 +43,7 @@ function useInternalStore() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
+  const [location, setLocation] = useState<ResolvedLocation | null>(null);
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
   const canPost =
@@ -66,20 +69,7 @@ function useInternalStore() {
   }
 
   async function pickFiles() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsMultipleSelection: true,
-      mediaTypes: ["images"],
-      quality: 1,
-    });
-    if (result.canceled) return;
-
-    setError(null);
-    const validFiles = result.assets.filter(isAllowedFileSize);
-    if (validFiles.length !== result.assets.length) {
-      setError(`Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`);
-    }
-    setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
-    void Haptics.selectionAsync();
+    await pickComposerFiles({ setError, setItems });
   }
 
   function removeItem(itemId: string) {
@@ -105,8 +95,15 @@ function useInternalStore() {
       await createPost({
         caption: latestCaption || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
+        location: location
+          ? {
+              googlePlaceId: location.googlePlaceId,
+              provider: location.provider,
+            }
+          : undefined,
       });
       resetCaptionDraft();
+      setLocation(null);
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
@@ -131,13 +128,16 @@ function useInternalStore() {
     hasUploadingItems,
     isPosting,
     items,
+    location,
     mutedForeground,
     pickFiles,
     replaceItems,
     removeItem,
     retryItem,
+    clearLocation: () => setLocation(null),
     setCaption,
     setCaptionDraft,
+    setLocation,
   };
 }
 
@@ -147,6 +147,29 @@ function createComposerItem(file: ImagePicker.ImagePickerAsset) {
     id: `${Date.now()}-${Math.random()}`,
     status: "ready" as const,
   };
+}
+
+async function pickComposerFiles({
+  setError,
+  setItems,
+}: {
+  setError: (error: string | null) => void;
+  setItems: Dispatch<SetStateAction<ComposerItem[]>>;
+}) {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    allowsMultipleSelection: true,
+    mediaTypes: ["images"],
+    quality: 1,
+  });
+  if (result.canceled) return;
+
+  setError(null);
+  const validFiles = result.assets.filter(isAllowedFileSize);
+  if (validFiles.length !== result.assets.length) {
+    setError(`Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`);
+  }
+  setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
+  void Haptics.selectionAsync();
 }
 
 function getErrorMessage(caughtError: unknown, fallback: string) {

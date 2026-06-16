@@ -13,6 +13,7 @@
     "./files/types": "./src/files/types.ts",
     "./friends/types": "./src/friends/types.ts",
     "./images/types": "./src/images/types.ts",
+    "./places/types": "./src/places/types.ts",
     "./posts/types": "./src/posts/types.ts",
     "./profile/types": "./src/profile/types.ts"
   },

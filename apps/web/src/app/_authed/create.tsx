@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CaptionField } from "~/features/post/create/components/caption-field";
 import { ComposerError } from "~/features/post/create/components/composer-error";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
+import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaDropzone } from "~/features/post/create/components/media-dropzone";
 import { MediaFileInput } from "~/features/post/create/components/media-file-input";
 import { MediaGrid } from "~/features/post/create/components/media-grid";
@@ -16,18 +17,21 @@ export const Route = createFileRoute("/_authed/create")({
 function Create() {
   return (
     <CreateStore>
-      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-5 px-4 pt-6 pb-28 sm:px-6 sm:pt-10">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 pt-6 pb-28 sm:px-6 sm:pt-10">
+        <div className="mb-7 flex items-center justify-between gap-4">
           <h1 className="text-foreground text-2xl font-bold">
             Create a new post
           </h1>
           <CreatePostButton />
         </div>
-        <MediaFileInput />
-        <MediaDropzone />
-        <MediaGrid />
-        <CaptionField />
-        <ComposerError />
+        <div className="flex flex-col gap-6">
+          <MediaFileInput />
+          <MediaDropzone />
+          <MediaGrid />
+          <LocationField />
+          <CaptionField />
+          <ComposerError />
+        </div>
         <PostConfirmationDialog />
       </div>
     </CreateStore>

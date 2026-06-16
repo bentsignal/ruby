@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
+import type { ResolvedLocation } from "@acme/convex/places/types";
 import { api } from "@acme/convex/api";
 
 import { useComposerItems } from "./hooks/use-composer-items";
@@ -19,6 +20,7 @@ function useInternalStore() {
   const [error, setError] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [location, setLocation] = useState<ResolvedLocation | null>(null);
   const {
     addFiles,
     items,
@@ -56,11 +58,18 @@ function useInternalStore() {
       await createPost({
         caption: caption.trim() || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
+        location: location
+          ? {
+              googlePlaceId: location.googlePlaceId,
+              provider: location.provider,
+            }
+          : undefined,
       });
       await queryClient.invalidateQueries({
         queryKey: convexQuery(api.posts.queries.getAll, {}).queryKey,
       });
       revokeItemPreviewUrls(items);
+      setLocation(null);
       setIsConfirmOpen(false);
       setIsPosting(false);
       await navigate({ to: "/" });
@@ -81,12 +90,15 @@ function useInternalStore() {
     isConfirmOpen,
     isPosting,
     items,
+    location,
     moveItem,
     openConfirm: () => setIsConfirmOpen(true),
     publishPost,
     removeItem,
+    clearLocation: () => setLocation(null),
     setCaption,
     setIsConfirmOpen,
+    setLocation,
   };
 }
 

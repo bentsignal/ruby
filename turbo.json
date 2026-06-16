@@ -48,6 +48,7 @@
   "globalEnv": [
     "AUTH_SECRET",
     "CONVEX_DEPLOY_KEY",
+    "GOOGLE_PLACES_API_KEY",
     "UPLOADTHING_APP_ID",
     "VITE_NODE_ENV"
   ],

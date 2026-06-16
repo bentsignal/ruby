@@ -11,6 +11,7 @@ import { SafeAreaView } from "~/components/safe-area-view";
 import { CaptionField } from "~/features/post/create/components/caption-field";
 import { ComposerError } from "~/features/post/create/components/composer-error";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
+import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaGrid } from "~/features/post/create/components/media-grid";
 import { MediaPicker } from "~/features/post/create/components/media-picker";
 import { CreateStore } from "~/features/post/create/store";
@@ -47,6 +48,7 @@ export default function Create() {
             <MediaPicker />
             <MediaGrid />
             <View className="gap-5 px-2 pt-3">
+              <LocationField />
               <CaptionField onFocus={scrollToCaption} />
               <ComposerError />
             </View>

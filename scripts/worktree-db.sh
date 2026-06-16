@@ -2,6 +2,10 @@
 set -eu
 
 NEW_WT="$PWD"
+MAIN_REPO="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)")"
+if [ -z "$MAIN_REPO" ] || [ "$MAIN_REPO" = "$NEW_WT" ]; then
+  MAIN_REPO="$NEW_WT"
+fi
 
 BRANCH_NAME="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
 HEAD_SHA="$(git rev-parse --short HEAD)"
@@ -12,10 +16,14 @@ if [ -z "$WT_NAME" ]; then
   WT_NAME="worktree-$PORTLESS_WORKTREE_ID"
 fi
 
+CONVEX_TEAM="${WORKTREE_CONVEX_TEAM:-BSX}"
+CONVEX_PROJECT="${WORKTREE_CONVEX_PROJECT:-ruby}"
+
 echo "branch=${BRANCH_NAME:-HEAD}"
 echo "head=$HEAD_SHA"
 echo "worktree_id=$PORTLESS_WORKTREE_ID"
 echo "web_url=https://$PORTLESS_WORKTREE_ID.www.ruby.local"
+echo "source_repo=$MAIN_REPO"
 
 set_env_var() {
   FILE="$1"
@@ -30,10 +38,33 @@ set_env_var() {
   fi
 }
 
-cd "$NEW_WT/services/convex"
+remove_env_var() {
+  FILE="$1"
+  NAME="$2"
 
-# Pull env vars from the main deployment before switching
+  if [ -f "$FILE" ]; then
+    sed -i '' "/^$NAME=/d" "$FILE"
+  fi
+}
+
+clear_convex_selection() {
+  FILE="$1"
+
+  remove_env_var "$FILE" "CONVEX_URL"
+  remove_env_var "$FILE" "CONVEX_SITE_URL"
+  remove_env_var "$FILE" "CONVEX_DEPLOY_KEY"
+}
+
+# Pull env vars from the main deployment before switching the worktree deployment.
 TEMP_ENV=$(mktemp)
+SOURCE_CONVEX_DIR="$MAIN_REPO/services/convex"
+if [ ! -d "$SOURCE_CONVEX_DIR" ]; then
+  rm -f "$TEMP_ENV"
+  echo "Could not find source Convex directory at $SOURCE_CONVEX_DIR" >&2
+  exit 1
+fi
+
+cd "$SOURCE_CONVEX_DIR"
 npx convex env list > "$TEMP_ENV"
 if grep -Eq '^ENVIRONMENT="?production"?$' "$TEMP_ENV" ||
   grep -Eq '^CONVEX_CLOUD_URL="?https://api\.ruby\.travel"?$' "$TEMP_ENV"; then
@@ -42,14 +73,24 @@ if grep -Eq '^ENVIRONMENT="?production"?$' "$TEMP_ENV" ||
   exit 1
 fi
 
-npx convex deployment create "dev/$WT_NAME" --select --expiration "in 7 days" --type dev < /dev/null
+cd "$NEW_WT/services/convex"
+clear_convex_selection ".env.local"
+DEPLOYMENT_REF="$CONVEX_TEAM:$CONVEX_PROJECT:dev/$WT_NAME"
+if npx convex deployment select "$DEPLOYMENT_REF" < /dev/null; then
+  echo "selected existing worktree deployment $DEPLOYMENT_REF"
+else
+  npx convex deployment create "$DEPLOYMENT_REF" --select --expiration "in 7 days" --type dev < /dev/null
+fi
 npx convex deployment token create "$WT_NAME" --save-env < /dev/null
 
 # Push env vars to the new deployment
-if [ -s "$TEMP_ENV" ]; then
-  npx convex env set --from-file "$TEMP_ENV" < /dev/null
-  echo "copied environment variables to new deployment"
+if [ ! -s "$TEMP_ENV" ]; then
+  rm -f "$TEMP_ENV"
+  echo "Refusing to continue because no environment variables were copied from the source deployment." >&2
+  exit 1
 fi
+npx convex env set --from-file "$TEMP_ENV" --force < /dev/null
+echo "copied environment variables from $SOURCE_CONVEX_DIR to new deployment"
 rm -f "$TEMP_ENV"
 
 AUTH_METADATA="$(curl -fsS "https://site.dev.ruby.travel/api/auth/convex/.well-known/openid-configuration")"

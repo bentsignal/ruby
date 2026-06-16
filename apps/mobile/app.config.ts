@@ -44,6 +44,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         ios: {
           deploymentTarget: "16.4",
+          usePrecompiledModules: false,
         },
       },
     ],

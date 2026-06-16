@@ -4,6 +4,9 @@ import { POST_CAPTION_MAX_LENGTH, POST_MAX_FILES } from "@acme/config/posts";
 
 import type { Id } from "../_generated/dataModel";
 import type { AuthedMutationCtx } from "../utils";
+import type { PostLocation } from "./types";
+
+const POST_LOCATION_PLACE_ID_MAX_LENGTH = 256;
 
 export function validatePostInput(
   rawCaption: string | undefined,
@@ -39,4 +42,21 @@ export async function validatePostFiles(
       throw new ConvexError("Wait for uploads to finish before posting");
     }
   }
+}
+
+export function validatePostLocation(rawLocation: PostLocation | undefined) {
+  if (!rawLocation) return undefined;
+
+  const googlePlaceId = rawLocation.googlePlaceId.trim();
+  if (!googlePlaceId) {
+    throw new ConvexError("Invalid location");
+  }
+  if (googlePlaceId.length > POST_LOCATION_PLACE_ID_MAX_LENGTH) {
+    throw new ConvexError("Location is too long");
+  }
+
+  return {
+    provider: "google",
+    googlePlaceId,
+  } satisfies PostLocation;
 }
