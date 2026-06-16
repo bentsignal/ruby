@@ -5,7 +5,6 @@ import { isPreviewableImage } from "../lib/media-type";
 import { useCreateStore } from "../store";
 import { ImageViewerModal } from "./image-viewer-modal";
 import { MediaTile } from "./media-tile";
-import { ManageMediaButton } from "./reorder-media-button";
 
 export function MediaGrid() {
   const items = useCreateStore((store) => store.items);
@@ -15,11 +14,11 @@ export function MediaGrid() {
   if (items.length === 0) return null;
 
   return (
-    <View className="gap-3">
+    <View>
       <ScrollView
         horizontal
         className="-mx-4"
-        contentContainerClassName="gap-3 px-4"
+        contentContainerClassName="gap-3 px-6"
         showsHorizontalScrollIndicator={false}
       >
         {items.map((item, index) => {
@@ -41,7 +40,7 @@ export function MediaGrid() {
           );
         })}
       </ScrollView>
-      <ManageMediaButton />
+
       {previewIndex !== null ? (
         <ImageViewerModal
           initialIndex={previewIndex}

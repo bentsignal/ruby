@@ -39,15 +39,17 @@ export default function Create() {
             keyboardDismissMode="interactive"
             keyboardShouldPersistTaps="handled"
           >
-            <View className="flex-row items-center justify-between gap-4 px-2 pb-3">
+            <View className="flex-row items-center justify-between gap-4 px-2">
               <Text className="text-foreground text-3xl font-black tracking-normal">
                 Create
               </Text>
               <CreatePostButton />
             </View>
-            <MediaPicker />
-            <MediaGrid />
-            <View className="gap-5 px-2 pt-3">
+            <View className="gap-3">
+              <MediaPicker />
+              <MediaGrid />
+            </View>
+            <View className="gap-5 px-2">
               <LocationField />
               <CaptionField onFocus={scrollToCaption} />
               <ComposerError />

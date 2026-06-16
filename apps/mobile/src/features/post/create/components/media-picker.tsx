@@ -2,15 +2,25 @@ import { Pressable, Text, View } from "react-native";
 import { ImagePlus } from "lucide-react-native";
 
 import { useCreateStore } from "../store";
+import { ManageMediaButton } from "./reorder-media-button";
 
 export function MediaPicker() {
   const hasItems = useCreateStore((store) => store.items.length > 0);
 
   if (hasItems) {
-    return <AddMoreMediaButton />;
+    return (
+      <View className="gap-3 px-2">
+        <AddMoreMediaButton />
+        <ManageMediaButton />
+      </View>
+    );
   }
 
-  return <EmptyMediaPicker />;
+  return (
+    <View className="px-2">
+      <EmptyMediaPicker />
+    </View>
+  );
 }
 
 export function AddMoreMediaButton() {
