@@ -28,7 +28,10 @@ function LocationPicker() {
 
   if (!location) {
     return (
-      <>
+      <LocationPickerFrame
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      >
         <Pressable
           className="bg-card border-border min-h-12 flex-row items-center gap-3 rounded-lg border px-3"
           onPress={openSearch}
@@ -38,16 +41,15 @@ function LocationPicker() {
             Add location
           </Text>
         </Pressable>
-        <LocationSearchSheet
-          isOpen={isSearchOpen}
-          onOpenChange={setIsSearchOpen}
-        />
-      </>
+      </LocationPickerFrame>
     );
   }
 
   return (
-    <>
+    <LocationPickerFrame
+      isSearchOpen={isSearchOpen}
+      setIsSearchOpen={setIsSearchOpen}
+    >
       <View className="bg-card border-border min-h-14 flex-row items-center gap-3 rounded-lg border px-3 py-2">
         <Pressable
           className="min-w-0 flex-1 flex-row items-center gap-3"
@@ -75,6 +77,22 @@ function LocationPicker() {
           <X color={mutedForeground} size={18} />
         </Pressable>
       </View>
+    </LocationPickerFrame>
+  );
+}
+
+function LocationPickerFrame({
+  children,
+  isSearchOpen,
+  setIsSearchOpen,
+}: {
+  children: React.ReactNode;
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isOpen: boolean) => void;
+}) {
+  return (
+    <>
+      {children}
       <LocationSearchSheet
         isOpen={isSearchOpen}
         onOpenChange={setIsSearchOpen}

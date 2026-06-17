@@ -131,7 +131,7 @@ function LocationSearchInput() {
       <Search color={mutedForeground} size={18} />
       <TextInput
         key={isOpen ? "open" : "closed"}
-        autoFocus
+        autoFocus={isOpen}
         className="text-foreground min-w-0 flex-1 text-base"
         defaultValue={search}
         placeholder="Search places"

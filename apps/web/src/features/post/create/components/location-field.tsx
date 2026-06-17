@@ -17,6 +17,9 @@ export function LocationField() {
 
 function LocationPicker() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const isLocationResolving = useCreateStore(
+    (store) => store.isLocationResolving,
+  );
   const location = useCreateStore((store) => store.location);
   const clearLocation = useCreateStore((store) => store.clearLocation);
 
@@ -24,9 +27,23 @@ function LocationPicker() {
     setIsSearchOpen(true);
   }
 
+  if (isLocationResolving) {
+    return (
+      <LocationPickerFrame
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      >
+        <LocationShell />
+      </LocationPickerFrame>
+    );
+  }
+
   if (!location) {
     return (
-      <>
+      <LocationPickerFrame
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      >
         <Button
           className="h-14 justify-start rounded-lg px-3"
           type="button"
@@ -36,26 +53,25 @@ function LocationPicker() {
           <MapPinIcon className="size-4" />
           Add location
         </Button>
-        <LocationSearchDialog
-          isOpen={isSearchOpen}
-          onOpenChange={setIsSearchOpen}
-        />
-      </>
+      </LocationPickerFrame>
     );
   }
 
   return (
-    <>
-      <div className="border-input bg-background flex h-14 items-center gap-3 rounded-lg border px-3">
+    <LocationPickerFrame
+      isSearchOpen={isSearchOpen}
+      setIsSearchOpen={setIsSearchOpen}
+    >
+      <LocationShell>
         <button
           type="button"
-          className="flex h-full min-w-0 flex-1 items-center gap-3 text-left"
+          className="flex h-full min-w-0 flex-1 items-center text-left"
           onClick={openSearch}
         >
-          <span className="bg-secondary text-secondary-foreground flex size-9 shrink-0 items-center justify-center rounded-full">
-            <MapPinIcon className="size-4" />
-          </span>
-          <span className="min-w-0">
+          <span
+            key={location.googlePlaceId}
+            className="animate-in fade-in min-w-0"
+          >
             <span className="text-foreground block truncate text-sm font-semibold">
               {location.name}
             </span>
@@ -71,7 +87,34 @@ function LocationPicker() {
         >
           <XIcon className="size-4" />
         </Button>
-      </div>
+      </LocationShell>
+    </LocationPickerFrame>
+  );
+}
+
+function LocationShell({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="border-input bg-background flex h-14 items-center gap-3 rounded-lg border px-3">
+      <span className="bg-secondary text-secondary-foreground flex size-9 shrink-0 items-center justify-center rounded-full">
+        <MapPinIcon className="size-4" />
+      </span>
+      {children}
+    </div>
+  );
+}
+
+function LocationPickerFrame({
+  children,
+  isSearchOpen,
+  setIsSearchOpen,
+}: {
+  children: React.ReactNode;
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isOpen: boolean) => void;
+}) {
+  return (
+    <>
+      {children}
       <LocationSearchDialog
         isOpen={isSearchOpen}
         onOpenChange={setIsSearchOpen}

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
@@ -12,6 +12,8 @@ import { toast } from "@acme/ui-web/toast";
 import { useComposerItems } from "./hooks/use-composer-items";
 import { uploadComposerFile } from "./lib/composer-upload";
 
+const LOCATION_REVEAL_DELAY_MS = 100;
+
 function useInternalStore() {
   const createUpload = useConvexMutation(api.files.mutations.createUpload);
   const createPost = useConvexMutation(api.posts.mutations.create);
@@ -22,6 +24,7 @@ function useInternalStore() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const locationResolve = useLocationResolveState({ setLocation });
   const {
     addFiles,
     items,
@@ -64,7 +67,7 @@ function useInternalStore() {
         queryKey: convexQuery(api.posts.queries.getAll, {}).queryKey,
       });
       revokeItemPreviewUrls(items);
-      setLocation(null);
+      locationResolve.clearLocation();
       setIsConfirmOpen(false);
       setIsPosting(false);
       await navigate({ to: "/" });
@@ -84,6 +87,7 @@ function useInternalStore() {
     hasUploadingItems,
     inputRef,
     isConfirmOpen,
+    isLocationResolving: locationResolve.isLocationResolving,
     isPosting,
     items,
     location,
@@ -91,10 +95,57 @@ function useInternalStore() {
     openConfirm: () => setIsConfirmOpen(true),
     publishPost,
     removeItem,
-    clearLocation: () => setLocation(null),
+    clearLocation: locationResolve.clearLocation,
+    finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
     setIsConfirmOpen,
-    setLocation,
+    setLocation: locationResolve.setLocation,
+    startLocationResolve: locationResolve.startLocationResolve,
+  };
+}
+
+function useLocationResolveState({
+  setLocation,
+}: {
+  setLocation: (location: ResolvedLocation | null) => void;
+}) {
+  const [isLocationResolving, setIsLocationResolving] = useState(false);
+  const locationRevealTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  function clearLocationRevealTimeout() {
+    if (!locationRevealTimeoutRef.current) return;
+    clearTimeout(locationRevealTimeoutRef.current);
+    locationRevealTimeoutRef.current = null;
+  }
+
+  // eslint-disable-next-line no-restricted-syntax -- Clears a pending delayed location reveal when the composer unmounts.
+  useEffect(() => {
+    return clearLocationRevealTimeout;
+  }, []);
+
+  return {
+    isLocationResolving,
+    clearLocation: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(false);
+    },
+    finishLocationResolve: () => setIsLocationResolving(false),
+    setLocation: (nextLocation: ResolvedLocation) => {
+      clearLocationRevealTimeout();
+      setLocation(nextLocation);
+      locationRevealTimeoutRef.current = setTimeout(() => {
+        locationRevealTimeoutRef.current = null;
+        setIsLocationResolving(false);
+      }, LOCATION_REVEAL_DELAY_MS);
+    },
+    startLocationResolve: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(true);
+    },
   };
 }
 

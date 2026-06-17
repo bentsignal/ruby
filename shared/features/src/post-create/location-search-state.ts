@@ -13,17 +13,16 @@ interface MutableRef<T> {
   current: T;
 }
 
-interface AutocompleteArgs {
-  input: string;
-  sessionToken: string;
-}
-
 export function useLocationSearchState({
   isOpen,
+  onResolveEnd,
+  onResolveStart,
   onOpenChange,
   setLocation,
 }: {
   isOpen: boolean;
+  onResolveEnd?: () => void;
+  onResolveStart?: () => void;
   onOpenChange: (isOpen: boolean) => void;
   setLocation: (location: ResolvedLocation) => void;
 }) {
@@ -84,7 +83,8 @@ export function useLocationSearchState({
   function selectPrediction(prediction: LocationPrediction) {
     if (!sessionToken) return;
 
-    setLocation(createOptimisticLocation(prediction));
+    if (onResolveStart) onResolveStart();
+    else setLocation(createOptimisticLocation(prediction));
     handleOpenChange(false);
 
     void resolveLocationAction({
@@ -94,7 +94,7 @@ export function useLocationSearchState({
       sessionToken,
     })
       .then(parseResolvedLocation)
-      .then(setLocation, () => undefined);
+      .then(setLocation, () => onResolveEnd?.());
   }
 
   return {
@@ -119,7 +119,10 @@ function loadPredictions({
   setPredictions,
   setSearchError,
 }: {
-  autocompleteAction: (args: AutocompleteArgs) => Promise<unknown>;
+  autocompleteAction: (args: {
+    input: string;
+    sessionToken: string;
+  }) => Promise<unknown>;
   debouncedValue: string;
   isOpen: boolean;
   predictionCacheRef: MutableRef<Map<string, LocationPrediction[]>>;

@@ -9,7 +9,19 @@ export function useLocationSearch({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
+  const finishLocationResolve = useCreateStore(
+    (store) => store.finishLocationResolve,
+  );
   const setLocation = useCreateStore((store) => store.setLocation);
+  const startLocationResolve = useCreateStore(
+    (store) => store.startLocationResolve,
+  );
 
-  return useLocationSearchState({ isOpen, onOpenChange, setLocation });
+  return useLocationSearchState({
+    isOpen,
+    onOpenChange,
+    onResolveEnd: finishLocationResolve,
+    onResolveStart: startLocationResolve,
+    setLocation,
+  });
 }

@@ -16,7 +16,7 @@ export function LocationResults() {
   return (
     <ScrollView
       className="min-h-0 flex-1"
-      keyboardShouldPersistTaps="handled"
+      keyboardShouldPersistTaps="always"
       contentContainerClassName="min-h-56 py-1"
     >
       <LocationStatus />
