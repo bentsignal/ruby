@@ -14,10 +14,9 @@ import {
   PLACE_SESSION_TOKEN_MAX_LENGTH,
 } from "@acme/config/places";
 
-import type { ActionCtx } from "../_generated/server";
 import type { ResolvedLocation } from "./types";
-import { action } from "../_generated/server";
 import { rateLimiter } from "../limiter";
+import { authedAction } from "../utils";
 import {
   parseAutocompleteResponse,
   parseGoogleAutocompleteResponse,
@@ -31,7 +30,7 @@ const GOOGLE_AUTOCOMPLETE_URL =
   "https://places.googleapis.com/v1/places:autocomplete";
 const GOOGLE_PLACE_DETAILS_URL = "https://places.googleapis.com/v1/places";
 
-export const autocomplete = action({
+export const autocomplete = authedAction({
   args: {
     input: v.string(),
     sessionToken: v.string(),
@@ -40,12 +39,11 @@ export const autocomplete = action({
   },
   returns: v.array(vLocationPrediction),
   handler: async (ctx, args) => {
-    const user = await requireIdentity(ctx);
     const input = validateAutocompleteInput(args.input);
     const sessionToken = validateSessionToken(args.sessionToken);
 
     const { ok } = await rateLimiter.limit(ctx, "placesAutocomplete", {
-      key: user.subject,
+      key: ctx.user.subject,
     });
     if (!ok) throw new ConvexError("Could not load locations");
 
@@ -65,7 +63,7 @@ export const autocomplete = action({
   },
 });
 
-export const resolve = action({
+export const resolve = authedAction({
   args: {
     placeId: v.string(),
     sessionToken: v.string(),
@@ -74,7 +72,6 @@ export const resolve = action({
   },
   returns: vResolvedLocation,
   handler: async (ctx, args) => {
-    const user = await requireIdentity(ctx);
     const placeId = validatePlaceId(args.placeId);
     const sessionToken = validateSessionToken(args.sessionToken);
     const selectedName = validateSelectedText(
@@ -91,7 +88,7 @@ export const resolve = action({
       : undefined;
 
     const { ok } = await rateLimiter.limit(ctx, "placesResolve", {
-      key: user.subject,
+      key: ctx.user.subject,
     });
     if (!ok) throw new ConvexError("Could not select location");
 
@@ -124,12 +121,6 @@ export const resolve = action({
     });
   },
 });
-
-async function requireIdentity(ctx: ActionCtx) {
-  const user = await ctx.auth.getUserIdentity();
-  if (!user) throw new ConvexError("Unauthenticated");
-  return user;
-}
 
 async function fetchGoogleAutocomplete({
   input,
