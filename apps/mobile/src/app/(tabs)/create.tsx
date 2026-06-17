@@ -12,8 +12,8 @@ import { CaptionField } from "~/features/post/create/components/caption-field";
 import { ComposerError } from "~/features/post/create/components/composer-error";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
 import { LocationField } from "~/features/post/create/components/location-field";
-import { MediaGrid } from "~/features/post/create/components/media-grid";
 import { MediaPicker } from "~/features/post/create/components/media-picker";
+import { MediaGrid } from "~/features/post/create/media-grid/media-grid";
 import { CreateStore } from "~/features/post/create/store";
 
 export default function Create() {

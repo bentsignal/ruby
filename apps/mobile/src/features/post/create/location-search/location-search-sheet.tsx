@@ -9,9 +9,8 @@ import {
 import { Search } from "lucide-react-native";
 
 import { SafeAreaView } from "~/components/safe-area-view";
-import { useColor } from "~/hooks/use-color";
-import { LocationResults } from "./location-results";
-import { useLocationSearch } from "./location-search-state";
+import { LocationResults } from "./components/results";
+import { LocationSearchSheetStore, useLocationSearchSheetStore } from "./store";
 
 export function LocationSearchSheet({
   isOpen,
@@ -20,9 +19,17 @@ export function LocationSearchSheet({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
-  const search = useLocationSearch({ isOpen, onOpenChange });
-  const foreground = useColor("foreground");
-  const mutedForeground = useColor("muted-foreground");
+  return (
+    <LocationSearchSheetStore isOpen={isOpen} onOpenChange={onOpenChange}>
+      <LocationSearchModal isOpen={isOpen} />
+    </LocationSearchSheetStore>
+  );
+}
+
+function LocationSearchModal({ isOpen }: { isOpen: boolean }) {
+  const handleOpenChange = useLocationSearchSheetStore(
+    (store) => store.handleOpenChange,
+  );
 
   return (
     <Modal
@@ -30,20 +37,12 @@ export function LocationSearchSheet({
       allowSwipeDismissal={Platform.OS === "ios"}
       presentationStyle={Platform.OS === "ios" ? "formSheet" : "fullScreen"}
       visible={isOpen}
-      onRequestClose={() => search.handleOpenChange(false)}
+      onRequestClose={() => handleOpenChange(false)}
     >
       <SheetFrame>
         <SheetHeader />
-        <LocationSearchInput
-          mutedForeground={mutedForeground}
-          search={search.search}
-          setSearch={search.setSearch}
-        />
-        <LocationResults
-          foreground={foreground}
-          mutedForeground={mutedForeground}
-          search={search}
-        />
+        <LocationSearchInput />
+        <LocationResults />
       </SheetFrame>
     </Modal>
   );
@@ -73,15 +72,13 @@ function SheetHeader() {
   );
 }
 
-function LocationSearchInput({
-  mutedForeground,
-  search,
-  setSearch,
-}: {
-  mutedForeground: string;
-  search: string;
-  setSearch: (search: string) => void;
-}) {
+function LocationSearchInput() {
+  const mutedForeground = useLocationSearchSheetStore(
+    (store) => store.mutedForeground,
+  );
+  const search = useLocationSearchSheetStore((store) => store.search);
+  const setSearch = useLocationSearchSheetStore((store) => store.setSearch);
+
   return (
     <View className="bg-background border-border mb-3 h-12 flex-row items-center gap-3 rounded-xl border px-3">
       <Search color={mutedForeground} size={18} />

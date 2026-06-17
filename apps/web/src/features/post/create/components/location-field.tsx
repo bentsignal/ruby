@@ -4,8 +4,8 @@ import { MapPinIcon, XIcon } from "lucide-react";
 import type { ResolvedLocation } from "@acme/convex/places/types";
 import { Button } from "@acme/ui-web/button";
 
+import { LocationSearchDialog } from "../location-search/location-search-dialog";
 import { useCreateStore } from "../store";
-import { LocationSearchDialog } from "./location-search-dialog";
 
 export function LocationField() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);

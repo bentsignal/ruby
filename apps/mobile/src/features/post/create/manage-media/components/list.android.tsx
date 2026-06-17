@@ -2,105 +2,66 @@ import { useState } from "react";
 import { Animated, PanResponder, Pressable, View } from "react-native";
 import { GripVertical, Trash2 } from "lucide-react-native";
 
-import type { ComposerItem } from "../types";
-import { MediaPreview } from "./media-preview";
+import type { ComposerItem } from "../../types";
+import { MediaPreview } from "../../components/media-preview";
+import { useManageMediaStore } from "../store";
 
 const ROW_HEIGHT = 92;
 const ROW_GAP = 12;
 const ROW_STEP = ROW_HEIGHT + ROW_GAP;
 
-export function ManageMediaList({
-  activeIndex,
-  activeItemId,
-  foreground,
-  hoverIndex,
-  itemCount,
-  items,
-  onDragFinish,
-  onDragStart,
-  onItemDelete,
-  onHoverIndexChange,
-}: {
-  activeIndex: number | null;
-  activeItemId: string | null;
-  foreground: string;
-  hoverIndex: number | null;
-  itemCount: number;
-  items: ComposerItem[];
-  onDragFinish: () => void;
-  onDragStart: (itemId: string, index: number) => void;
-  onItemDelete: (itemId: string) => void;
-  onHoverIndexChange: (index: number) => void;
-}) {
+export function ManageMediaList() {
+  const items = useManageMediaStore((store) => store.orderedItems);
+
   return (
     <View className="flex-1 px-4 py-4">
       {items.map((item, index) => (
-        <ManageMediaRow
-          activeIndex={activeIndex}
-          activeItemId={activeItemId}
-          foreground={foreground}
-          hoverIndex={hoverIndex}
-          index={index}
-          item={item}
-          itemCount={itemCount}
-          key={item.id}
-          onDragFinish={onDragFinish}
-          onDragStart={onDragStart}
-          onItemDelete={onItemDelete}
-          onHoverIndexChange={onHoverIndexChange}
-        />
+        <ManageMediaRow index={index} item={item} key={item.id} />
       ))}
     </View>
   );
 }
 
 function ManageMediaRow({
-  activeIndex,
-  activeItemId,
-  foreground,
-  hoverIndex,
   index,
   item,
-  itemCount,
-  onDragFinish,
-  onDragStart,
-  onItemDelete,
-  onHoverIndexChange,
 }: {
-  activeIndex: number | null;
-  activeItemId: string | null;
-  foreground: string;
-  hoverIndex: number | null;
   index: number;
   item: ComposerItem;
-  itemCount: number;
-  onDragFinish: () => void;
-  onDragStart: (itemId: string, index: number) => void;
-  onItemDelete: (itemId: string) => void;
-  onHoverIndexChange: (index: number) => void;
 }) {
   const [dragY] = useState(() => new Animated.Value(0));
+  const activeIndex = useManageMediaStore((store) => store.activeIndex);
+  const activeItemId = useManageMediaStore((store) => store.activeItemId);
+  const finishDrag = useManageMediaStore((store) => store.finishDrag);
+  const foreground = useManageMediaStore((store) => store.foreground);
+  const hoverIndex = useManageMediaStore((store) => store.hoverIndex);
+  const itemCount = useManageMediaStore((store) => store.itemCount);
+  const deleteItem = useManageMediaStore((store) => store.deleteItem);
+  const startDrag = useManageMediaStore((store) => store.startDrag);
+  const updateHoverIndex = useManageMediaStore(
+    (store) => store.updateHoverIndex,
+  );
   const isActive = activeItemId === item.id;
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponderCapture: () => true,
     onPanResponderGrant: () => {
       dragY.setValue(0);
-      onDragStart(item.id, index);
+      startDrag(item.id, index);
     },
     onPanResponderMove: (_, gesture) => {
       dragY.setValue(gesture.dy);
-      onHoverIndexChange(
+      updateHoverIndex(
         clamp(index + Math.round(gesture.dy / ROW_STEP), 0, itemCount - 1),
       );
     },
     onPanResponderRelease: () => {
       dragY.setValue(0);
-      onDragFinish();
+      finishDrag();
     },
     onPanResponderTerminate: () => {
       dragY.setValue(0);
-      onDragFinish();
+      finishDrag();
     },
     onStartShouldSetPanResponder: () => true,
     onStartShouldSetPanResponderCapture: () => true,
@@ -128,7 +89,7 @@ function ManageMediaRow({
         <View className="min-w-0 flex-1" />
         <Pressable
           className="h-full w-12 items-center justify-center rounded-md"
-          onPress={() => onItemDelete(item.id)}
+          onPress={() => deleteItem(item.id)}
         >
           <Trash2 className="size-5" color={foreground} />
         </Pressable>

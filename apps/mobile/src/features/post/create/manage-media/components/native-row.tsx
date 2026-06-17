@@ -1,9 +1,9 @@
 import { Text, useWindowDimensions, View } from "react-native";
 
-import type { ComposerItem } from "../types";
-import { getMediaTitle, getMediaTypeLabel } from "../lib/reorder-media";
-import { useCreateStore } from "../store";
-import { MediaPreview } from "./media-preview";
+import type { ComposerItem } from "../../types";
+import { MediaPreview } from "../../components/media-preview";
+import { useCreateStore } from "../../store";
+import { getMediaTitle, getMediaTypeLabel } from "../reorder-media";
 
 export function NativeManageMediaRow({ item }: { item: ComposerItem }) {
   const mutedForeground = useCreateStore((store) => store.mutedForeground);

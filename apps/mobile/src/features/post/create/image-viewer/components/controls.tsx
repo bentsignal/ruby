@@ -1,4 +1,3 @@
-import type { RefObject } from "react";
 import {
   Animated,
   Image,
@@ -9,26 +8,21 @@ import {
 } from "react-native";
 import { X } from "lucide-react-native";
 
-import type { ComposerItem } from "../types";
+import type { ComposerItem } from "../../types";
+import { useImageViewerStore } from "../store";
 
-export function ViewerCounter({
-  activeIndex,
-  count,
-  isVisible,
-  opacity,
-  top,
-}: {
-  activeIndex: number;
-  count: number;
-  isVisible: boolean;
-  opacity: Animated.Value;
-  top: number;
-}) {
+export function ViewerCounter() {
+  const activeIndex = useImageViewerStore((store) => store.activeIndex);
+  const controlsOpacity = useImageViewerStore((store) => store.controlsOpacity);
+  const controlsVisible = useImageViewerStore((store) => store.controlsVisible);
+  const count = useImageViewerStore((store) => store.items.length);
+  const top = useImageViewerStore((store) => store.viewerCounterTop);
+
   return (
     <Animated.View
       className="absolute right-0 left-0 items-center"
-      pointerEvents={isVisible ? "auto" : "none"}
-      style={{ opacity, top, zIndex: 20 }}
+      pointerEvents={controlsVisible ? "auto" : "none"}
+      style={{ opacity: controlsOpacity, top, zIndex: 20 }}
     >
       <View className="rounded-full bg-black/55 px-4 py-2">
         <Text className="text-sm font-black text-white">
@@ -39,22 +33,17 @@ export function ViewerCounter({
   );
 }
 
-export function CloseButton({
-  isVisible,
-  opacity,
-  onClose,
-  top,
-}: {
-  isVisible: boolean;
-  opacity: Animated.Value;
-  onClose: () => void;
-  top: number;
-}) {
+export function CloseButton() {
+  const controlsOpacity = useImageViewerStore((store) => store.controlsOpacity);
+  const controlsVisible = useImageViewerStore((store) => store.controlsVisible);
+  const onClose = useImageViewerStore((store) => store.onClose);
+  const top = useImageViewerStore((store) => store.closeButtonTop);
+
   return (
     <Animated.View
       className="absolute right-4 size-11 items-center justify-center rounded-full bg-black/65"
-      pointerEvents={isVisible ? "auto" : "none"}
-      style={{ elevation: 30, opacity, top, zIndex: 30 }}
+      pointerEvents={controlsVisible ? "auto" : "none"}
+      style={{ elevation: 30, opacity: controlsOpacity, top, zIndex: 30 }}
     >
       <Pressable
         accessibilityLabel="Close image preview"
@@ -68,28 +57,20 @@ export function CloseButton({
   );
 }
 
-export function ThumbnailStrip({
-  activeIndex,
-  bottom,
-  isVisible,
-  items,
-  opacity,
-  scrollRef,
-  onSelect,
-}: {
-  activeIndex: number;
-  bottom: number;
-  isVisible: boolean;
-  items: ComposerItem[];
-  opacity: Animated.Value;
-  scrollRef: RefObject<ScrollView | null>;
-  onSelect: (index: number) => void;
-}) {
+export function ThumbnailStrip() {
+  const activeIndex = useImageViewerStore((store) => store.activeIndex);
+  const bottom = useImageViewerStore((store) => store.thumbnailStripBottom);
+  const controlsOpacity = useImageViewerStore((store) => store.controlsOpacity);
+  const controlsVisible = useImageViewerStore((store) => store.controlsVisible);
+  const items = useImageViewerStore((store) => store.items);
+  const scrollRef = useImageViewerStore((store) => store.thumbnailScrollRef);
+  const selectThumbnail = useImageViewerStore((store) => store.selectThumbnail);
+
   return (
     <Animated.View
       className="absolute right-0 left-0"
-      pointerEvents={isVisible ? "auto" : "none"}
-      style={{ bottom, elevation: 20, opacity, zIndex: 20 }}
+      pointerEvents={controlsVisible ? "auto" : "none"}
+      style={{ bottom, elevation: 20, opacity: controlsOpacity, zIndex: 20 }}
     >
       <ScrollView
         ref={scrollRef}
@@ -103,7 +84,7 @@ export function ThumbnailStrip({
             isActive={index === activeIndex}
             item={item}
             key={item.id}
-            onPress={() => onSelect(index)}
+            onPress={() => selectThumbnail(index)}
           />
         ))}
       </ScrollView>

@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 
-import { useCreateStore } from "../store";
+import { useCreateStore } from "../../store";
 
 export function AddMoreMediaTile() {
   const inputRef = useCreateStore((store) => store.inputRef);

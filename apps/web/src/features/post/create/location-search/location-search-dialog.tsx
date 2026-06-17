@@ -5,7 +5,10 @@ import { PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH } from "@acme/config/places";
 import * as Dialog from "@acme/ui-web/dialog";
 import { Input } from "@acme/ui-web/input";
 
-import { useLocationSearch } from "./location-search-state";
+import {
+  LocationSearchDialogStore,
+  useLocationSearchDialogStore,
+} from "./store";
 
 export function LocationSearchDialog({
   isOpen,
@@ -14,10 +17,20 @@ export function LocationSearchDialog({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
-  const search = useLocationSearch({ isOpen, onOpenChange });
+  return (
+    <LocationSearchDialogStore isOpen={isOpen} onOpenChange={onOpenChange}>
+      <LocationSearchDialogContent isOpen={isOpen} />
+    </LocationSearchDialogStore>
+  );
+}
+
+function LocationSearchDialogContent({ isOpen }: { isOpen: boolean }) {
+  const handleOpenChange = useLocationSearchDialogStore(
+    (store) => store.handleOpenChange,
+  );
 
   return (
-    <Dialog.Container open={isOpen} onOpenChange={search.handleOpenChange}>
+    <Dialog.Container open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Content
         className="gap-0 overflow-hidden p-0 sm:max-w-xl"
         style={{
@@ -31,23 +44,17 @@ export function LocationSearchDialog({
             Search Google Maps places.
           </Dialog.Description>
         </Dialog.Header>
-        <LocationSearchInput
-          search={search.search}
-          setSearch={search.setSearch}
-        />
-        <LocationResults search={search} />
+        <LocationSearchInput />
+        <LocationResults />
       </Dialog.Content>
     </Dialog.Container>
   );
 }
 
-function LocationSearchInput({
-  search,
-  setSearch,
-}: {
-  search: string;
-  setSearch: (search: string) => void;
-}) {
+function LocationSearchInput() {
+  const search = useLocationSearchDialogStore((store) => store.search);
+  const setSearch = useLocationSearchDialogStore((store) => store.setSearch);
+
   return (
     <div className="px-5 py-4">
       <div className="relative">
@@ -64,44 +71,39 @@ function LocationSearchInput({
   );
 }
 
-function LocationResults({
-  search,
-}: {
-  search: ReturnType<typeof useLocationSearch>;
-}) {
+function LocationResults() {
+  const isLoading = useLocationSearchDialogStore((store) => store.isLoading);
+  const predictions = useLocationSearchDialogStore(
+    (store) => store.predictions,
+  );
+  const search = useLocationSearchDialogStore((store) => store.search);
+  const searchError = useLocationSearchDialogStore(
+    (store) => store.searchError,
+  );
   const showEmptyState =
-    search.search.trim().length >= PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH &&
-    !search.isLoading &&
-    !search.searchError &&
-    search.predictions.length === 0;
+    search.trim().length >= PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH &&
+    !isLoading &&
+    !searchError &&
+    predictions.length === 0;
 
   return (
     <div
       className="min-h-0 flex-1 overflow-y-auto px-3 pb-2"
-      aria-busy={search.isLoading}
+      aria-busy={isLoading}
     >
-      <LocationStatus search={search} showEmptyState={showEmptyState} />
-      {!search.isLoading && !search.searchError
-        ? search.predictions.map((prediction) => (
-            <PredictionRow
-              key={prediction.id}
-              prediction={prediction}
-              selectPrediction={search.selectPrediction}
-            />
-          ))
-        : null}
+      <LocationStatus showEmptyState={showEmptyState} />
+      <PredictionRows />
     </div>
   );
 }
 
-function LocationStatus({
-  search,
-  showEmptyState,
-}: {
-  search: ReturnType<typeof useLocationSearch>;
-  showEmptyState: boolean;
-}) {
-  if (search.isLoading) {
+function LocationStatus({ showEmptyState }: { showEmptyState: boolean }) {
+  const isLoading = useLocationSearchDialogStore((store) => store.isLoading);
+  const searchError = useLocationSearchDialogStore(
+    (store) => store.searchError,
+  );
+
+  if (isLoading) {
     return (
       <div className="text-muted-foreground flex h-28 items-center justify-center gap-2 text-sm">
         <LoaderCircleIcon className="size-4 animate-spin" />
@@ -109,10 +111,10 @@ function LocationStatus({
       </div>
     );
   }
-  if (search.searchError) {
+  if (searchError) {
     return (
       <div className="text-destructive flex h-28 items-center justify-center text-sm">
-        {search.searchError}
+        {searchError}
       </div>
     );
   }
@@ -124,6 +126,31 @@ function LocationStatus({
     );
   }
   return null;
+}
+
+function PredictionRows() {
+  const isLoading = useLocationSearchDialogStore((store) => store.isLoading);
+  const predictions = useLocationSearchDialogStore(
+    (store) => store.predictions,
+  );
+  const searchError = useLocationSearchDialogStore(
+    (store) => store.searchError,
+  );
+  const selectPrediction = useLocationSearchDialogStore(
+    (store) => store.selectPrediction,
+  );
+
+  if (isLoading || searchError) {
+    return null;
+  }
+
+  return predictions.map((prediction) => (
+    <PredictionRow
+      key={prediction.id}
+      prediction={prediction}
+      selectPrediction={selectPrediction}
+    />
+  ));
 }
 
 function PredictionRow({

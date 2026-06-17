@@ -10,22 +10,18 @@ import { MapPin } from "lucide-react-native";
 import type { LocationPrediction } from "@acme/convex/places/types";
 import { PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH } from "@acme/config/places";
 
-import type { useLocationSearch } from "./location-search-state";
+import { useLocationSearchSheetStore } from "../store";
 
-export function LocationResults({
-  foreground,
-  mutedForeground,
-  search,
-}: {
-  foreground: string;
-  mutedForeground: string;
-  search: ReturnType<typeof useLocationSearch>;
-}) {
+export function LocationResults() {
+  const isLoading = useLocationSearchSheetStore((store) => store.isLoading);
+  const predictions = useLocationSearchSheetStore((store) => store.predictions);
+  const search = useLocationSearchSheetStore((store) => store.search);
+  const searchError = useLocationSearchSheetStore((store) => store.searchError);
   const showEmptyState =
-    search.search.trim().length >= PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH &&
-    !search.isLoading &&
-    !search.searchError &&
-    search.predictions.length === 0;
+    search.trim().length >= PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH &&
+    !isLoading &&
+    !searchError &&
+    predictions.length === 0;
 
   return (
     <ScrollView
@@ -33,32 +29,20 @@ export function LocationResults({
       keyboardShouldPersistTaps="handled"
       contentContainerClassName="min-h-56 py-1"
     >
-      <LocationStatus
-        mutedForeground={mutedForeground}
-        search={search}
-        showEmptyState={showEmptyState}
-      />
-      <PredictionRows
-        foreground={foreground}
-        predictions={search.predictions}
-        searchError={search.searchError}
-        selectPrediction={search.selectPrediction}
-        isLoading={search.isLoading}
-      />
+      <LocationStatus showEmptyState={showEmptyState} />
+      <PredictionRows />
     </ScrollView>
   );
 }
 
-function LocationStatus({
-  mutedForeground,
-  search,
-  showEmptyState,
-}: {
-  mutedForeground: string;
-  search: ReturnType<typeof useLocationSearch>;
-  showEmptyState: boolean;
-}) {
-  if (search.isLoading) {
+function LocationStatus({ showEmptyState }: { showEmptyState: boolean }) {
+  const isLoading = useLocationSearchSheetStore((store) => store.isLoading);
+  const mutedForeground = useLocationSearchSheetStore(
+    (store) => store.mutedForeground,
+  );
+  const searchError = useLocationSearchSheetStore((store) => store.searchError);
+
+  if (isLoading) {
     return (
       <View className="h-28 flex-row items-center justify-center gap-2">
         <ActivityIndicator color={mutedForeground} />
@@ -66,10 +50,10 @@ function LocationStatus({
       </View>
     );
   }
-  if (search.searchError) {
+  if (searchError) {
     return (
       <View className="h-28 items-center justify-center">
-        <Text className="text-destructive text-sm">{search.searchError}</Text>
+        <Text className="text-destructive text-sm">{searchError}</Text>
       </View>
     );
   }
@@ -85,19 +69,15 @@ function LocationStatus({
   return null;
 }
 
-function PredictionRows({
-  foreground,
-  isLoading,
-  predictions,
-  searchError,
-  selectPrediction,
-}: {
-  foreground: string;
-  isLoading: boolean;
-  predictions: LocationPrediction[];
-  searchError: string | null;
-  selectPrediction: (prediction: LocationPrediction) => void;
-}) {
+function PredictionRows() {
+  const foreground = useLocationSearchSheetStore((store) => store.foreground);
+  const isLoading = useLocationSearchSheetStore((store) => store.isLoading);
+  const predictions = useLocationSearchSheetStore((store) => store.predictions);
+  const searchError = useLocationSearchSheetStore((store) => store.searchError);
+  const selectPrediction = useLocationSearchSheetStore(
+    (store) => store.selectPrediction,
+  );
+
   if (isLoading || searchError) {
     return null;
   }

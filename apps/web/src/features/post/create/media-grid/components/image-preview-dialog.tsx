@@ -4,52 +4,32 @@ import { cn } from "@acme/std/cn";
 import { Button } from "@acme/ui-web/button";
 import * as Dialog from "@acme/ui-web/dialog";
 
-import type { ComposerItem } from "../types";
 import { Image } from "~/components/image";
+import { useMediaGridStore } from "../store";
 
-export function ImagePreviewDialog({
-  activeIndex,
-  items,
-  onIndexChange,
-  onOpenChange,
-}: {
-  activeIndex: number | null;
-  items: ComposerItem[];
-  onIndexChange: (index: number) => void;
-  onOpenChange: (isOpen: boolean) => void;
-}) {
-  const activeItem = activeIndex === null ? undefined : items[activeIndex];
-  const isOpen = activeIndex !== null && !!activeItem;
+export function ImagePreviewDialog() {
+  const handleOpenChange = useMediaGridStore((store) => store.handleOpenChange);
+  const isOpen = useMediaGridStore((store) => store.isPreviewOpen);
 
   return (
-    <Dialog.Container open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog.Container open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Content
         className="max-h-[calc(100vh-2rem)] max-w-5xl gap-4 overflow-hidden border-white/10 bg-black p-4 text-white sm:max-w-5xl"
         showCloseButton
       >
         <Dialog.Title className="sr-only">Image preview</Dialog.Title>
-        <ImagePreviewContent
-          activeIndex={activeIndex}
-          activeItem={activeItem}
-          items={items}
-          onIndexChange={onIndexChange}
-        />
+        <ImagePreviewContent />
       </Dialog.Content>
     </Dialog.Container>
   );
 }
 
-function ImagePreviewContent({
-  activeIndex,
-  activeItem,
-  items,
-  onIndexChange,
-}: {
-  activeIndex: number | null;
-  activeItem: ComposerItem | undefined;
-  items: ComposerItem[];
-  onIndexChange: (index: number) => void;
-}) {
+function ImagePreviewContent() {
+  const activeIndex = useMediaGridStore((store) => store.previewIndex);
+  const activeItem = useMediaGridStore((store) => store.activeItem);
+  const items = useMediaGridStore((store) => store.imageItems);
+  const setPreviewIndex = useMediaGridStore((store) => store.setPreviewIndex);
+
   if (!activeItem || activeIndex === null) {
     return null;
   }
@@ -63,7 +43,7 @@ function ImagePreviewContent({
         <ImageNavButton
           direction="previous"
           disabled={activeIndex === 0}
-          onClick={() => onIndexChange(activeIndex - 1)}
+          onClick={() => setPreviewIndex(activeIndex - 1)}
         />
         <div className="flex min-h-0 items-center justify-center">
           <Image
@@ -77,14 +57,10 @@ function ImagePreviewContent({
         <ImageNavButton
           direction="next"
           disabled={activeIndex === items.length - 1}
-          onClick={() => onIndexChange(activeIndex + 1)}
+          onClick={() => setPreviewIndex(activeIndex + 1)}
         />
       </div>
-      <ThumbnailStrip
-        activeIndex={activeIndex}
-        items={items}
-        onSelect={onIndexChange}
-      />
+      <ThumbnailStrip />
     </>
   );
 }
@@ -115,15 +91,15 @@ function ImageNavButton({
   );
 }
 
-function ThumbnailStrip({
-  activeIndex,
-  items,
-  onSelect,
-}: {
-  activeIndex: number;
-  items: ComposerItem[];
-  onSelect: (index: number) => void;
-}) {
+function ThumbnailStrip() {
+  const activeIndex = useMediaGridStore((store) => store.previewIndex);
+  const items = useMediaGridStore((store) => store.imageItems);
+  const setPreviewIndex = useMediaGridStore((store) => store.setPreviewIndex);
+
+  if (activeIndex === null) {
+    return null;
+  }
+
   return (
     <div className="flex max-w-full gap-2 overflow-x-auto px-1 py-1">
       {items.map((item, index) => (
@@ -137,7 +113,7 @@ function ThumbnailStrip({
               : "border-white/25 opacity-70 hover:opacity-100",
           )}
           key={item.id}
-          onClick={() => onSelect(index)}
+          onClick={() => setPreviewIndex(index)}
         >
           <Image
             alt=""

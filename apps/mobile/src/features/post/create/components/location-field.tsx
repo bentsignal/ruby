@@ -5,8 +5,8 @@ import { MapPin, X } from "lucide-react-native";
 import type { ResolvedLocation } from "@acme/convex/places/types";
 
 import { useColor } from "~/hooks/use-color";
+import { LocationSearchSheet } from "../location-search/location-search-sheet";
 import { useCreateStore } from "../store";
-import { LocationSearchSheet } from "./location-search-sheet";
 
 export function LocationField() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);

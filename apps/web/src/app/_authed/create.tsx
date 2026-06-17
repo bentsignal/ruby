@@ -6,8 +6,8 @@ import { CreatePostButton } from "~/features/post/create/components/create-post-
 import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaDropzone } from "~/features/post/create/components/media-dropzone";
 import { MediaFileInput } from "~/features/post/create/components/media-file-input";
-import { MediaGrid } from "~/features/post/create/components/media-grid";
 import { PostConfirmationDialog } from "~/features/post/create/components/post-confirmation-dialog";
+import { MediaGrid } from "~/features/post/create/media-grid/media-grid";
 import { CreateStore } from "~/features/post/create/store";
 
 export const Route = createFileRoute("/_authed/create")({

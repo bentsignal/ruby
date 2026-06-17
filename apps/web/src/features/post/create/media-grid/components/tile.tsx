@@ -7,16 +7,15 @@ import { GripVertical, LoaderCircle, Trash2, X } from "lucide-react";
 import { cn } from "@acme/std/cn";
 import * as Tooltip from "@acme/ui-web/tooltip";
 
-import { useComposerItem, useCreateStore } from "../store";
+import { useComposerItem, useCreateStore } from "../../store";
+import { useMediaGridStore } from "../store";
 
 export function PreviewTile({
   index,
   itemId,
-  onPreview,
 }: {
   index: number;
   itemId: string;
-  onPreview?: () => void;
 }) {
   const {
     attributes,
@@ -39,7 +38,7 @@ export function PreviewTile({
         transition,
       }}
     >
-      <PreviewMedia itemId={itemId} onPreview={onPreview} />
+      <PreviewMedia itemId={itemId} />
       <PreviewToolbar
         attributes={attributes}
         index={index}
@@ -51,14 +50,9 @@ export function PreviewTile({
   );
 }
 
-function PreviewMedia({
-  itemId,
-  onPreview,
-}: {
-  itemId: string;
-  onPreview?: () => void;
-}) {
+function PreviewMedia({ itemId }: { itemId: string }) {
   const item = useComposerItem(itemId);
+  const openPreview = useMediaGridStore((store) => store.openPreview);
   if (!item) return null;
 
   if (item.file.type.startsWith("video/")) {
@@ -79,7 +73,7 @@ function PreviewMedia({
       aria-label="Preview image"
       className="size-full cursor-pointer bg-cover bg-center"
       style={{ backgroundImage: `url(${item.previewUrl})` }}
-      onClick={onPreview}
+      onClick={() => openPreview(itemId)}
     />
   );
 }

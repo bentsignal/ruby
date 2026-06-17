@@ -1,18 +1,17 @@
 import { Pressable, Text, View } from "react-native";
 
-import { isPreviewableImage } from "../lib/media-type";
-import { useComposerItem } from "../store";
-import { MediaPreview } from "./media-preview";
-import { MediaStatusOverlay } from "./media-status-overlay";
+import { MediaPreview } from "../../components/media-preview";
+import { MediaStatusOverlay } from "../../components/media-status-overlay";
+import { isPreviewableImage } from "../../lib/media-type";
+import { useComposerItem } from "../../store";
+import { useMediaGridStore } from "../store";
 
 export function MediaTile({
   index,
   itemId,
-  onImagePress,
 }: {
   index: number;
   itemId: string;
-  onImagePress?: () => void;
 }) {
   const item = useComposerItem(itemId);
   const isImage = item ? isPreviewableImage(item) : false;
@@ -20,11 +19,7 @@ export function MediaTile({
   return (
     <View className="w-36">
       <View className="bg-card border-border aspect-[4/5] overflow-hidden rounded-lg border">
-        <MediaPreviewFrame
-          index={index}
-          itemId={itemId}
-          onImagePress={isImage ? onImagePress : undefined}
-        />
+        <MediaPreviewFrame index={index} isImage={isImage} itemId={itemId} />
         <View className="absolute top-2 left-2">
           <View className="h-8 flex-row items-center rounded-full bg-black/85 px-3">
             <Text className="text-xs font-black text-white">{index + 1}</Text>
@@ -38,20 +33,22 @@ export function MediaTile({
 
 function MediaPreviewFrame({
   index,
+  isImage,
   itemId,
-  onImagePress,
 }: {
   index: number;
+  isImage: boolean;
   itemId: string;
-  onImagePress?: () => void;
 }) {
-  if (onImagePress) {
+  const openPreview = useMediaGridStore((store) => store.openPreview);
+
+  if (isImage) {
     return (
       <Pressable
         accessibilityLabel={`Preview image ${index + 1}`}
         accessibilityRole="imagebutton"
         className="size-full items-center justify-center bg-black"
-        onPress={onImagePress}
+        onPress={() => openPreview(itemId)}
       >
         <MediaPreview itemId={itemId} />
       </Pressable>

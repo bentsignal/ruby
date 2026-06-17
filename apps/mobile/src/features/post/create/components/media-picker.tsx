@@ -1,8 +1,8 @@
 import { Pressable, Text, View } from "react-native";
 import { ImagePlus } from "lucide-react-native";
 
+import { ManageMediaButton } from "../manage-media/manage-media-button";
 import { useCreateStore } from "../store";
-import { ManageMediaButton } from "./reorder-media-button";
 
 export function MediaPicker() {
   const hasItems = useCreateStore((store) => store.items.length > 0);
