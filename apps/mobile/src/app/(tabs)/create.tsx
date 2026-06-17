@@ -9,7 +9,6 @@ import {
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import { CaptionField } from "~/features/post/create/components/caption-field";
-import { ComposerError } from "~/features/post/create/components/composer-error";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
 import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaPicker } from "~/features/post/create/components/media-picker";
@@ -55,7 +54,6 @@ export default function Create() {
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
-        <ComposerError />
       </SafeAreaView>
     </CreateStore>
   );

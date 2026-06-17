@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import { Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 
@@ -13,10 +14,8 @@ import {
 import type { ComposerItem } from "../types";
 
 export async function pickComposerFiles({
-  setError,
   setItems,
 }: {
-  setError: (error: string | null) => void;
   setItems: Dispatch<SetStateAction<ComposerItem[]>>;
 }) {
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -26,10 +25,9 @@ export async function pickComposerFiles({
   });
   if (result.canceled) return;
 
-  setError(null);
   const validFiles = result.assets.filter(isAllowedFile);
   if (validFiles.length !== result.assets.length) {
-    setError(getFileValidationError());
+    Alert.alert("Error", getFileValidationError());
   }
   setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
   void Haptics.selectionAsync();

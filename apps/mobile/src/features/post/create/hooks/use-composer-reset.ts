@@ -8,12 +8,10 @@ import { resetCaptionDraft } from "../lib/caption-draft";
 
 export function useComposerReset({
   setCaptionState,
-  setError,
   setItems,
   setLocation,
 }: {
   setCaptionState: (caption: string) => void;
-  setError: (error: string | null) => void;
   setItems: Dispatch<SetStateAction<ComposerItem[]>>;
   setLocation: (location: ResolvedLocation | null) => void;
 }) {
@@ -23,7 +21,6 @@ export function useComposerReset({
     resetCaptionDraft();
     setItems([]);
     setCaptionState("");
-    setError(null);
     setLocation(null);
     setResetKey((current) => current + 1);
   }

@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CaptionField } from "~/features/post/create/components/caption-field";
-import { ComposerError } from "~/features/post/create/components/composer-error";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
 import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaDropzone } from "~/features/post/create/components/media-dropzone";
@@ -31,7 +30,6 @@ function Create() {
           <LocationField />
           <CaptionField />
         </div>
-        <ComposerError />
         <PostConfirmationDialog />
       </div>
     </CreateStore>

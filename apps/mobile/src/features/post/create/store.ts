@@ -30,12 +30,10 @@ function useInternalStore() {
     resetCaptionDraft();
     return "";
   });
-  const [error, setError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
   const { resetComposer, resetKey } = useComposerReset({
     setCaptionState,
-    setError,
     setItems,
     setLocation,
   });
@@ -79,7 +77,6 @@ function useInternalStore() {
 
   async function publishPost() {
     setIsPosting(true);
-    setError(null);
     try {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
       const latestCaption = readCaptionDraft().trim();
@@ -92,7 +89,7 @@ function useInternalStore() {
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
-      setError(getDisplayErrorMessage(caughtError, "Post failed"));
+      Alert.alert("Error", getDisplayErrorMessage(caughtError, "Post failed"));
       setIsPosting(false);
     }
   }
@@ -108,14 +105,13 @@ function useInternalStore() {
     canPost,
     caption,
     confirmPost,
-    error,
     foreground,
     hasUploadingItems,
     isPosting,
     items,
     location,
     mutedForeground,
-    pickFiles: () => pickComposerFiles({ setError, setItems }),
+    pickFiles: () => pickComposerFiles({ setItems }),
     replaceItems,
     resetKey,
     removeItem,
@@ -123,7 +119,6 @@ function useInternalStore() {
     clearLocation: () => setLocation(null),
     setCaption,
     setCaptionDraft,
-    setError,
     setLocation,
   };
 }

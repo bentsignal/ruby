@@ -7,6 +7,7 @@ import { createStore } from "rostra";
 import type { ResolvedLocation } from "@acme/convex/places/types";
 import { api } from "@acme/convex/api";
 import { getDisplayErrorMessage } from "@acme/std/display-error";
+import { toast } from "@acme/ui-web/toast";
 
 import { useComposerItems } from "./hooks/use-composer-items";
 import { uploadComposerFile } from "./lib/composer-upload";
@@ -18,7 +19,6 @@ function useInternalStore() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [caption, setCaption] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
@@ -29,7 +29,7 @@ function useInternalStore() {
     removeItem,
     revokeItemPreviewUrls,
     updateItem,
-  } = useComposerItems({ setError });
+  } = useComposerItems();
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
   const hasPostContent = items.length > 0 || caption.trim().length > 0;
@@ -53,7 +53,6 @@ function useInternalStore() {
 
   async function publishPost() {
     setIsPosting(true);
-    setError(null);
     try {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
       await createPost({
@@ -70,7 +69,9 @@ function useInternalStore() {
       setIsPosting(false);
       await navigate({ to: "/" });
     } catch (caughtError) {
-      setError(getDisplayErrorMessage(caughtError, "Post failed"));
+      toast.error(getDisplayErrorMessage(caughtError, "Post failed"), {
+        position: "top-center",
+      });
       setIsConfirmOpen(false);
       setIsPosting(false);
     }
@@ -80,7 +81,6 @@ function useInternalStore() {
     addFiles,
     canPost,
     caption,
-    error,
     hasUploadingItems,
     inputRef,
     isConfirmOpen,
@@ -93,7 +93,6 @@ function useInternalStore() {
     removeItem,
     clearLocation: () => setLocation(null),
     setCaption,
-    setError,
     setIsConfirmOpen,
     setLocation,
   };

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 
 import { POST_UPLOAD_MAX_SIZE_BYTES } from "@acme/config/posts";
+import { toast } from "@acme/ui-web/toast";
 
 import type { ComposerItem } from "../types";
 import {
@@ -10,11 +11,7 @@ import {
   reorderItems,
 } from "../lib/composer-items";
 
-export function useComposerItems({
-  setError,
-}: {
-  setError: (error: string | null) => void;
-}) {
+export function useComposerItems() {
   const previewUrlsRef = useRef(new Set<string>());
   const [items, setItems] = useState<ComposerItem[]>([]);
 
@@ -25,7 +22,11 @@ export function useComposerItems({
       (file) => file.size <= POST_UPLOAD_MAX_SIZE_BYTES,
     );
 
-    setError(getFileValidationError(files, mediaFiles));
+    const validationError = getFileValidationError(files, mediaFiles);
+    if (validationError) {
+      toast.error(validationError, { position: "top-center" });
+    }
+
     const newItems = validFiles.map((file) => {
       const item = createComposerItem(file);
       previewUrlsRef.current.add(item.previewUrl);
