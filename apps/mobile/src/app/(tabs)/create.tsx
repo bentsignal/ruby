@@ -39,8 +39,8 @@ export default function Create() {
             keyboardShouldPersistTaps="handled"
           >
             <View className="flex-row items-center justify-between gap-4 px-2">
-              <Text className="text-foreground text-3xl font-black tracking-normal">
-                Create
+              <Text className="text-foreground text-xl font-black tracking-normal">
+                Create a new post
               </Text>
               <CreatePostButton />
             </View>

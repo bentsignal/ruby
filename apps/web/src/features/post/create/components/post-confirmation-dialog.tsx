@@ -40,7 +40,7 @@ function ConfirmPostButton() {
 
   if (isPosting) {
     return (
-      <Button disabled onClick={publishPost}>
+      <Button disabled>
         <LoaderCircle className="size-4 animate-spin" />
         Posting
       </Button>
