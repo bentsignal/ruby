@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
+import type { ComposerItem } from "../types";
 import { isPreviewableImage } from "../lib/media-type";
 import { useCreateStore } from "../store";
 import { ImageViewerModal } from "./image-viewer-modal";
@@ -25,30 +26,48 @@ export function MediaGrid() {
           const imageIndex = imageItems.findIndex(
             (current) => current.id === item.id,
           );
+          const openPreview =
+            imageIndex === -1 ? undefined : () => setPreviewIndex(imageIndex);
 
           return (
             <MediaTile
               index={index}
               itemId={item.id}
               key={item.id}
-              onImagePress={
-                imageIndex === -1
-                  ? undefined
-                  : () => setPreviewIndex(imageIndex)
-              }
+              onImagePress={openPreview}
             />
           );
         })}
       </ScrollView>
 
-      {previewIndex !== null ? (
-        <ImageViewerModal
-          initialIndex={previewIndex}
-          isVisible
-          items={imageItems}
-          onClose={() => setPreviewIndex(null)}
-        />
-      ) : null}
+      <ImagePreviewModalHost
+        imageItems={imageItems}
+        previewIndex={previewIndex}
+        onClose={() => setPreviewIndex(null)}
+      />
     </View>
+  );
+}
+
+function ImagePreviewModalHost({
+  imageItems,
+  previewIndex,
+  onClose,
+}: {
+  imageItems: ComposerItem[];
+  previewIndex: number | null;
+  onClose: () => void;
+}) {
+  if (previewIndex === null) {
+    return null;
+  }
+
+  return (
+    <ImageViewerModal
+      initialIndex={previewIndex}
+      isVisible
+      items={imageItems}
+      onClose={onClose}
+    />
   );
 }

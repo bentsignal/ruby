@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Modal,
-  Pressable,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import { Host, HStack, List, RNHostView } from "@expo/ui/swift-ui";
 import {
   environment,
@@ -15,10 +9,14 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { GripVertical } from "lucide-react-native";
 
-import type { ComposerItem } from "../types";
 import { useSafeAreaInsets } from "~/components/safe-area-view";
+import {
+  deferReplaceItems,
+  deleteItems,
+  moveItems,
+} from "../lib/reorder-media";
 import { useCreateStore } from "../store";
-import { MediaPreview } from "./media-preview";
+import { NativeManageMediaRow } from "./manage-media-row";
 
 export function ManageMediaButton() {
   const foreground = useCreateStore((store) => store.foreground);
@@ -36,12 +34,10 @@ export function ManageMediaButton() {
         <GripVertical className="size-4" color={foreground} />
         <Text className="text-foreground text-sm font-bold">Manage media</Text>
       </Pressable>
-      {isVisible ? (
-        <ManageMediaModal
-          isVisible={isVisible}
-          onClose={() => setIsVisible(false)}
-        />
-      ) : null}
+      <ManageMediaModal
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+      />
     </>
   );
 }
@@ -138,66 +134,4 @@ function ManageMediaHeader({
       </Pressable>
     </View>
   );
-}
-
-function NativeManageMediaRow({ item }: { item: ComposerItem }) {
-  const mutedForeground = useCreateStore((store) => store.mutedForeground);
-  const { width } = useWindowDimensions();
-
-  return (
-    <View
-      className="h-20 flex-row items-center gap-3 pl-3"
-      style={{ width: Math.max(width - 112, 220) }}
-    >
-      <View className="size-16 overflow-hidden rounded-md bg-black">
-        <MediaPreview itemId={item.id} />
-      </View>
-      <View className="min-w-0 flex-1">
-        <Text className="text-foreground text-sm font-bold" numberOfLines={1}>
-          {getMediaTitle(item)}
-        </Text>
-        <Text
-          className="mt-1 text-xs font-semibold"
-          numberOfLines={1}
-          style={{ color: mutedForeground }}
-        >
-          {item.file.type === "video" ? "Video" : "Photo"}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function getMediaTitle(item: ComposerItem) {
-  return item.file.fileName ?? (item.file.type === "video" ? "Video" : "Photo");
-}
-
-function moveItems(
-  items: ComposerItem[],
-  sourceIndices: number[],
-  destination: number,
-) {
-  const sourceIndex = sourceIndices[0];
-  if (sourceIndex === undefined) return items;
-
-  const nextItems = [...items];
-  const [movedItem] = nextItems.splice(sourceIndex, 1);
-  if (!movedItem) return items;
-
-  const adjustedDestination =
-    sourceIndex < destination ? destination - 1 : destination;
-  nextItems.splice(adjustedDestination, 0, movedItem);
-  return nextItems;
-}
-
-function deleteItems(items: ComposerItem[], indices: number[]) {
-  const indicesToDelete = new Set(indices);
-  return items.filter((_, index) => !indicesToDelete.has(index));
-}
-
-function deferReplaceItems(
-  replaceItems: (nextItems: ComposerItem[]) => void,
-  nextItems: ComposerItem[],
-) {
-  setTimeout(() => replaceItems(nextItems), 0);
 }

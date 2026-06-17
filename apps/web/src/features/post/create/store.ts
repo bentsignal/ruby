@@ -118,3 +118,9 @@ function createPostLocation(location: ResolvedLocation | null) {
 
 export const { Store: CreateStore, useStore: useCreateStore } =
   createStore(useInternalStore);
+
+export function useComposerItem(itemId: string) {
+  return useCreateStore((store) =>
+    store.items.find((item) => item.id === itemId),
+  );
+}

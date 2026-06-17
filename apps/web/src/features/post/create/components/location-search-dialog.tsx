@@ -146,12 +146,20 @@ function PredictionRow({
         <span className="text-foreground block truncate text-sm font-semibold">
           {prediction.title}
         </span>
-        {prediction.subtitle ? (
-          <span className="text-muted-foreground block truncate text-xs">
-            {prediction.subtitle}
-          </span>
-        ) : null}
+        <PredictionSubtitle subtitle={prediction.subtitle} />
       </span>
     </button>
+  );
+}
+
+function PredictionSubtitle({ subtitle }: { subtitle?: string }) {
+  if (!subtitle) {
+    return null;
+  }
+
+  return (
+    <span className="text-muted-foreground block truncate text-xs">
+      {subtitle}
+    </span>
   );
 }

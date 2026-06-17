@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { GripVertical, X } from "lucide-react-native";
 
-import type { ComposerItem } from "../types";
 import { useSafeAreaInsets } from "~/components/safe-area-view";
+import { moveItem } from "../lib/reorder-media";
 import { useCreateStore } from "../store";
 import { ManageMediaList } from "./reorder-media-list.android";
 
@@ -23,12 +23,10 @@ export function ManageMediaButton() {
         <GripVertical className="size-4" color={foreground} />
         <Text className="text-foreground text-sm font-bold">Manage media</Text>
       </Pressable>
-      {isVisible ? (
-        <ManageMediaModal
-          isVisible={isVisible}
-          onClose={() => setIsVisible(false)}
-        />
-      ) : null}
+      <ManageMediaModal
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+      />
     </>
   );
 }
@@ -133,15 +131,4 @@ function ManageMediaHeader({
       </Pressable>
     </View>
   );
-}
-
-function moveItem(items: ComposerItem[], fromIndex: number, toIndex: number) {
-  if (fromIndex === toIndex) return items;
-
-  const nextItems = [...items];
-  const [movedItem] = nextItems.splice(fromIndex, 1);
-  if (!movedItem) return items;
-
-  nextItems.splice(toIndex, 0, movedItem);
-  return nextItems;
 }

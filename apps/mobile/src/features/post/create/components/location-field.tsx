@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { MapPin, X } from "lucide-react-native";
 
+import type { ResolvedLocation } from "@acme/convex/places/types";
+
 import { useColor } from "~/hooks/use-color";
 import { useCreateStore } from "../store";
 import { LocationSearchSheet } from "./location-search-sheet";
@@ -16,56 +18,82 @@ export function LocationField() {
   return (
     <View className="gap-2">
       <Text className="text-foreground text-sm font-bold">Location</Text>
-      {location ? (
-        <View className="bg-card border-border min-h-14 flex-row items-center gap-3 rounded-lg border px-3 py-2">
-          <Pressable
-            className="min-w-0 flex-1 flex-row items-center gap-3"
-            onPress={() => setIsSearchOpen(true)}
-          >
-            <View className="bg-secondary size-9 items-center justify-center rounded-full">
-              <MapPin color={foreground} size={16} />
-            </View>
-            <View className="min-w-0 flex-1">
-              <Text
-                className="text-foreground text-sm font-bold"
-                numberOfLines={1}
-              >
-                {location.name}
-              </Text>
-              {location.formattedAddress ? (
-                <Text
-                  className="text-muted-foreground text-xs"
-                  numberOfLines={1}
-                >
-                  {location.formattedAddress}
-                </Text>
-              ) : null}
-            </View>
-          </Pressable>
-          <Pressable
-            accessibilityLabel="Remove location"
-            className="size-9 items-center justify-center rounded-full"
-            hitSlop={8}
-            onPress={clearLocation}
-          >
-            <X color={mutedForeground} size={18} />
-          </Pressable>
-        </View>
-      ) : (
-        <Pressable
-          className="bg-card border-border min-h-12 flex-row items-center gap-3 rounded-lg border px-3"
-          onPress={() => setIsSearchOpen(true)}
-        >
-          <MapPin color={foreground} size={18} />
-          <Text className="text-foreground text-sm font-bold">
-            Add location
-          </Text>
-        </Pressable>
-      )}
+      <LocationFieldControl
+        clearLocation={clearLocation}
+        foreground={foreground}
+        location={location}
+        mutedForeground={mutedForeground}
+        openSearch={() => setIsSearchOpen(true)}
+      />
       <LocationSearchSheet
         isOpen={isSearchOpen}
         onOpenChange={setIsSearchOpen}
       />
     </View>
+  );
+}
+
+function LocationFieldControl({
+  clearLocation,
+  foreground,
+  location,
+  mutedForeground,
+  openSearch,
+}: {
+  clearLocation: () => void;
+  foreground: string;
+  location: ResolvedLocation | null;
+  mutedForeground: string;
+  openSearch: () => void;
+}) {
+  if (!location) {
+    return (
+      <Pressable
+        className="bg-card border-border min-h-12 flex-row items-center gap-3 rounded-lg border px-3"
+        onPress={openSearch}
+      >
+        <MapPin color={foreground} size={18} />
+        <Text className="text-foreground text-sm font-bold">Add location</Text>
+      </Pressable>
+    );
+  }
+
+  return (
+    <View className="bg-card border-border min-h-14 flex-row items-center gap-3 rounded-lg border px-3 py-2">
+      <Pressable
+        className="min-w-0 flex-1 flex-row items-center gap-3"
+        onPress={openSearch}
+      >
+        <View className="bg-secondary size-9 items-center justify-center rounded-full">
+          <MapPin color={foreground} size={16} />
+        </View>
+        <View className="min-w-0 flex-1">
+          <Text className="text-foreground text-sm font-bold" numberOfLines={1}>
+            {location.name}
+          </Text>
+          <LocationAddress address={location.formattedAddress} />
+        </View>
+      </Pressable>
+      <Pressable
+        accessibilityLabel="Remove location"
+        className="size-9 items-center justify-center rounded-full"
+        hitSlop={8}
+        onPress={clearLocation}
+      >
+        <X color={mutedForeground} size={18} />
+      </Pressable>
+    </View>
+  );
+}
+
+function LocationAddress({ address }: { address?: string }) {
+  if (!address) {
+    return null;
+  }
+
+  return (
+    <Text className="text-muted-foreground text-xs" numberOfLines={1}>
+      {address}
+    </Text>
   );
 }

@@ -16,11 +16,7 @@ export function MediaPicker() {
     );
   }
 
-  return (
-    <View className="px-2">
-      <EmptyMediaPicker />
-    </View>
-  );
+  return <EmptyMediaPicker />;
 }
 
 export function AddMoreMediaButton() {
@@ -40,21 +36,23 @@ export function AddMoreMediaButton() {
   );
 }
 
-export function EmptyMediaPicker() {
+function EmptyMediaPicker() {
   const foreground = useCreateStore((store) => store.foreground);
   const pickFiles = useCreateStore((store) => store.pickFiles);
 
   return (
-    <Pressable
-      className="bg-card border-border min-h-80 items-center justify-center gap-4 overflow-hidden rounded-lg border border-dashed p-6"
-      onPress={pickFiles}
-    >
-      <View className="bg-primary/15 size-16 items-center justify-center rounded-full">
-        <ImagePlus className="size-8" color={foreground} />
-      </View>
-      <Text className="text-foreground text-center text-base font-bold">
-        Tap to add photos
-      </Text>
-    </Pressable>
+    <View className="px-2">
+      <Pressable
+        className="bg-card border-border min-h-80 items-center justify-center gap-4 overflow-hidden rounded-lg border border-dashed p-6"
+        onPress={pickFiles}
+      >
+        <View className="bg-primary/15 size-16 items-center justify-center rounded-full">
+          <ImagePlus className="size-8" color={foreground} />
+        </View>
+        <Text className="text-foreground text-center text-base font-bold">
+          Tap to add photos
+        </Text>
+      </Pressable>
+    </View>
   );
 }

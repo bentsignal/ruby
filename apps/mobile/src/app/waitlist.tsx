@@ -53,17 +53,32 @@ export default function Waitlist() {
           disabled={waitlistStatus === "on-waitlist"}
           onPress={() => void joinWaitlist({})}
         >
-          {waitlistStatus === "on-waitlist" ? (
-            <>
-              <Check size={17} color={foreground} />
-              <ButtonText>You're on the list</ButtonText>
-            </>
-          ) : (
-            <ButtonText>Join the waitlist</ButtonText>
-          )}
+          <WaitlistButtonContent
+            foreground={foreground}
+            isOnWaitlist={waitlistStatus === "on-waitlist"}
+          />
         </Button>
         {/* <SignOutButton /> */}
       </View>
     </SafeAreaView>
   );
+}
+
+function WaitlistButtonContent({
+  foreground,
+  isOnWaitlist,
+}: {
+  foreground: string;
+  isOnWaitlist: boolean;
+}) {
+  if (isOnWaitlist) {
+    return (
+      <>
+        <Check size={17} color={foreground} />
+        <ButtonText>You're on the list</ButtonText>
+      </>
+    );
+  }
+
+  return <ButtonText>Join the waitlist</ButtonText>;
 }
