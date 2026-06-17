@@ -26,14 +26,18 @@ export function normalizeProfileLink(link: string) {
   const trimmed = link.trim();
   if (!trimmed) return null;
 
-  const href = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(trimmed)
-    ? trimmed
-    : `https://${trimmed}`;
+  let url: URL;
 
-  const withoutScheme = href.replace(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//, "");
-  const hostWithPort = withoutScheme.split("/")[0] ?? "";
-  const host = hostWithPort.replace(/:\d+$/, "");
-  const display = host.startsWith("www.") ? host.slice(4) : host;
+  try {
+    url = new URL(trimmed);
+  } catch {
+    url = new URL(`https://${trimmed}`);
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+
+  const display = url.hostname.startsWith("www.")
+    ? url.hostname.slice(4)
+    : url.hostname;
   if (!display) return null;
-  return { href, display };
+  return { display, href: url.toString() };
 }

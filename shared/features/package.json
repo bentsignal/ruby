@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./friends": "./src/friends/index.ts"
+    "./friends": "./src/friends/index.ts",
+    "./post-create/location-search-state": "./src/post-create/location-search-state.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -13,6 +14,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@acme/config": "workspace:*",
     "@acme/convex": "workspace:*",
     "@acme/std": "workspace:*"
   },

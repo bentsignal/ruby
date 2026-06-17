@@ -9,6 +9,9 @@ import { createStore } from "rostra";
 
 import type { ResolvedLocation } from "@acme/convex/places/types";
 import {
+  POST_UPLOAD_BLOCKED_CONTENT_TYPES,
+  POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+  POST_UPLOAD_FILE_NAME_MAX_LENGTH,
   POST_UPLOAD_MAX_SIZE_BYTES,
   POST_UPLOAD_MAX_SIZE_LABEL,
 } from "@acme/config/posts";
@@ -180,9 +183,9 @@ async function pickComposerFiles({
   if (result.canceled) return;
 
   setError(null);
-  const validFiles = result.assets.filter(isAllowedFileSize);
+  const validFiles = result.assets.filter(isAllowedFile);
   if (validFiles.length !== result.assets.length) {
-    setError(`Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`);
+    setError(getFileValidationError());
   }
   setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
   void Haptics.selectionAsync();
@@ -217,6 +220,36 @@ function isAllowedFileSize(file: ImagePicker.ImagePickerAsset) {
   return (
     file.fileSize === undefined || file.fileSize <= POST_UPLOAD_MAX_SIZE_BYTES
   );
+}
+
+function isAllowedFileMetadata(file: ImagePicker.ImagePickerAsset) {
+  const contentType = normalizeContentType(file.mimeType);
+  if (
+    file.fileName &&
+    file.fileName.length > POST_UPLOAD_FILE_NAME_MAX_LENGTH
+  ) {
+    return false;
+  }
+  if (
+    contentType &&
+    (contentType.length > POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH ||
+      POST_UPLOAD_BLOCKED_CONTENT_TYPES.some((type) => type === contentType))
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function normalizeContentType(contentType: string | undefined) {
+  return contentType?.split(";")[0]?.trim().toLowerCase();
+}
+
+function isAllowedFile(file: ImagePicker.ImagePickerAsset) {
+  return isAllowedFileSize(file) && isAllowedFileMetadata(file);
+}
+
+function getFileValidationError() {
+  return `Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller and must be supported photos.`;
 }
 
 function patchItem({

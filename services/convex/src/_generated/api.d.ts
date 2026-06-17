@@ -31,6 +31,7 @@ import type * as permissions_validators from "../permissions/validators.js";
 import type * as places_actions from "../places/actions.js";
 import type * as places_google from "../places/google.js";
 import type * as places_types from "../places/types.js";
+import type * as places_validation from "../places/validation.js";
 import type * as places_validators from "../places/validators.js";
 import type * as posts_mutations from "../posts/mutations.js";
 import type * as posts_queries from "../posts/queries.js";
@@ -80,6 +81,7 @@ declare const fullApi: ApiFromModules<{
   "places/actions": typeof places_actions;
   "places/google": typeof places_google;
   "places/types": typeof places_types;
+  "places/validation": typeof places_validation;
   "places/validators": typeof places_validators;
   "posts/mutations": typeof posts_mutations;
   "posts/queries": typeof posts_queries;

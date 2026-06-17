@@ -1,5 +1,19 @@
 import { ConvexError, v } from "convex/values";
 
+import {
+  PLACE_AUTOCOMPLETE_INPUT_MAX_LENGTH,
+  PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH,
+  PLACE_AUTOCOMPLETE_LIMIT,
+  PLACE_FORMATTED_ADDRESS_MAX_LENGTH,
+  PLACE_ID_MAX_LENGTH,
+  PLACE_MAX_LATITUDE,
+  PLACE_MAX_LONGITUDE,
+  PLACE_MIN_LATITUDE,
+  PLACE_MIN_LONGITUDE,
+  PLACE_NAME_MAX_LENGTH,
+  PLACE_SESSION_TOKEN_MAX_LENGTH,
+} from "@acme/config/places";
+
 import type { ActionCtx } from "../_generated/server";
 import type { ResolvedLocation } from "./types";
 import { action } from "../_generated/server";
@@ -10,18 +24,12 @@ import {
   parseGoogleError,
   parseGooglePlaceDetails,
 } from "./google";
+import { hasWhitespaceOrControlCharacter } from "./validation";
 import { vLocationPrediction, vResolvedLocation } from "./validators";
 
 const GOOGLE_AUTOCOMPLETE_URL =
   "https://places.googleapis.com/v1/places:autocomplete";
 const GOOGLE_PLACE_DETAILS_URL = "https://places.googleapis.com/v1/places";
-const AUTOCOMPLETE_INPUT_MIN_LENGTH = 3;
-const AUTOCOMPLETE_INPUT_MAX_LENGTH = 120;
-const SESSION_TOKEN_MAX_LENGTH = 128;
-const PLACE_ID_MAX_LENGTH = 256;
-const LOCATION_NAME_MAX_LENGTH = 160;
-const LOCATION_SUBTITLE_MAX_LENGTH = 280;
-const AUTOCOMPLETE_LIMIT = 5;
 
 export const autocomplete = action({
   args: {
@@ -49,10 +57,10 @@ export const autocomplete = action({
     });
 
     return parseAutocompleteResponse({
-      limit: AUTOCOMPLETE_LIMIT,
-      nameMaxLength: LOCATION_NAME_MAX_LENGTH,
+      limit: PLACE_AUTOCOMPLETE_LIMIT,
+      nameMaxLength: PLACE_NAME_MAX_LENGTH,
       response,
-      subtitleMaxLength: LOCATION_SUBTITLE_MAX_LENGTH,
+      subtitleMaxLength: PLACE_FORMATTED_ADDRESS_MAX_LENGTH,
     });
   },
 });
@@ -71,13 +79,13 @@ export const resolve = action({
     const sessionToken = validateSessionToken(args.sessionToken);
     const selectedName = validateSelectedText(
       args.selectedName,
-      LOCATION_NAME_MAX_LENGTH,
+      PLACE_NAME_MAX_LENGTH,
       "Invalid location",
     );
     const selectedSubtitle = args.selectedSubtitle
       ? validateSelectedText(
           args.selectedSubtitle,
-          LOCATION_SUBTITLE_MAX_LENGTH,
+          PLACE_FORMATTED_ADDRESS_MAX_LENGTH,
           "Invalid location",
         )
       : undefined;
@@ -96,19 +104,22 @@ export const resolve = action({
       throw new ConvexError("Could not select location");
     }
 
-    const name = cleanOptional(
-      details.displayName.text,
-      LOCATION_NAME_MAX_LENGTH,
-    );
+    const name = cleanOptional(details.displayName.text, PLACE_NAME_MAX_LENGTH);
     const formattedAddress = cleanOptional(
       details.formattedAddress,
-      LOCATION_SUBTITLE_MAX_LENGTH,
+      PLACE_FORMATTED_ADDRESS_MAX_LENGTH,
     );
     return createResolvedLocation({
       formattedAddress: formattedAddress ?? selectedSubtitle,
       googlePlaceId: resolvedPlaceId,
-      latitude: details.location.latitude,
-      longitude: details.location.longitude,
+      latitude: validateCoordinate(details.location.latitude, {
+        max: PLACE_MAX_LATITUDE,
+        min: PLACE_MIN_LATITUDE,
+      }),
+      longitude: validateCoordinate(details.location.longitude, {
+        max: PLACE_MAX_LONGITUDE,
+        min: PLACE_MIN_LONGITUDE,
+      }),
       name: name ?? selectedName,
     });
   },
@@ -232,10 +243,10 @@ function googleHeaders(fieldMask: string) {
 
 function validateAutocompleteInput(input: string) {
   const trimmed = input.trim();
-  if (trimmed.length < AUTOCOMPLETE_INPUT_MIN_LENGTH) {
+  if (trimmed.length < PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH) {
     throw new ConvexError("Location search is too short");
   }
-  if (trimmed.length > AUTOCOMPLETE_INPUT_MAX_LENGTH) {
+  if (trimmed.length > PLACE_AUTOCOMPLETE_INPUT_MAX_LENGTH) {
     throw new ConvexError("Location search is too long");
   }
   return trimmed;
@@ -243,7 +254,7 @@ function validateAutocompleteInput(input: string) {
 
 function validateSessionToken(sessionToken: string) {
   const trimmed = sessionToken.trim();
-  if (!trimmed || trimmed.length > SESSION_TOKEN_MAX_LENGTH) {
+  if (!trimmed || trimmed.length > PLACE_SESSION_TOKEN_MAX_LENGTH) {
     throw new ConvexError("Invalid location session");
   }
   return trimmed;
@@ -251,7 +262,11 @@ function validateSessionToken(sessionToken: string) {
 
 function validatePlaceId(placeId: string) {
   const trimmed = placeId.trim();
-  if (!trimmed || trimmed.length > PLACE_ID_MAX_LENGTH) {
+  if (
+    !trimmed ||
+    trimmed.length > PLACE_ID_MAX_LENGTH ||
+    hasWhitespaceOrControlCharacter(trimmed)
+  ) {
     throw new ConvexError("Invalid location");
   }
   return trimmed;
@@ -269,6 +284,17 @@ function cleanOptional(value: string | undefined, maxLength: number) {
   const trimmed = value?.trim();
   if (!trimmed) return undefined;
   return trimmed.slice(0, maxLength);
+}
+
+function validateCoordinate(
+  value: number | undefined,
+  bounds: { min: number; max: number },
+) {
+  if (value === undefined) return undefined;
+  if (!Number.isFinite(value) || value < bounds.min || value > bounds.max) {
+    throw new ConvexError("Could not select location");
+  }
+  return value;
 }
 
 function createResolvedLocation({

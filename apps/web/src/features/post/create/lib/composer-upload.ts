@@ -1,5 +1,10 @@
 import type { UIFile } from "@acme/convex/files/types";
 import type { Id } from "@acme/convex/model";
+import {
+  POST_UPLOAD_BLOCKED_CONTENT_TYPES,
+  POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+  POST_UPLOAD_FILE_NAME_MAX_LENGTH,
+} from "@acme/config/posts";
 
 import { authClient } from "~/features/auth/lib/client";
 
@@ -58,6 +63,16 @@ export async function uploadComposerFile({
   file: File;
 }) {
   const contentType = file.type || "application/octet-stream";
+  const normalizedContentType = normalizeContentType(contentType);
+  if (
+    file.name.length > POST_UPLOAD_FILE_NAME_MAX_LENGTH ||
+    contentType.length > POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH ||
+    POST_UPLOAD_BLOCKED_CONTENT_TYPES.some(
+      (type) => type === normalizedContentType,
+    )
+  ) {
+    throw new Error("File cannot be uploaded");
+  }
   const { uploadUrl } = await createUpload({
     contentType,
     fileName: file.name,
@@ -74,4 +89,8 @@ export async function uploadComposerFile({
     throw new Error("error" in result ? result.error : "Upload failed");
   }
   return result.file;
+}
+
+function normalizeContentType(contentType: string) {
+  return contentType.split(";")[0]?.trim().toLowerCase() ?? "";
 }

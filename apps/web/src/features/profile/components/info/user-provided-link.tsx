@@ -9,7 +9,9 @@ import { normalizeProfileLink } from "../../utils";
 export function UserProvidedLink({ className }: { className?: string }) {
   const link = useProfileStore((s) => s.link);
   if (!link) return null;
-  const { href, display } = normalizeProfileLink(link);
+  const normalizedLink = normalizeProfileLink(link);
+  if (!normalizedLink) return null;
+  const { href, display } = normalizedLink;
   return (
     <Button
       variant="link"

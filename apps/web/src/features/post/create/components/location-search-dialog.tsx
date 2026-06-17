@@ -1,6 +1,7 @@
 import { LoaderCircleIcon, MapPinIcon, SearchIcon } from "lucide-react";
 
 import type { LocationPrediction } from "@acme/convex/places/types";
+import { PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH } from "@acme/config/places";
 import * as Dialog from "@acme/ui-web/dialog";
 import { Input } from "@acme/ui-web/input";
 
@@ -69,7 +70,7 @@ function LocationResults({
   search: ReturnType<typeof useLocationSearch>;
 }) {
   const showEmptyState =
-    search.search.trim().length >= 3 &&
+    search.search.trim().length >= PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH &&
     !search.isLoading &&
     !search.searchError &&
     search.predictions.length === 0;

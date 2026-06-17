@@ -2,6 +2,9 @@ import * as FileSystem from "expo-file-system/legacy";
 import { useConvexMutation } from "@convex-dev/react-query";
 
 import {
+  POST_UPLOAD_BLOCKED_CONTENT_TYPES,
+  POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+  POST_UPLOAD_FILE_NAME_MAX_LENGTH,
   POST_UPLOAD_MAX_SIZE_BYTES,
   POST_UPLOAD_MAX_SIZE_LABEL,
 } from "@acme/config/posts";
@@ -49,6 +52,7 @@ export function useUploadItem({
     const contentType = item.file.mimeType ?? getFallbackContentType(item.file);
     const fileName = item.file.fileName ?? getFallbackFileName(item.file);
     const size = await getFileSize(item);
+    validateUploadMetadata({ contentType, fileName });
     if (size > POST_UPLOAD_MAX_SIZE_BYTES) {
       throw new Error(
         `Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`,
@@ -104,4 +108,27 @@ function getUploadError(result: ReturnType<typeof getUploadResult>) {
   if ("error" in result) return result.error;
 
   return "Upload failed";
+}
+
+function validateUploadMetadata({
+  contentType,
+  fileName,
+}: {
+  contentType: string;
+  fileName: string;
+}) {
+  const normalizedContentType = normalizeContentType(contentType);
+  if (
+    fileName.length > POST_UPLOAD_FILE_NAME_MAX_LENGTH ||
+    normalizedContentType.length > POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH ||
+    POST_UPLOAD_BLOCKED_CONTENT_TYPES.some(
+      (type) => type === normalizedContentType,
+    )
+  ) {
+    throw new Error("File cannot be uploaded");
+  }
+}
+
+function normalizeContentType(contentType: string) {
+  return contentType.split(";")[0]?.trim().toLowerCase() ?? "";
 }

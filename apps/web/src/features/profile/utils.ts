@@ -23,15 +23,21 @@ export function getPFPClassName(variant: PFPVariant) {
 }
 
 export function normalizeProfileLink(link: string) {
+  const trimmed = link.trim();
+  if (!trimmed) return null;
+
   let url: URL;
 
   try {
-    url = new URL(link);
+    url = new URL(trimmed);
   } catch {
-    url = new URL(`https://${link}`);
+    url = new URL(`https://${trimmed}`);
   }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
 
   const hostname = url.hostname;
+  if (!hostname) return null;
+
   const parts = hostname.split(".");
 
   let displayHostname = hostname;
