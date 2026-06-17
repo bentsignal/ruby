@@ -16,6 +16,7 @@ function useInternalStore({
 
   return {
     foreground,
+    isOpen,
     mutedForeground,
     ...search,
   };

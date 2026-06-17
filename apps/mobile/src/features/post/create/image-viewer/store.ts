@@ -71,6 +71,7 @@ function useInternalStore({
     controlsOpacity,
     controlsVisible,
     dismissGesture,
+    initialIndex,
     items,
     onClose,
     pagerRef,

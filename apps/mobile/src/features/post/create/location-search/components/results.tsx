@@ -13,7 +13,23 @@ import { PLACE_AUTOCOMPLETE_INPUT_MIN_LENGTH } from "@acme/config/places";
 import { useLocationSearchSheetStore } from "../store";
 
 export function LocationResults() {
+  return (
+    <ScrollView
+      className="min-h-0 flex-1"
+      keyboardShouldPersistTaps="handled"
+      contentContainerClassName="min-h-56 py-1"
+    >
+      <LocationStatus />
+      <PredictionRows />
+    </ScrollView>
+  );
+}
+
+function LocationStatus() {
   const isLoading = useLocationSearchSheetStore((store) => store.isLoading);
+  const mutedForeground = useLocationSearchSheetStore(
+    (store) => store.mutedForeground,
+  );
   const predictions = useLocationSearchSheetStore((store) => store.predictions);
   const search = useLocationSearchSheetStore((store) => store.search);
   const searchError = useLocationSearchSheetStore((store) => store.searchError);
@@ -22,25 +38,6 @@ export function LocationResults() {
     !isLoading &&
     !searchError &&
     predictions.length === 0;
-
-  return (
-    <ScrollView
-      className="min-h-0 flex-1"
-      keyboardShouldPersistTaps="handled"
-      contentContainerClassName="min-h-56 py-1"
-    >
-      <LocationStatus showEmptyState={showEmptyState} />
-      <PredictionRows />
-    </ScrollView>
-  );
-}
-
-function LocationStatus({ showEmptyState }: { showEmptyState: boolean }) {
-  const isLoading = useLocationSearchSheetStore((store) => store.isLoading);
-  const mutedForeground = useLocationSearchSheetStore(
-    (store) => store.mutedForeground,
-  );
-  const searchError = useLocationSearchSheetStore((store) => store.searchError);
 
   if (isLoading) {
     return (

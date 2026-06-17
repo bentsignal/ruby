@@ -36,14 +36,15 @@ export function ImageViewerModal({
         items={items}
         onClose={onClose}
       >
-        <ImageViewerContent initialIndex={initialIndex} />
+        <ImageViewerContent />
       </ImageViewerStore>
     </Modal>
   );
 }
 
-function ImageViewerContent({ initialIndex }: { initialIndex: number }) {
+function ImageViewerContent() {
   const dismissGesture = useImageViewerStore((store) => store.dismissGesture);
+  const initialIndex = useImageViewerStore((store) => store.initialIndex);
   const items = useImageViewerStore((store) => store.items);
   const pagerRef = useImageViewerStore((store) => store.pagerRef);
   const selectImage = useImageViewerStore((store) => store.selectImage);

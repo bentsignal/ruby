@@ -19,15 +19,16 @@ export function LocationSearchDialog({
 }) {
   return (
     <LocationSearchDialogStore isOpen={isOpen} onOpenChange={onOpenChange}>
-      <LocationSearchDialogContent isOpen={isOpen} />
+      <LocationSearchDialogContent />
     </LocationSearchDialogStore>
   );
 }
 
-function LocationSearchDialogContent({ isOpen }: { isOpen: boolean }) {
+function LocationSearchDialogContent() {
   const handleOpenChange = useLocationSearchDialogStore(
     (store) => store.handleOpenChange,
   );
+  const isOpen = useLocationSearchDialogStore((store) => store.isOpen);
 
   return (
     <Dialog.Container open={isOpen} onOpenChange={handleOpenChange}>
@@ -73,6 +74,20 @@ function LocationSearchInput() {
 
 function LocationResults() {
   const isLoading = useLocationSearchDialogStore((store) => store.isLoading);
+
+  return (
+    <div
+      className="min-h-0 flex-1 overflow-y-auto px-3 pb-2"
+      aria-busy={isLoading}
+    >
+      <LocationStatus />
+      <PredictionRows />
+    </div>
+  );
+}
+
+function LocationStatus() {
+  const isLoading = useLocationSearchDialogStore((store) => store.isLoading);
   const predictions = useLocationSearchDialogStore(
     (store) => store.predictions,
   );
@@ -85,23 +100,6 @@ function LocationResults() {
     !isLoading &&
     !searchError &&
     predictions.length === 0;
-
-  return (
-    <div
-      className="min-h-0 flex-1 overflow-y-auto px-3 pb-2"
-      aria-busy={isLoading}
-    >
-      <LocationStatus showEmptyState={showEmptyState} />
-      <PredictionRows />
-    </div>
-  );
-}
-
-function LocationStatus({ showEmptyState }: { showEmptyState: boolean }) {
-  const isLoading = useLocationSearchDialogStore((store) => store.isLoading);
-  const searchError = useLocationSearchDialogStore(
-    (store) => store.searchError,
-  );
 
   if (isLoading) {
     return (

@@ -9,7 +9,10 @@ function useInternalStore({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
-  return useLocationSearch({ isOpen, onOpenChange });
+  return {
+    isOpen,
+    ...useLocationSearch({ isOpen, onOpenChange }),
+  };
 }
 
 export const {

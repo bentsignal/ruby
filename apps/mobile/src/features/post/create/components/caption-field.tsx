@@ -13,36 +13,18 @@ export function CaptionField({ onFocus }: { onFocus?: () => void }) {
   const resetKey = useCreateStore((store) => store.resetKey);
   const setCaption = useCreateStore((store) => store.setCaption);
   const setCaptionDraft = useCreateStore((store) => store.setCaptionDraft);
-  return (
-    <CaptionInput
-      caption={caption}
-      key={resetKey}
-      mutedForeground={mutedForeground}
-      setCaption={setCaption}
-      setCaptionDraft={setCaptionDraft}
-      onFocus={onFocus}
-    />
-  );
-}
-
-function CaptionInput({
-  caption,
-  mutedForeground,
-  onFocus,
-  setCaption,
-  setCaptionDraft,
-}: {
-  caption: string;
-  mutedForeground: string;
-  onFocus?: () => void;
-  setCaption: (caption: string) => void;
-  setCaptionDraft: (caption: string) => void;
-}) {
-  const [captionLength, setCaptionLength] = useState(caption.length);
+  const [inputState, setInputState] = useState({
+    length: caption.length,
+    resetKey,
+  });
   const latestCaptionRef = useRef(caption);
   const storeWriteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+
+  if (inputState.resetKey !== resetKey) {
+    setInputState({ length: caption.length, resetKey });
+  }
 
   // eslint-disable-next-line no-restricted-syntax -- Clears a pending deferred store write if this native input unmounts.
   useEffect(() => {
@@ -52,6 +34,11 @@ function CaptionInput({
       }
     };
   }, []);
+
+  // eslint-disable-next-line no-restricted-syntax -- Keeps the deferred native input value aligned after composer resets.
+  useEffect(() => {
+    latestCaptionRef.current = caption;
+  }, [caption, resetKey]);
 
   function flushCaptionToStore() {
     if (storeWriteTimeoutRef.current) {
@@ -64,7 +51,7 @@ function CaptionInput({
   function handleChangeText(nextCaption: string) {
     latestCaptionRef.current = nextCaption;
     setCaptionDraft(nextCaption);
-    setCaptionLength(nextCaption.length);
+    setInputState({ length: nextCaption.length, resetKey });
 
     if (storeWriteTimeoutRef.current) {
       clearTimeout(storeWriteTimeoutRef.current);
@@ -79,6 +66,7 @@ function CaptionInput({
     <View className="gap-2">
       <Text className="text-foreground text-sm font-bold">Caption</Text>
       <TextInput
+        key={resetKey}
         className="bg-card border-border text-foreground min-h-40 rounded-lg border p-4 text-base leading-6"
         defaultValue={caption}
         maxLength={POST_CAPTION_MAX_LENGTH}
@@ -91,7 +79,7 @@ function CaptionInput({
         onFocus={onFocus}
       />
       <Text className="text-muted-foreground self-end text-xs">
-        {captionLength}/{POST_CAPTION_MAX_LENGTH}
+        {inputState.length}/{POST_CAPTION_MAX_LENGTH}
       </Text>
     </View>
   );

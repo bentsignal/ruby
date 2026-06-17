@@ -21,15 +21,16 @@ export function LocationSearchSheet({
 }) {
   return (
     <LocationSearchSheetStore isOpen={isOpen} onOpenChange={onOpenChange}>
-      <LocationSearchModal isOpen={isOpen} />
+      <LocationSearchModal />
     </LocationSearchSheetStore>
   );
 }
 
-function LocationSearchModal({ isOpen }: { isOpen: boolean }) {
+function LocationSearchModal() {
   const handleOpenChange = useLocationSearchSheetStore(
     (store) => store.handleOpenChange,
   );
+  const isOpen = useLocationSearchSheetStore((store) => store.isOpen);
 
   return (
     <Modal
