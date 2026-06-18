@@ -69,7 +69,6 @@ function useInternalStore() {
       revokeItemPreviewUrls(items);
       locationResolve.clearLocation();
       setIsConfirmOpen(false);
-      setIsPosting(false);
       await navigate({ to: "/" });
     } catch (caughtError) {
       toast.error(getDisplayErrorMessage(caughtError, "Post failed"), {
