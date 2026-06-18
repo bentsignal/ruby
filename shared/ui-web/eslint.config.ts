@@ -11,5 +11,5 @@ export default defineConfig(
   baseConfig,
   strictConfig,
   reactConfig,
-  createStrictSyntax({ ts: true, react: true }),
+  createStrictSyntax({ ts: true, react: true, web: true }),
 );

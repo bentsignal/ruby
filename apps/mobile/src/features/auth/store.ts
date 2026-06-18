@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-// eslint-disable-next-line no-restricted-imports -- Mobile auth state is client-only, so it cannot be route-preloaded.
 import { useQuery as useTanStackQuery } from "@tanstack/react-query";
 /* eslint-disable no-restricted-imports -- Startup auth gating must avoid the TanStack Convex adapter path that intermittently leaves waitlist status fetching forever on mobile. */
 import {

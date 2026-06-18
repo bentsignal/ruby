@@ -56,17 +56,6 @@ const strictReactSyntaxSelectors = [
       "Do not use `finally` blocks. The React Compiler cannot optimize components and hooks that use `finally` with try/catch blocks..",
   },
   {
-    selector: "JSXOpeningElement[name.name='img']",
-    message:
-      "Use the app's `Image` component (`import { Image } from '~/components/image'`) instead of a raw `<img>` tag. The custom component uses Vercel image optimization.",
-  },
-  {
-    selector:
-      "CallExpression:matches([callee.name='useSearch'], [callee.property.name='useSearch']):not(:has(Property[key.name='select']))",
-    message:
-      "useSearch must include a `select` option so the component only re-renders when the selected slice changes.",
-  },
-  {
     selector:
       "CallExpression:matches([callee.name='useSuspenseQuery'], [callee.property.name='useSuspenseQuery']):not(:has(Property[key.name='select']))",
     message:
@@ -77,18 +66,6 @@ const strictReactSyntaxSelectors = [
       "CallExpression:matches([callee.name='useQuery'], [callee.property.name='useQuery']):not(:has(Property[key.name='select']))",
     message:
       "useQuery must include a `select` option so the component only subscribes to the data it needs. ",
-  },
-  {
-    selector:
-      "CallExpression:matches([callee.name='useRouteContext'], [callee.property.name='useRouteContext']):not(:has(Property[key.name='select']))",
-    message:
-      "useRouteContext must include a `select` option so the component only re-renders when the selected slice changes.",
-  },
-  {
-    selector:
-      "CallExpression:matches([callee.name='useLoaderData'], [callee.property.name='useLoaderData']):not(:has(Property[key.name='select']))",
-    message:
-      "useLoaderData must include a `select` option so the component only re-renders when the selected slice changes.",
   },
   {
     selector: "CallExpression[callee.name='useContext']",
@@ -116,16 +93,45 @@ const reactImportRestrictions = [
       "React Compiler handles memoization automatically. Only use manual memoization as an escape hatch with a comment explaining why.",
   },
   {
-    name: "@tanstack/react-query",
-    importNames: ["useQuery"],
-    message:
-      "Prefer `useSuspenseQuery` with data preloaded via `ensureQueryData` in the route loader. If `useQuery` is genuinely needed (e.g. conditional fetching), add an eslint-disable comment explaining why.",
-  },
-  {
     name: "convex/react",
     importNames: ["useQuery"],
     message:
       "Use TanStack Query's `useQuery` with `convexQuery` instead (`import { useQuery } from '@tanstack/react-query'` + `import { convexQuery } from '@convex-dev/react-query'`). This integrates with the route loader cache and supports `select`.",
+  },
+] as const;
+
+const webSyntaxSelectors = [
+  {
+    selector: "JSXOpeningElement[name.name='img']",
+    message:
+      "Use the app's `Image` component (`import { Image } from '~/components/image'`) instead of a raw `<img>` tag. The custom component uses Vercel image optimization.",
+  },
+  {
+    selector:
+      "CallExpression:matches([callee.name='useSearch'], [callee.property.name='useSearch']):not(:has(Property[key.name='select']))",
+    message:
+      "useSearch must include a `select` option so the component only re-renders when the selected slice changes.",
+  },
+  {
+    selector:
+      "CallExpression:matches([callee.name='useRouteContext'], [callee.property.name='useRouteContext']):not(:has(Property[key.name='select']))",
+    message:
+      "useRouteContext must include a `select` option so the component only re-renders when the selected slice changes.",
+  },
+  {
+    selector:
+      "CallExpression:matches([callee.name='useLoaderData'], [callee.property.name='useLoaderData']):not(:has(Property[key.name='select']))",
+    message:
+      "useLoaderData must include a `select` option so the component only re-renders when the selected slice changes.",
+  },
+] as const;
+
+const webImportRestrictions = [
+  {
+    name: "@tanstack/react-query",
+    importNames: ["useQuery"],
+    message:
+      "Prefer `useSuspenseQuery` with data preloaded via `ensureQueryData` in the route loader. If `useQuery` is genuinely needed (e.g. conditional fetching), add an eslint-disable comment explaining why.",
   },
   {
     name: "@tanstack/react-router",
@@ -142,6 +148,12 @@ const mobileSyntaxSelectors = [
     message:
       "Do not use StyleSheet.create in the mobile app. Use Tailwind/Uniwind className styles instead.",
   },
+  {
+    selector:
+      "JSXOpeningElement[name.name='TextInput'] JSXAttribute[name.name='value']",
+    message:
+      "Do not pass `value` to React Native TextInput. Use an uncontrolled TextInput with `defaultValue` to avoid typing lag.",
+  },
 ] as const;
 
 const mobileImportRestrictions = [
@@ -157,6 +169,7 @@ export function createStrictSyntax(options: {
   ts?: boolean;
   react?: boolean;
   env?: boolean;
+  web?: boolean;
   mobile?: boolean;
 }) {
   const syntaxSelectors = [];
@@ -169,6 +182,11 @@ export function createStrictSyntax(options: {
   if (options.react) {
     syntaxSelectors.push(...strictReactSyntaxSelectors);
     importPaths.push(...reactImportRestrictions);
+  }
+
+  if (options.web) {
+    syntaxSelectors.push(...webSyntaxSelectors);
+    importPaths.push(...webImportRestrictions);
   }
 
   if (options.env) {

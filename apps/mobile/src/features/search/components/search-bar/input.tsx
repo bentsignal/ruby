@@ -5,13 +5,15 @@ import { cn } from "@acme/std/cn";
 
 import { useSearchStore } from "~/features/search/store";
 
-export function Input({ className, ...props }: TextInputProps) {
+type InputProps = Omit<TextInputProps, "value">;
+
+export function Input({ className, ...props }: InputProps) {
   const searchTerm = useSearchStore((s) => s.searchTerm);
   const setSearchTerm = useSearchStore((s) => s.setSearchTerm);
   return (
     <TextInput
       className={cn("text-sidebar-foreground h-10 flex-1 px-4", className)}
-      value={searchTerm}
+      defaultValue={searchTerm}
       autoCorrect={false}
       autoCapitalize="none"
       autoComplete="off"

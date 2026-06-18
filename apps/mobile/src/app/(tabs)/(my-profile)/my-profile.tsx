@@ -1,7 +1,6 @@
 import type { LegendListRenderItemProps } from "@legendapp/list";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-// eslint-disable-next-line no-restricted-imports -- This query depends on the profile loaded into the auth store.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LegendList } from "@legendapp/list";

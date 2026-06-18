@@ -15,7 +15,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-// eslint-disable-next-line no-restricted-imports -- Expo Router tab screens fetch after auth context is mounted.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LockKeyhole } from "lucide-react-native";

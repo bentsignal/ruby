@@ -1,7 +1,6 @@
 import type { LegendListRenderItemProps } from "@legendapp/list";
 import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-// eslint-disable-next-line no-restricted-imports -- Expo Router tab screens fetch after auth context is mounted.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LegendList } from "@legendapp/list";

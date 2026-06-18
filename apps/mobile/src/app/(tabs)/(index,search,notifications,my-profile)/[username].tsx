@@ -2,7 +2,6 @@ import type { LegendListRenderItemProps } from "@legendapp/list";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-// eslint-disable-next-line no-restricted-imports -- Expo Router profile screens fetch after route params are available.
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { LegendList } from "@legendapp/list";
