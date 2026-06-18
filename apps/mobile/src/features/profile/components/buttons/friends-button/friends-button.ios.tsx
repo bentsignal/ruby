@@ -23,12 +23,9 @@ export function FriendsButton() {
             role="destructive"
             onPress={removeFriend}
             systemImage="person.badge.minus"
-          >
-            Remove friend
-          </SwiftUIButton>
-          <SwiftUIButton systemImage="x.circle" role="default">
-            Cancel
-          </SwiftUIButton>
+            label="Remove friend"
+          />
+          <SwiftUIButton systemImage="x.circle" role="default" label="Cancel" />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Button variant="outline" className={cn("w-full")}>

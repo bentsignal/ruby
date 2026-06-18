@@ -8,6 +8,7 @@ import {
   getMediaType,
   getUploadKey,
   getUploadUrl,
+  validateUploadMetadata,
   validateUploadSize,
 } from "./upload_session";
 
@@ -23,17 +24,18 @@ export const createUpload = authedMutation({
   ): Promise<{ fileId: Id<"files">; uploadUrl: string }> => {
     await ensureUserPermissions(ctx, ["can-post"]);
     validateUploadSize(args.size);
-    const mediaType = getMediaType(args.contentType);
+    const uploadMetadata = validateUploadMetadata(args);
+    const mediaType = getMediaType(uploadMetadata.contentType);
     const uploadToken = crypto.randomUUID();
     const key = getUploadKey({
-      fileName: args.fileName,
+      fileName: uploadMetadata.fileName,
       now: Date.now(),
       uploadId: crypto.randomUUID(),
       userId: ctx.user.subject,
     });
     const fileId = await ctx.db.insert("files", {
-      contentType: args.contentType,
-      fileName: args.fileName,
+      contentType: uploadMetadata.contentType,
+      fileName: uploadMetadata.fileName,
       key,
       mediaType,
       size: args.size,

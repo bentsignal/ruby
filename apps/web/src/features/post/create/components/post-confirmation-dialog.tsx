@@ -8,7 +8,6 @@ import { useCreateStore } from "../store";
 export function PostConfirmationDialog() {
   const isOpen = useCreateStore((store) => store.isConfirmOpen);
   const isPosting = useCreateStore((store) => store.isPosting);
-  const publishPost = useCreateStore((store) => store.publishPost);
   const setIsConfirmOpen = useCreateStore((store) => store.setIsConfirmOpen);
 
   return (
@@ -28,23 +27,20 @@ export function PostConfirmationDialog() {
           >
             Cancel
           </Button>
-          <ConfirmPostButton isPosting={isPosting} onPost={publishPost} />
+          <ConfirmPostButton />
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog.Container>
   );
 }
 
-function ConfirmPostButton({
-  isPosting,
-  onPost,
-}: {
-  isPosting: boolean;
-  onPost: () => void;
-}) {
+function ConfirmPostButton() {
+  const isPosting = useCreateStore((store) => store.isPosting);
+  const publishPost = useCreateStore((store) => store.publishPost);
+
   if (isPosting) {
     return (
-      <Button disabled onClick={onPost}>
+      <Button disabled>
         <LoaderCircle className="size-4 animate-spin" />
         Posting
       </Button>
@@ -52,7 +48,7 @@ function ConfirmPostButton({
   }
 
   return (
-    <Button onClick={onPost}>
+    <Button onClick={publishPost}>
       <Upload className="size-4" />
       Post
     </Button>

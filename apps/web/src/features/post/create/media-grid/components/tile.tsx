@@ -1,84 +1,22 @@
-import type { DragEndEvent } from "@dnd-kit/core";
 import type { HTMLAttributes } from "react";
 import { useState } from "react";
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, LoaderCircle, Plus, Trash2, X } from "lucide-react";
+import { GripVertical, LoaderCircle, Trash2, X } from "lucide-react";
 
 import { cn } from "@acme/std/cn";
 import * as Tooltip from "@acme/ui-web/tooltip";
 
-import { useCreateStore } from "../store";
+import { useComposerItem, useCreateStore } from "../../store";
+import { useMediaGridStore } from "../store";
 
-export function MediaGrid() {
-  const items = useCreateStore((store) => store.items);
-  const moveItem = useCreateStore((store) => store.moveItem);
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      moveItem(String(active.id), String(over.id));
-    }
-  }
-
-  if (items.length === 0) return null;
-
-  return (
-    <DndContext
-      collisionDetection={closestCenter}
-      sensors={sensors}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext
-        items={items.map((item) => item.id)}
-        strategy={rectSortingStrategy}
-      >
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {items.map((item, index) => (
-            <PreviewTile index={index} itemId={item.id} key={item.id} />
-          ))}
-          <AddMoreMediaTile />
-        </div>
-      </SortableContext>
-    </DndContext>
-  );
-}
-
-function AddMoreMediaTile() {
-  const inputRef = useCreateStore((store) => store.inputRef);
-
-  return (
-    <button
-      type="button"
-      className="border-border text-muted-foreground hover:bg-accent hover:text-foreground flex aspect-[4/5] flex-col items-center justify-center gap-2 rounded-lg border border-dashed transition-colors"
-      onClick={() => inputRef.current?.click()}
-    >
-      <Plus className="size-6" />
-      <span className="text-sm font-semibold">Add more</span>
-    </button>
-  );
-}
-
-function PreviewTile({ index, itemId }: { index: number; itemId: string }) {
+export function PreviewTile({
+  index,
+  itemId,
+}: {
+  index: number;
+  itemId: string;
+}) {
   const {
     attributes,
     isDragging,
@@ -114,6 +52,7 @@ function PreviewTile({ index, itemId }: { index: number; itemId: string }) {
 
 function PreviewMedia({ itemId }: { itemId: string }) {
   const item = useComposerItem(itemId);
+  const openPreview = useMediaGridStore((store) => store.openPreview);
   if (!item) return null;
 
   if (item.file.type.startsWith("video/")) {
@@ -129,9 +68,12 @@ function PreviewMedia({ itemId }: { itemId: string }) {
   }
 
   return (
-    <div
-      className="size-full bg-cover bg-center"
+    <button
+      type="button"
+      aria-label="Preview image"
+      className="size-full cursor-pointer bg-cover bg-center"
       style={{ backgroundImage: `url(${item.previewUrl})` }}
+      onClick={() => openPreview(itemId)}
     />
   );
 }
@@ -247,10 +189,4 @@ function UploadState({ itemId }: { itemId: string }) {
   }
 
   return null;
-}
-
-function useComposerItem(itemId: string) {
-  return useCreateStore((store) =>
-    store.items.find((item) => item.id === itemId),
-  );
 }

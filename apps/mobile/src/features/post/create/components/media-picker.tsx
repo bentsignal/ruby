@@ -1,13 +1,19 @@
 import { Pressable, Text, View } from "react-native";
 import { ImagePlus } from "lucide-react-native";
 
+import { ManageMediaButton } from "../manage-media/manage-media-button";
 import { useCreateStore } from "../store";
 
 export function MediaPicker() {
   const hasItems = useCreateStore((store) => store.items.length > 0);
 
   if (hasItems) {
-    return <AddMoreMediaButton />;
+    return (
+      <View className="gap-3 px-2">
+        <AddMoreMediaButton />
+        <ManageMediaButton />
+      </View>
+    );
   }
 
   return <EmptyMediaPicker />;
@@ -30,21 +36,23 @@ export function AddMoreMediaButton() {
   );
 }
 
-export function EmptyMediaPicker() {
+function EmptyMediaPicker() {
   const foreground = useCreateStore((store) => store.foreground);
   const pickFiles = useCreateStore((store) => store.pickFiles);
 
   return (
-    <Pressable
-      className="bg-card border-border min-h-80 items-center justify-center gap-4 overflow-hidden rounded-lg border border-dashed p-6"
-      onPress={pickFiles}
-    >
-      <View className="bg-primary/15 size-16 items-center justify-center rounded-full">
-        <ImagePlus className="size-8" color={foreground} />
-      </View>
-      <Text className="text-foreground text-center text-base font-bold">
-        Tap to add photos or videos
-      </Text>
-    </Pressable>
+    <View className="px-2">
+      <Pressable
+        className="bg-card border-border min-h-80 items-center justify-center gap-4 overflow-hidden rounded-lg border border-dashed p-6"
+        onPress={pickFiles}
+      >
+        <View className="bg-primary/15 size-16 items-center justify-center rounded-full">
+          <ImagePlus className="size-8" color={foreground} />
+        </View>
+        <Text className="text-foreground text-center text-base font-bold">
+          Tap to add photos
+        </Text>
+      </Pressable>
+    </View>
   );
 }

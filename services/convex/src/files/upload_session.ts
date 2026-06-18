@@ -1,8 +1,11 @@
 import { ConvexError } from "convex/values";
 
 import {
-  POST_MEDIA_TYPES,
+  POST_UPLOAD_BLOCKED_CONTENT_TYPES,
+  POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+  POST_UPLOAD_FILE_NAME_MAX_LENGTH,
   POST_UPLOAD_MAX_SIZE_BYTES,
+  POST_UPLOAD_MEDIA_TYPES,
 } from "@acme/config/posts";
 import { createStorageKeyPrefix } from "@acme/config/storage";
 
@@ -10,11 +13,33 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { env } from "../convex.env";
 
 export function getMediaType(contentType: string) {
-  const mediaType = POST_MEDIA_TYPES.find((type) =>
-    contentType.startsWith(`${type}/`),
+  const normalizedContentType = normalizeContentType(contentType);
+  const mediaType = POST_UPLOAD_MEDIA_TYPES.find((type) =>
+    normalizedContentType.startsWith(`${type}/`),
   );
   if (mediaType) return mediaType;
-  throw new ConvexError("Only image and video uploads are supported");
+  throw new ConvexError("Only photo uploads are supported");
+}
+
+export function validateUploadMetadata(args: {
+  contentType: string;
+  fileName: string;
+}) {
+  const contentType = args.contentType.trim();
+  const fileName = args.fileName.trim();
+
+  if (
+    !contentType ||
+    contentType.length > POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH
+  ) {
+    throw new ConvexError("Invalid upload type");
+  }
+  if (!fileName || fileName.length > POST_UPLOAD_FILE_NAME_MAX_LENGTH) {
+    throw new ConvexError("Invalid file name");
+  }
+  getMediaType(contentType);
+
+  return { contentType, fileName };
 }
 
 export function getUploadKey(args: {
@@ -40,7 +65,11 @@ export function getUploadUrl(args: { fileId: Id<"files">; token: string }) {
 }
 
 export function validateUploadSize(size: number) {
-  if (size <= 0 || size > POST_UPLOAD_MAX_SIZE_BYTES) {
+  if (
+    !Number.isFinite(size) ||
+    size <= 0 ||
+    size > POST_UPLOAD_MAX_SIZE_BYTES
+  ) {
     throw new ConvexError("File is too large");
   }
 }
@@ -65,6 +94,7 @@ export function validateUploadSession(
   if (file.contentType !== args.contentType) {
     throw new ConvexError("Upload content type does not match session");
   }
+  getMediaType(args.contentType);
   if (file.uploadedBy !== args.profileId) {
     throw new ConvexError("Invalid upload session");
   }
@@ -82,4 +112,15 @@ function getExtension(fileName: string) {
   const extension = fileName.split(".").pop()?.toLowerCase();
   if (!extension || extension === fileName.toLowerCase()) return "bin";
   return extension.replace(/[^a-z0-9]/g, "") || "bin";
+}
+
+function normalizeContentType(contentType: string) {
+  const normalized = contentType.split(";")[0]?.trim().toLowerCase();
+  if (
+    !normalized ||
+    POST_UPLOAD_BLOCKED_CONTENT_TYPES.some((type) => type === normalized)
+  ) {
+    throw new ConvexError("Only photo uploads are supported");
+  }
+  return normalized;
 }

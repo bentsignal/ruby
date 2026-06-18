@@ -1,13 +1,18 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
+import type { ResolvedLocation } from "@acme/convex/places/types";
 import { api } from "@acme/convex/api";
+import { getDisplayErrorMessage } from "@acme/std/display-error";
+import { toast } from "@acme/ui-web/toast";
 
 import { useComposerItems } from "./hooks/use-composer-items";
 import { uploadComposerFile } from "./lib/composer-upload";
+
+const LOCATION_REVEAL_DELAY_MS = 100;
 
 function useInternalStore() {
   const createUpload = useConvexMutation(api.files.mutations.createUpload);
@@ -16,9 +21,10 @@ function useInternalStore() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [caption, setCaption] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const locationResolve = useLocationResolveState({ setLocation });
   const {
     addFiles,
     items,
@@ -26,7 +32,7 @@ function useInternalStore() {
     removeItem,
     revokeItemPreviewUrls,
     updateItem,
-  } = useComposerItems({ setError });
+  } = useComposerItems();
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
   const hasPostContent = items.length > 0 || caption.trim().length > 0;
@@ -42,7 +48,7 @@ function useInternalStore() {
       updateItem(item.id, { status: "uploaded" });
       return file;
     } catch (caughtError) {
-      const message = getErrorMessage(caughtError, "Upload failed");
+      const message = getDisplayErrorMessage(caughtError, "Upload failed");
       updateItem(item.id, { error: message, status: "error" });
       throw new Error(message);
     }
@@ -50,22 +56,24 @@ function useInternalStore() {
 
   async function publishPost() {
     setIsPosting(true);
-    setError(null);
     try {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
       await createPost({
         caption: caption.trim() || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
+        location: createPostLocation(location),
       });
       await queryClient.invalidateQueries({
         queryKey: convexQuery(api.posts.queries.getAll, {}).queryKey,
       });
       revokeItemPreviewUrls(items);
+      locationResolve.clearLocation();
       setIsConfirmOpen(false);
-      setIsPosting(false);
       await navigate({ to: "/" });
     } catch (caughtError) {
-      setError(getErrorMessage(caughtError, "Post failed"));
+      toast.error(getDisplayErrorMessage(caughtError, "Post failed"), {
+        position: "top-center",
+      });
       setIsConfirmOpen(false);
       setIsPosting(false);
     }
@@ -75,25 +83,93 @@ function useInternalStore() {
     addFiles,
     canPost,
     caption,
-    error,
     hasUploadingItems,
     inputRef,
     isConfirmOpen,
+    isLocationResolving: locationResolve.isLocationResolving,
     isPosting,
     items,
+    location,
     moveItem,
     openConfirm: () => setIsConfirmOpen(true),
     publishPost,
     removeItem,
+    clearLocation: locationResolve.clearLocation,
+    finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
     setIsConfirmOpen,
+    setLocation: locationResolve.setLocation,
+    startLocationResolve: locationResolve.startLocationResolve,
   };
 }
 
-function getErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof Error) return error.message;
-  return fallback;
+function useLocationResolveState({
+  setLocation,
+}: {
+  setLocation: (location: ResolvedLocation | null) => void;
+}) {
+  const [isLocationResolving, setIsLocationResolving] = useState(false);
+  const locationRevealTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  function clearLocationRevealTimeout() {
+    if (!locationRevealTimeoutRef.current) return;
+    clearTimeout(locationRevealTimeoutRef.current);
+    locationRevealTimeoutRef.current = null;
+  }
+
+  // eslint-disable-next-line no-restricted-syntax -- Clears a pending delayed location reveal when the composer unmounts.
+  useEffect(() => {
+    return clearLocationRevealTimeout;
+  }, []);
+
+  return {
+    isLocationResolving,
+    clearLocation: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(false);
+    },
+    finishLocationResolve: () => setIsLocationResolving(false),
+    setLocation: (nextLocation: ResolvedLocation) => {
+      clearLocationRevealTimeout();
+      setLocation(nextLocation);
+      locationRevealTimeoutRef.current = setTimeout(() => {
+        locationRevealTimeoutRef.current = null;
+        setIsLocationResolving(false);
+      }, LOCATION_REVEAL_DELAY_MS);
+    },
+    startLocationResolve: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(true);
+    },
+  };
+}
+
+function createPostLocation(location: ResolvedLocation | null) {
+  if (!location) return undefined;
+
+  return {
+    googlePlaceId: location.googlePlaceId,
+    name: location.name,
+    provider: location.provider,
+    ...(location.formattedAddress
+      ? { formattedAddress: location.formattedAddress }
+      : {}),
+    ...(location.latitude === undefined ? {} : { latitude: location.latitude }),
+    ...(location.longitude === undefined
+      ? {}
+      : { longitude: location.longitude }),
+  };
 }
 
 export const { Store: CreateStore, useStore: useCreateStore } =
   createStore(useInternalStore);
+
+export function useComposerItem(itemId: string) {
+  return useCreateStore((store) =>
+    store.items.find((item) => item.id === itemId),
+  );
+}

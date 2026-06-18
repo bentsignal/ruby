@@ -1,36 +1,143 @@
-import { ScrollView, Text, View } from "react-native";
+import type { RefObject } from "react";
+import { useEffect, useRef } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import { CaptionField } from "~/features/post/create/components/caption-field";
-import { ComposerError } from "~/features/post/create/components/composer-error";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
-import { MediaGrid } from "~/features/post/create/components/media-grid";
+import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaPicker } from "~/features/post/create/components/media-picker";
-import { CreateStore } from "~/features/post/create/store";
+import { MediaGrid } from "~/features/post/create/media-grid/media-grid";
+import { CreateStore, useCreateStore } from "~/features/post/create/store";
 
 export default function Create() {
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  function scrollToCaption() {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 120);
+  }
+
   return (
     <CreateStore>
-      <SafeAreaView className="bg-background flex-1">
+      <CreateContent
+        scrollToCaption={scrollToCaption}
+        scrollViewRef={scrollViewRef}
+      />
+    </CreateStore>
+  );
+}
+
+function CreateContent({
+  scrollToCaption,
+  scrollViewRef,
+}: {
+  scrollToCaption: () => void;
+  scrollViewRef: RefObject<ScrollView | null>;
+}) {
+  const isPosting = useCreateStore((store) => store.isPosting);
+
+  if (isPosting) return <SubmittingPost />;
+
+  return (
+    <SafeAreaView className="bg-background flex-1">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
         <ScrollView
+          ref={scrollViewRef}
           className="flex-1"
           contentContainerClassName="gap-5 px-4 pt-4 pb-32"
+          keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
         >
-          <View className="flex-row items-center justify-between gap-4 px-2 pb-3">
-            <Text className="text-foreground text-3xl font-black tracking-normal">
-              Create
+          <View className="flex-row items-center justify-between gap-4 px-2">
+            <Text className="text-foreground text-xl font-black tracking-normal">
+              Create a new post
             </Text>
             <CreatePostButton />
           </View>
-          <MediaPicker />
-          <MediaGrid />
-          <View className="gap-5 px-2 pt-3">
-            <CaptionField />
-            <ComposerError />
+          <View className="gap-3">
+            <MediaPicker />
+            <MediaGrid />
+          </View>
+          <View className="gap-5 px-2">
+            <LocationField />
+            <CaptionField onFocus={scrollToCaption} />
           </View>
         </ScrollView>
-      </SafeAreaView>
-    </CreateStore>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+function SubmittingPost() {
+  return (
+    <SafeAreaView className="bg-background flex-1">
+      <View className="flex-1 items-center justify-center px-8 pb-20">
+        <View className="items-center">
+          <Text className="text-foreground text-center text-2xl font-black tracking-normal">
+            Submitting post
+          </Text>
+          <Text className="text-muted-foreground mt-3 max-w-xs text-center text-sm leading-6 font-medium">
+            Hang tight for just a sec while your post goes live.
+          </Text>
+          <LoadingBars />
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function LoadingBars() {
+  return (
+    <View className="mt-6 w-40 flex-row justify-center gap-2">
+      <LoadingBar delay={0} />
+      <LoadingBar delay={150} />
+      <LoadingBar delay={300} />
+    </View>
+  );
+}
+
+function LoadingBar({ delay }: { delay: number }) {
+  const opacity = useSharedValue(0.35);
+
+  // eslint-disable-next-line no-restricted-syntax -- Starts a native UI-thread animation for the submitting indicator.
+  useEffect(() => {
+    opacity.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 450 }),
+          withTiming(0.35, { duration: 450 }),
+        ),
+        -1,
+        false,
+      ),
+    );
+  }, [delay, opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View className="bg-primary h-1 flex-1" style={animatedStyle} />
   );
 }

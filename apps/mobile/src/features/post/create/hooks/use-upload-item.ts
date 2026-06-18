@@ -1,10 +1,15 @@
+import * as FileSystem from "expo-file-system/legacy";
 import { useConvexMutation } from "@convex-dev/react-query";
 
 import {
+  POST_UPLOAD_BLOCKED_CONTENT_TYPES,
+  POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+  POST_UPLOAD_FILE_NAME_MAX_LENGTH,
   POST_UPLOAD_MAX_SIZE_BYTES,
   POST_UPLOAD_MAX_SIZE_LABEL,
 } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
+import { getDisplayErrorMessage } from "@acme/std/display-error";
 
 import type { ComposerItem } from "../types";
 import {
@@ -37,7 +42,7 @@ export function useUploadItem({
       updateItem(item.id, { status: "uploaded", uploadedFile: file });
       return file;
     } catch (caughtError) {
-      const message = getErrorMessage(caughtError, "Upload failed");
+      const message = getDisplayErrorMessage(caughtError, "Upload failed");
       updateItem(item.id, { error: message, status: "error" });
       throw new Error(message);
     }
@@ -46,9 +51,9 @@ export function useUploadItem({
   async function uploadReadyItem(item: ComposerItem) {
     const contentType = item.file.mimeType ?? getFallbackContentType(item.file);
     const fileName = item.file.fileName ?? getFallbackFileName(item.file);
-    const fileResponse = await fetch(item.file.uri);
-    const body = await fileResponse.blob();
-    if (body.size > POST_UPLOAD_MAX_SIZE_BYTES) {
+    const size = await getFileSize(item);
+    validateUploadMetadata({ contentType, fileName });
+    if (size > POST_UPLOAD_MAX_SIZE_BYTES) {
       throw new Error(
         `Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`,
       );
@@ -57,15 +62,22 @@ export function useUploadItem({
     const { uploadUrl } = await createUpload({
       contentType,
       fileName,
-      size: item.file.fileSize ?? body.size,
+      size,
     });
-    const uploadResponse = await fetch(uploadUrl, {
-      method: "POST",
-      headers: await getUploadHeaders(contentType),
-      body,
-    });
-    const result = getUploadResult(await uploadResponse.json());
-    if (!uploadResponse.ok || "error" in result) {
+    const uploadResponse = await FileSystem.uploadAsync(
+      uploadUrl,
+      item.file.uri,
+      {
+        headers: await getUploadHeaders(contentType),
+        httpMethod: "POST",
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+      },
+    );
+    const result = getUploadResultFromBody(uploadResponse.body);
+    if (uploadResponse.status < 200 || uploadResponse.status >= 300) {
+      throw new Error(getUploadError(result));
+    }
+    if ("error" in result) {
       throw new Error(getUploadError(result));
     }
 
@@ -75,14 +87,48 @@ export function useUploadItem({
   return { uploadItem };
 }
 
-function getErrorMessage(caughtError: unknown, fallback: string) {
-  if (caughtError instanceof Error) return caughtError.message;
+async function getFileSize(item: ComposerItem) {
+  if (item.file.fileSize !== undefined) return item.file.fileSize;
 
-  return fallback;
+  const info = await FileSystem.getInfoAsync(item.file.uri);
+  if (info.exists) return info.size;
+
+  throw new Error("Selected file could not be read");
+}
+
+function getUploadResultFromBody(body: string) {
+  try {
+    return getUploadResult(JSON.parse(body));
+  } catch {
+    return { error: "Upload failed" };
+  }
 }
 
 function getUploadError(result: ReturnType<typeof getUploadResult>) {
   if ("error" in result) return result.error;
 
   return "Upload failed";
+}
+
+function validateUploadMetadata({
+  contentType,
+  fileName,
+}: {
+  contentType: string;
+  fileName: string;
+}) {
+  const normalizedContentType = normalizeContentType(contentType);
+  if (
+    fileName.length > POST_UPLOAD_FILE_NAME_MAX_LENGTH ||
+    normalizedContentType.length > POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH ||
+    POST_UPLOAD_BLOCKED_CONTENT_TYPES.some(
+      (type) => type === normalizedContentType,
+    )
+  ) {
+    throw new Error("File cannot be uploaded");
+  }
+}
+
+function normalizeContentType(contentType: string) {
+  return contentType.split(";")[0]?.trim().toLowerCase() ?? "";
 }

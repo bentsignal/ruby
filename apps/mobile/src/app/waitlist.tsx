@@ -1,4 +1,5 @@
 import { Image, Text, View } from "react-native";
+import { Redirect } from "expo-router";
 import { useMutation } from "convex/react";
 import { Check } from "lucide-react-native";
 
@@ -6,14 +7,18 @@ import { api } from "@acme/convex/api";
 import { Button, ButtonText } from "@acme/ui-mobile/button";
 
 import { SafeAreaView } from "~/components/safe-area-view";
+import {
+  AUTH_DESTINATION,
+  useAuthDestination,
+} from "~/features/auth/hooks/use-auth-destination";
 // import { SignOutButton } from "~/features/auth/components/sign-out-button";
-import { useRedirectIfSignedIn } from "~/features/auth/hooks/use-redirect-if-signed-in";
 import { useAuthStore } from "~/features/auth/store";
 import { useColor } from "~/hooks/use-color";
 import logo from "../../assets/rounded-icon.png";
 
 export default function Waitlist() {
   const foreground = useColor("primary-foreground");
+  const destination = useAuthDestination();
   const waitlistStatus = useAuthStore((s) => s.waitlistStatus);
   const joinWaitlist = useMutation(
     api.waitlist.mutations.join,
@@ -21,7 +26,12 @@ export default function Waitlist() {
     localStore.setQuery(api.waitlist.queries.getMyStatus, {}, "on-waitlist");
   });
 
-  useRedirectIfSignedIn();
+  if (
+    destination === AUTH_DESTINATION.home ||
+    destination === AUTH_DESTINATION.login
+  ) {
+    return <Redirect href={destination} />;
+  }
 
   return (
     <SafeAreaView className="bg-background relative flex-1" bottom>
@@ -43,17 +53,32 @@ export default function Waitlist() {
           disabled={waitlistStatus === "on-waitlist"}
           onPress={() => void joinWaitlist({})}
         >
-          {waitlistStatus === "on-waitlist" ? (
-            <>
-              <Check size={17} color={foreground} />
-              <ButtonText>You're on the list</ButtonText>
-            </>
-          ) : (
-            <ButtonText>Join the waitlist</ButtonText>
-          )}
+          <WaitlistButtonContent
+            foreground={foreground}
+            isOnWaitlist={waitlistStatus === "on-waitlist"}
+          />
         </Button>
         {/* <SignOutButton /> */}
       </View>
     </SafeAreaView>
   );
+}
+
+function WaitlistButtonContent({
+  foreground,
+  isOnWaitlist,
+}: {
+  foreground: string;
+  isOnWaitlist: boolean;
+}) {
+  if (isOnWaitlist) {
+    return (
+      <>
+        <Check size={17} color={foreground} />
+        <ButtonText>You're on the list</ButtonText>
+      </>
+    );
+  }
+
+  return <ButtonText>Join the waitlist</ButtonText>;
 }

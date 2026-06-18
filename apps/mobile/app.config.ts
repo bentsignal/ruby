@@ -11,7 +11,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     fallbackToCacheTimeout: 0,
   },
-  newArchEnabled: true,
   assetBundlePatterns: ["**/*"],
   ios: {
     bundleIdentifier: "rubyapp",
@@ -23,7 +22,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: "com.ruby.rubyapp",
-    edgeToEdgeEnabled: true,
     icon: "./assets/rounded-icon.png",
   },
   extra: {
@@ -34,7 +32,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     tsconfigPaths: true,
     typedRoutes: true,
-    reactCanary: true,
     reactCompiler: true,
   },
   plugins: [
@@ -43,10 +40,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-web-browser",
     "expo-system-ui",
     [
+      "expo-build-properties",
+      {
+        ios: {
+          deploymentTarget: "16.4",
+          usePrecompiledModules: false,
+        },
+      },
+    ],
+    "./expo-plugins/with-ios-scene-lifecycle.cjs",
+    "./expo-plugins/with-ios-pods-deployment-target.cjs",
+    [
       "expo-image-picker",
       {
         photosPermission:
-          "Allow Ruby to access your photos and videos so you can share travel updates.",
+          "Allow Ruby to access your photos so you can share travel updates.",
       },
     ],
     "./expo-plugins/with-android-user-certs.cjs",

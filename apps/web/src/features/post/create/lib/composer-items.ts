@@ -1,17 +1,24 @@
 import { arrayMove } from "@dnd-kit/sortable";
 
 import {
-  POST_MEDIA_TYPES,
   POST_UPLOAD_ALLOWED_MEDIA_LABEL,
+  POST_UPLOAD_BLOCKED_CONTENT_TYPES,
+  POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+  POST_UPLOAD_FILE_NAME_MAX_LENGTH,
   POST_UPLOAD_MAX_SIZE_BYTES,
   POST_UPLOAD_MAX_SIZE_LABEL,
+  POST_UPLOAD_MEDIA_TYPES,
 } from "@acme/config/posts";
 
 import type { ComposerItem } from "../types";
 
 export function isMediaFile(file: File) {
-  return POST_MEDIA_TYPES.some((mediaType) =>
-    file.type.startsWith(`${mediaType}/`),
+  const contentType = normalizeContentType(file.type);
+  return (
+    !POST_UPLOAD_BLOCKED_CONTENT_TYPES.some((type) => type === contentType) &&
+    POST_UPLOAD_MEDIA_TYPES.some((mediaType) =>
+      contentType.startsWith(`${mediaType}/`),
+    )
   );
 }
 
@@ -22,7 +29,20 @@ export function getFileValidationError(files: File[], mediaFiles: File[]) {
   if (mediaFiles.some((file) => file.size > POST_UPLOAD_MAX_SIZE_BYTES)) {
     return `Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`;
   }
+  if (
+    mediaFiles.some(
+      (file) =>
+        file.name.length > POST_UPLOAD_FILE_NAME_MAX_LENGTH ||
+        file.type.length > POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH,
+    )
+  ) {
+    return "One or more files cannot be uploaded.";
+  }
   return null;
+}
+
+function normalizeContentType(contentType: string) {
+  return contentType.split(";")[0]?.trim().toLowerCase() ?? "";
 }
 
 export function createComposerItem(file: File) {

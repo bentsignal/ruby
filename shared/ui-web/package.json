@@ -38,10 +38,13 @@
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
     "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "react": "catalog:react19",
+    "react-dom": "catalog:react19",
     "typescript": "catalog:"
   },
   "peerDependencies": {
@@ -49,6 +52,7 @@
     "class-variance-authority": "catalog:",
     "lucide-react": "catalog:",
     "react": "catalog:react19",
+    "react-dom": "catalog:react19",
     "tailwind-merge": "catalog:"
   },
   "prettier": "@acme/prettier-config"

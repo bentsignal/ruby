@@ -12,7 +12,7 @@ export function CaptionField() {
       <textarea
         className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-36 w-full resize-none rounded-lg border px-3 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         maxLength={POST_CAPTION_MAX_LENGTH}
-        placeholder="Tell the story behind this stop..."
+        placeholder="Add a caption..."
         value={caption}
         onChange={(event) => setCaption(event.target.value)}
       />

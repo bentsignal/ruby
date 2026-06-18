@@ -1,9 +1,15 @@
 import type { ComponentType } from "react";
+import type { ColorValue } from "react-native";
+import { View } from "react-native";
 import { Redirect, Tabs } from "expo-router";
 import { BellIcon, House, SearchIcon, UserRound } from "lucide-react-native";
 
 import { MobileTabBar } from "~/components/mobile-tab-bar";
-import { useAuthStore } from "~/features/auth/store";
+import {
+  AUTH_DESTINATION,
+  useAuthDestination,
+} from "~/features/auth/hooks/use-auth-destination";
+import { useColor } from "~/hooks/use-color";
 
 function TabIcon({
   icon: Icon,
@@ -11,29 +17,24 @@ function TabIcon({
   focused,
 }: {
   icon: ComponentType<{ color: string; size: number; strokeWidth: number }>;
-  color: string;
+  color: ColorValue;
   focused: boolean;
 }) {
-  return <Icon strokeWidth={focused ? 3 : 1.75} color={color} size={24} />;
+  return (
+    <Icon strokeWidth={focused ? 3 : 1.75} color={String(color)} size={24} />
+  );
 }
 
 export default function TabLayout() {
-  const imSignedIn = useAuthStore((s) => s.imSignedIn);
-  const myProfile = useAuthStore((s) => s.myProfile);
-  const waitlistStatus = useAuthStore((s) => s.waitlistStatus);
-  const waitlistStatusIsLoaded = useAuthStore((s) => s.waitlistStatusIsLoaded);
-  const hasAccess = waitlistStatus === "has-access";
+  const backgroundColor = useColor("background");
+  const destination = useAuthDestination();
 
-  if (!imSignedIn) {
-    return <Redirect href="/login" />;
+  if (destination === AUTH_DESTINATION.pending) {
+    return <View className="flex-1" style={{ backgroundColor }} />;
   }
 
-  if (!myProfile || !waitlistStatusIsLoaded) {
-    return null;
-  }
-
-  if (!hasAccess) {
-    return <Redirect href="/waitlist" />;
+  if (destination !== AUTH_DESTINATION.home) {
+    return <Redirect href={destination} />;
   }
 
   return (
@@ -41,7 +42,7 @@ export default function TabLayout() {
       tabBar={(props) => <MobileTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: "transparent" },
+        sceneStyle: { backgroundColor },
         tabBarShowLabel: false,
       }}
     >

@@ -1,32 +1,45 @@
-import type { LayoutChangeEvent } from "react-native";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import * as Haptics from "expo-haptics";
-import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
-import {
-  POST_UPLOAD_MAX_SIZE_BYTES,
-  POST_UPLOAD_MAX_SIZE_LABEL,
-} from "@acme/config/posts";
+import type { ResolvedLocation } from "@acme/convex/places/types";
 import { api } from "@acme/convex/api";
+import { getDisplayErrorMessage } from "@acme/std/display-error";
 
 import type { ComposerItem } from "./types";
 import { useColor } from "~/hooks/use-color";
-import { useMediaReorder } from "./hooks/use-media-reorder";
+import { useComposerReset } from "./hooks/use-composer-reset";
 import { useUploadItem } from "./hooks/use-upload-item";
+import {
+  readCaptionDraft,
+  resetCaptionDraft,
+  writeCaptionDraft,
+} from "./lib/caption-draft";
+import { pickComposerFiles } from "./lib/pick-composer-files";
+import { createPostLocation } from "./lib/post-location";
+
+const LOCATION_REVEAL_DELAY_MS = 100;
 
 function useInternalStore() {
   const createPost = useConvexMutation(api.posts.mutations.create);
   const foreground = useColor("foreground");
   const mutedForeground = useColor("muted-foreground");
   const [items, setItems] = useState<ComposerItem[]>([]);
-  const [caption, setCaption] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [gridWidth, setGridWidth] = useState(0);
+  const [caption, setCaptionState] = useState(() => {
+    resetCaptionDraft();
+    return "";
+  });
   const [isPosting, setIsPosting] = useState(false);
+  const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const locationResolve = useLocationResolveState({ setLocation });
+  const { resetComposer, resetKey } = useComposerReset({
+    setCaptionState,
+    setItems,
+    resetLocation: locationResolve.clearLocation,
+  });
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
   const canPost =
@@ -41,31 +54,23 @@ function useInternalStore() {
   }
 
   const { uploadItem } = useUploadItem({ updateItem });
-  const reorder = useMediaReorder({
-    gridWidth,
-    itemCount: items.length,
-    setItems,
-  });
 
-  async function pickFiles() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsMultipleSelection: true,
-      mediaTypes: ["images", "videos"],
-      quality: 1,
-    });
-    if (result.canceled) return;
+  function setCaption(nextCaption: string) {
+    writeCaptionDraft(nextCaption);
+    setCaptionState(nextCaption);
+  }
 
-    setError(null);
-    const validFiles = result.assets.filter(isAllowedFileSize);
-    if (validFiles.length !== result.assets.length) {
-      setError(`Files must be ${POST_UPLOAD_MAX_SIZE_LABEL} or smaller.`);
-    }
-    setItems((current) => [...current, ...validFiles.map(createComposerItem)]);
-    void Haptics.selectionAsync();
+  function setCaptionDraft(nextCaption: string) {
+    writeCaptionDraft(nextCaption);
   }
 
   function removeItem(itemId: string) {
     setItems((current) => current.filter((item) => item.id !== itemId));
+    void Haptics.selectionAsync();
+  }
+
+  function replaceItems(nextItems: ComposerItem[]) {
+    setItems(nextItems);
     void Haptics.selectionAsync();
   }
 
@@ -75,17 +80,19 @@ function useInternalStore() {
 
   async function publishPost() {
     setIsPosting(true);
-    setError(null);
     try {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
+      const latestCaption = readCaptionDraft().trim();
       await createPost({
-        caption: caption.trim() || undefined,
+        caption: latestCaption || undefined,
         fileIds: uploadedFiles.map((file) => file._id),
+        location: createPostLocation(location),
       });
+      resetComposer();
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
-      setError(getErrorMessage(caughtError, "Post failed"));
+      Alert.alert("Error", getDisplayErrorMessage(caughtError, "Post failed"));
       setIsPosting(false);
     }
   }
@@ -98,46 +105,73 @@ function useInternalStore() {
   }
 
   return {
-    activeDragItemId: reorder.activeDragItemId,
-    beginReorder: reorder.beginReorder,
     canPost,
     caption,
     confirmPost,
-    endReorder: reorder.endReorder,
-    error,
     foreground,
-    handleGridLayout: (event: LayoutChangeEvent) =>
-      setGridWidth(event.nativeEvent.layout.width),
     hasUploadingItems,
+    isLocationResolving: locationResolve.isLocationResolving,
     isPosting,
     items,
+    location,
     mutedForeground,
-    pickFiles,
+    pickFiles: () => pickComposerFiles({ setItems }),
+    replaceItems,
+    resetKey,
     removeItem,
     retryItem,
+    clearLocation: locationResolve.clearLocation,
+    finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
-    updateReorder: reorder.updateReorder,
+    setCaptionDraft,
+    setLocation: locationResolve.setLocation,
+    startLocationResolve: locationResolve.startLocationResolve,
   };
 }
 
-function createComposerItem(file: ImagePicker.ImagePickerAsset) {
-  return {
-    file,
-    id: `${Date.now()}-${Math.random()}`,
-    status: "ready" as const,
-  };
-}
-
-function getErrorMessage(caughtError: unknown, fallback: string) {
-  if (caughtError instanceof Error) return caughtError.message;
-
-  return fallback;
-}
-
-function isAllowedFileSize(file: ImagePicker.ImagePickerAsset) {
-  return (
-    file.fileSize === undefined || file.fileSize <= POST_UPLOAD_MAX_SIZE_BYTES
+function useLocationResolveState({
+  setLocation,
+}: {
+  setLocation: (location: ResolvedLocation | null) => void;
+}) {
+  const [isLocationResolving, setIsLocationResolving] = useState(false);
+  const locationRevealTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
   );
+
+  function clearLocationRevealTimeout() {
+    if (!locationRevealTimeoutRef.current) return;
+    clearTimeout(locationRevealTimeoutRef.current);
+    locationRevealTimeoutRef.current = null;
+  }
+
+  // eslint-disable-next-line no-restricted-syntax -- Clears a pending delayed location reveal when the composer unmounts.
+  useEffect(() => {
+    return clearLocationRevealTimeout;
+  }, []);
+
+  return {
+    isLocationResolving,
+    clearLocation: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(false);
+    },
+    finishLocationResolve: () => setIsLocationResolving(false),
+    setLocation: (nextLocation: ResolvedLocation) => {
+      clearLocationRevealTimeout();
+      setLocation(nextLocation);
+      locationRevealTimeoutRef.current = setTimeout(() => {
+        locationRevealTimeoutRef.current = null;
+        setIsLocationResolving(false);
+      }, LOCATION_REVEAL_DELAY_MS);
+    },
+    startLocationResolve: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(true);
+    },
+  };
 }
 
 function patchItem({

@@ -12,8 +12,7 @@ function createStorageUrl(key: string) {
     endpoint.startsWith("http") ? endpoint : `https://${endpoint}`,
   );
 
-  url.pathname = `/${env.BUNNY_STORAGE_ZONE_NAME}/${key}`;
-  return url.toString();
+  return new URL(`/${env.BUNNY_STORAGE_ZONE_NAME}/${key}`, url).toString();
 }
 
 export function createPublicUrl(key: string) {
