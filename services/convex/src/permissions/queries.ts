@@ -1,8 +1,15 @@
 import { v } from "convex/values";
 
 import { internalQuery } from "../_generated/server";
-import { ensureUserPermissionsForUserId } from "./helpers";
+import { authedQuery } from "../utils";
+import { ensureUserPermissionsForUserId, getUserPermissions } from "./helpers";
 import { vPermission } from "./validators";
+
+export const getMine = authedQuery({
+  handler: async (ctx) => {
+    return await getUserPermissions(ctx, ctx.user.subject);
+  },
+});
 
 export const ensureForUser = internalQuery({
   args: {

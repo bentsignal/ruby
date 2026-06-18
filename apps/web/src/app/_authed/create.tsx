@@ -1,4 +1,10 @@
+// eslint-disable-next-line no-restricted-imports -- Create access is client-loaded so the locked state can update live.
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
+import { LockKeyhole } from "lucide-react";
+
+import { api } from "@acme/convex/api";
 
 import { CaptionField } from "~/features/post/create/components/caption-field";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
@@ -23,6 +29,14 @@ function Create() {
 
 function CreateContent() {
   const isPosting = useCreateStore((store) => store.isPosting);
+  const { data: permissions } = useQuery({
+    ...convexQuery(api.permissions.queries.getMine, {}),
+    select: (value) => value,
+  });
+  if (!permissions) return <CreateAccessLoading />;
+
+  const canPost = permissions.includes("can-post");
+  if (!canPost) return <CreateClosedBeta />;
 
   if (isPosting) return <SubmittingPost />;
 
@@ -43,6 +57,34 @@ function CreateContent() {
       </div>
       <PostConfirmationDialog />
     </div>
+  );
+}
+
+function CreateAccessLoading() {
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center px-6 pb-12">
+      <LoadingBars />
+    </div>
+  );
+}
+
+function CreateClosedBeta() {
+  return (
+    <main className="flex min-h-screen w-full items-center justify-center px-5 pb-24">
+      <section className="flex max-w-sm flex-col items-center text-center">
+        <div className="text-primary mb-4 flex flex-col items-center gap-3">
+          <LockKeyhole size={34} strokeWidth={1.9} />
+          <div className="bg-primary h-1 w-10 rounded-full" />
+        </div>
+        <p className="text-foreground text-2xl font-black tracking-normal">
+          Posting is invite only
+        </p>
+        <p className="text-muted-foreground mt-3 text-sm leading-6">
+          Ruby is in closed beta, so only invited members can share posts right
+          now.
+        </p>
+      </section>
+    </main>
   );
 }
 

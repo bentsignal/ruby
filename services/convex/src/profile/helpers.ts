@@ -8,6 +8,11 @@ export const DeletedProfile = {
 } satisfies UIProfile;
 
 export function getPublicProfile(profile: Doc<"profiles">) {
-  const { userId: _userId, _creationTime, _id, ...publicProfile } = profile;
-  return publicProfile;
+  return {
+    name: profile.name,
+    username: profile.username,
+    image: profile.image,
+    bio: profile.bio,
+    link: profile.link,
+  };
 }

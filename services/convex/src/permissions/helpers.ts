@@ -1,7 +1,6 @@
 import type { Infer } from "convex/values";
 import { ConvexError } from "convex/values";
 
-import type { Doc } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import type { vPermission } from "./validators";
 
@@ -35,15 +34,28 @@ export async function ensureUserPermissionsForUserId(
   if (!myProfile) {
     throw new ConvexError("Profile not found");
   }
-  ensureProfilePermissions(myProfile, permissions);
+  await ensureGrantedPermissions(ctx, userId, permissions);
   return myProfile;
 }
 
-function ensureProfilePermissions(
-  profile: Doc<"profiles">,
+export async function getUserPermissions(
+  ctx: QueryCtx | MutationCtx,
+  userId: string,
+) {
+  const permissions = await ctx.db
+    .query("permissions")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .first();
+
+  return permissions?.permissions ?? [];
+}
+
+async function ensureGrantedPermissions(
+  ctx: QueryCtx | MutationCtx,
+  userId: string,
   permissions: UserPermission[],
 ) {
-  const granted = new Set(profile.permissions ?? []);
+  const granted = new Set(await getUserPermissions(ctx, userId));
   const missingPermission = permissions.find(
     (permission) => !granted.has(permission),
   );

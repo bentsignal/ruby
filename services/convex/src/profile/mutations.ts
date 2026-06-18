@@ -1,6 +1,8 @@
 import { ConvexError, v } from "convex/values";
 
+import type { Doc } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+import type { UserPermission } from "../permissions/helpers";
 import { internalMutation, mutation } from "../_generated/server";
 
 async function generateUsername(ctx: MutationCtx, name: string) {
@@ -31,7 +33,10 @@ export const ensureProfileExists = mutation({
       .query("profiles")
       .withIndex("by_userId", (q) => q.eq("userId", user.subject))
       .first();
-    if (existing) return existing;
+    if (existing) {
+      await ensurePermissionsRecord(ctx, user.subject, existing);
+      return existing;
+    }
 
     const name = user.name ?? "User";
     const username = await generateUsername(ctx, name);
@@ -41,6 +46,7 @@ export const ensureProfileExists = mutation({
       username,
       searchTerm: `${username} ${name}`,
     });
+    await ensurePermissionsRecord(ctx, user.subject);
 
     const profile = await ctx.db.get("profiles", profileId);
     if (!profile) {
@@ -49,6 +55,43 @@ export const ensureProfileExists = mutation({
     return profile;
   },
 });
+
+async function ensurePermissionsRecord(
+  ctx: MutationCtx,
+  userId: string,
+  profile?: Doc<"profiles">,
+) {
+  const existingPermissions = await ctx.db
+    .query("permissions")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .first();
+  const legacyPermissions = getLegacyPermissions(profile);
+  const permissions =
+    legacyPermissions ?? existingPermissions?.permissions ?? [];
+
+  if (existingPermissions) {
+    await ctx.db.patch(existingPermissions._id, { permissions });
+  } else {
+    await ctx.db.insert("permissions", { userId, permissions });
+  }
+
+  if (profile && legacyPermissions) {
+    const patch = Object.fromEntries([["permissions", undefined]]);
+    await ctx.db.patch(profile._id, patch);
+  }
+}
+
+function getLegacyPermissions(profile?: Doc<"profiles">) {
+  if (!profile || !("permissions" in profile)) return undefined;
+  const { permissions } = profile;
+  if (!Array.isArray(permissions)) return undefined;
+
+  return permissions.filter(isUserPermission);
+}
+
+function isUserPermission(value: unknown): value is UserPermission {
+  return value === "can-access-app" || value === "can-post";
+}
 
 export const updatePFP = internalMutation({
   args: {

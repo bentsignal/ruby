@@ -15,6 +15,12 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+// eslint-disable-next-line no-restricted-imports -- Expo Router tab screens fetch after auth context is mounted.
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { LockKeyhole } from "lucide-react-native";
+
+import { api } from "@acme/convex/api";
 
 import { SafeAreaView } from "~/components/safe-area-view";
 import { CaptionField } from "~/features/post/create/components/caption-field";
@@ -23,6 +29,7 @@ import { LocationField } from "~/features/post/create/components/location-field"
 import { MediaPicker } from "~/features/post/create/components/media-picker";
 import { MediaGrid } from "~/features/post/create/media-grid/media-grid";
 import { CreateStore, useCreateStore } from "~/features/post/create/store";
+import { useColor } from "~/hooks/use-color";
 
 export default function Create() {
   const scrollViewRef = useRef<ScrollView>(null);
@@ -51,6 +58,15 @@ function CreateContent({
   scrollViewRef: RefObject<ScrollView | null>;
 }) {
   const isPosting = useCreateStore((store) => store.isPosting);
+  const { data: permissions } = useQuery({
+    ...convexQuery(api.permissions.queries.getMine, {}),
+    select: (value) => value,
+  });
+
+  if (!permissions) return <CreateAccessLoading />;
+
+  const canPost = permissions.includes("can-post");
+  if (!canPost) return <CreateClosedBeta />;
 
   if (isPosting) return <SubmittingPost />;
 
@@ -83,6 +99,38 @@ function CreateContent({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+function CreateAccessLoading() {
+  return (
+    <SafeAreaView className="bg-background flex-1">
+      <View className="flex-1 items-center justify-center px-8 pb-20">
+        <LoadingBars />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function CreateClosedBeta() {
+  const primary = useColor("primary");
+
+  return (
+    <SafeAreaView className="bg-background flex-1">
+      <View className="flex-1 items-center justify-center px-5 pb-20">
+        <View className="mb-4 items-center gap-3">
+          <LockKeyhole size={34} strokeWidth={1.9} color={primary} />
+          <View className="bg-primary h-1 w-10 rounded-full" />
+        </View>
+        <Text className="text-foreground text-center text-2xl font-black tracking-normal">
+          Posting is invite only
+        </Text>
+        <Text className="text-muted-foreground mt-3 max-w-xs text-center text-sm leading-6 font-medium">
+          Ruby is in closed beta, so only invited members can share posts right
+          now.
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }

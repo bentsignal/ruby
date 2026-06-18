@@ -3,6 +3,7 @@ import { defineSchema, defineTable } from "convex/server";
 import { vFile } from "./files/validators";
 import { vFriendship } from "./friends/validators";
 import { vImage } from "./images/validators";
+import { vUserPermissions } from "./permissions/validators";
 import { vPost } from "./posts/validators";
 import { vProfile } from "./profile/validators";
 import { vTrip } from "./trips/validators";
@@ -20,6 +21,7 @@ export default defineSchema(
       .index("by_userId", ["userId"])
       .index("by_username", ["username"])
       .searchIndex("search_searchTerm", { searchField: "searchTerm" }),
+    permissions: defineTable(vUserPermissions).index("by_userId", ["userId"]),
     friends: defineTable(vFriendship)
       .index("by_profileA", ["profileIdA"])
       .index("by_profileB", ["profileIdB"]),
