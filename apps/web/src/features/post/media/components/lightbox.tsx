@@ -5,7 +5,7 @@ import { Button } from "@acme/ui-web/button";
 import * as Dialog from "@acme/ui-web/dialog";
 
 import { Image } from "~/components/image";
-import { useMediaStore } from "./store";
+import { useMediaStore } from "../store";
 
 export function PostMediaLightbox() {
   const closeLightbox = useMediaStore((store) => store.closeLightbox);

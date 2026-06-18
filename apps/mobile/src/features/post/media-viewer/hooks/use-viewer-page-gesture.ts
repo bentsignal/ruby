@@ -7,7 +7,7 @@ import {
   withTiming,
 } from "react-native-reanimated";
 
-import { useMediaViewerStore } from "../components/media-viewer/store";
+import { useMediaViewerStore } from "../store";
 
 const MAX_SCALE = 4;
 

@@ -2,7 +2,7 @@ import { Pressable } from "react-native";
 import { Info } from "lucide-react-native";
 
 import { useColor } from "~/hooks/use-color";
-import { useOpenPostDetails } from "../details/use-open-post-details";
+import { useOpenPostDetails } from "../hooks/use-open-post-details";
 
 export function PostInfoButton() {
   const mutedForeground = useColor("muted-foreground");

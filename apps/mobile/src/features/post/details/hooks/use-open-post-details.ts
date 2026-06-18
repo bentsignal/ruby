@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 
-import { usePostStore } from "../store";
-import { createPostDetailsParams } from "./params";
+import { usePostStore } from "../../store";
+import { createPostDetailsParams } from "../lib/params";
 
 export function useOpenPostDetails() {
   const createdAt = usePostStore((store) => store.createdAt);

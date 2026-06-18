@@ -3,7 +3,7 @@ import { Image } from "@unpic/react";
 import { cn } from "@acme/std/cn";
 
 import type { PostMediaItem } from "../../store";
-import { useMediaStore } from "./store";
+import { useMediaStore } from "../store";
 
 export function MediaFrame({
   media,

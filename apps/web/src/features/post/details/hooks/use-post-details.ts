@@ -1,6 +1,6 @@
 import { googleMapsWebUrl } from "@acme/std/maps";
 
-import { usePostStore } from "../store";
+import { usePostStore } from "../../store";
 
 function formatFullDate(timestamp: number) {
   return new Date(timestamp).toLocaleString(undefined, {

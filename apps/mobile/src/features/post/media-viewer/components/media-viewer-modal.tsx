@@ -3,9 +3,9 @@ import { GestureDetector } from "react-native-gesture-handler";
 import PagerView from "react-native-pager-view";
 
 import type { PostMediaItem } from "../../store";
+import { MediaViewerStore, useMediaViewerStore } from "../store";
 import { CloseButton, ThumbnailStrip, ViewerCounter } from "./controls";
 import { ViewerPage } from "./page";
-import { MediaViewerStore, useMediaViewerStore } from "./store";
 
 export function MediaViewerModal({
   initialIndex,

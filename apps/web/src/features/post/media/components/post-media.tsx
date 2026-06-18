@@ -1,7 +1,7 @@
-import { usePostStore } from "../store";
-import { PostMediaCarousel } from "./media/carousel";
-import { PostMediaLightbox } from "./media/lightbox";
-import { MediaStore } from "./media/store";
+import { usePostStore } from "../../store";
+import { MediaStore } from "../store";
+import { PostMediaCarousel } from "./carousel";
+import { PostMediaLightbox } from "./lightbox";
 
 export function PostMedia() {
   const mediaItems = usePostStore((store) => store.mediaItems);

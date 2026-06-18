@@ -2,7 +2,7 @@ import { Image, Text, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import { Play } from "lucide-react-native";
 
-import type { PostMediaItem as UIPostMediaItem } from "../store";
+import type { PostMediaItem as UIPostMediaItem } from "../../store";
 import { useColor } from "~/hooks/use-color";
 import { usePostMediaPinchOpen } from "../hooks/use-post-media-pinch-open";
 

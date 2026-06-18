@@ -6,11 +6,11 @@ import { Name } from "~/features/profile/components/info/name";
 import { PFP } from "~/features/profile/components/info/pfp";
 import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
+import { PostInfoButton } from "../details/components/post-info-button";
+import { PostMediaPager } from "../media-pager/components/post-media-pager";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
-import { PostInfoButton } from "./post-info-button";
-import { PostMediaPager } from "./post-media-pager";
 
 export function Post({ post }: { post: UIPost }) {
   return (

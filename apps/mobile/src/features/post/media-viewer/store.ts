@@ -5,7 +5,7 @@ import { Animated } from "react-native";
 import { Gesture } from "react-native-gesture-handler";
 import { createStore } from "rostra";
 
-import type { PostMediaItem } from "../../store";
+import type { PostMediaItem } from "../store";
 import { useSafeAreaInsets } from "~/components/safe-area-view";
 
 const THUMBNAIL_STEP = 64;

@@ -1,7 +1,7 @@
 import { Gesture } from "react-native-gesture-handler";
 import { runOnJS, useSharedValue } from "react-native-reanimated";
 
-import { useMediaPagerStore } from "../components/media-pager/store";
+import { useMediaPagerStore } from "../store";
 
 export function usePostMediaPinchOpen(index: number) {
   const openViewer = useMediaPagerStore((store) => store.openViewer);

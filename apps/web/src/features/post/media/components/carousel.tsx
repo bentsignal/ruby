@@ -2,8 +2,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@acme/std/cn";
 
+import { useMediaStore } from "../store";
 import { MediaFrame } from "./media-frame";
-import { useMediaStore } from "./store";
 
 export function PostMediaCarousel() {
   const aspectRatio = useMediaStore((store) => store.aspectRatio);

@@ -4,11 +4,11 @@ import { Name } from "~/features/profile/components/info/name";
 import { PFP } from "~/features/profile/components/info/pfp";
 import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
+import { PostInfoButton } from "../details/components/post-info-button";
+import { PostMedia } from "../media/components/post-media";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
-import { PostInfoButton } from "./post-info-button";
-import { PostMedia } from "./post-media";
 
 export function Post({ post }: { post: UIPost }) {
   return (

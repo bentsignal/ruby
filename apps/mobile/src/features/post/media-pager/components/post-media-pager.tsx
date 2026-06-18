@@ -1,8 +1,8 @@
 import { Animated, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 
-import { MediaPagerStore, useMediaPagerStore } from "./media-pager/store";
-import { MediaViewerModal } from "./media-viewer/media-viewer-modal";
+import { MediaViewerModal } from "../../media-viewer/components/media-viewer-modal";
+import { MediaPagerStore, useMediaPagerStore } from "../store";
 import { PostMediaItem } from "./post-media-item";
 
 export function PostMediaPager() {

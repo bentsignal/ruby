@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Animated, Image, useWindowDimensions } from "react-native";
 import { createStore } from "rostra";
 
-import { usePostStore } from "../../store";
+import { usePostStore } from "../store";
 
 const MIN_ASPECT_RATIO = 4 / 5;
 const MAX_ASPECT_RATIO = 1.91;

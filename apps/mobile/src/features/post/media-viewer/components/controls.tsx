@@ -9,7 +9,7 @@ import {
 import { Play, X } from "lucide-react-native";
 
 import type { PostMediaItem } from "../../store";
-import { useMediaViewerStore } from "./store";
+import { useMediaViewerStore } from "../store";
 
 export function ViewerCounter() {
   const activeIndex = useMediaViewerStore((store) => store.activeIndex);

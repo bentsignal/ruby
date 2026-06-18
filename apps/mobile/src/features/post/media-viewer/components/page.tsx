@@ -4,7 +4,7 @@ import Animated from "react-native-reanimated";
 import { Play } from "lucide-react-native";
 
 import type { PostMediaItem } from "../../store";
-import { useViewerPageGesture } from "../../hooks/use-viewer-page-gesture";
+import { useViewerPageGesture } from "../hooks/use-viewer-page-gesture";
 
 export function ViewerPage({ media }: { media: PostMediaItem }) {
   const { animatedStyle, gesture, imageFrameStyle } = useViewerPageGesture();

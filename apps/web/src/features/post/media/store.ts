@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { createStore } from "rostra";
 
-import type { PostMediaItem } from "../../store";
+import type { PostMediaItem } from "../store";
 
 const MIN_ASPECT_RATIO = 4 / 5;
 const MAX_ASPECT_RATIO = 1.91;

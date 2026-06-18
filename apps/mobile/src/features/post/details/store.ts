@@ -3,7 +3,7 @@ import { createStore } from "rostra";
 
 import { androidGeoUrl, appleMapsUrl, googleMapsWebUrl } from "@acme/std/maps";
 
-import type { PostDetailsParams } from "./params";
+import type { PostDetailsParams } from "./lib/params";
 
 function formatFullDate(timestamp: number) {
   return new Date(timestamp).toLocaleString(undefined, {
