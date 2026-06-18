@@ -19,7 +19,6 @@ import {
   writeCaptionDraft,
 } from "./lib/caption-draft";
 import { pickComposerFiles } from "./lib/pick-composer-files";
-import { createPostLocation } from "./lib/post-location";
 
 const LOCATION_REVEAL_DELAY_MS = 100;
 
@@ -186,6 +185,23 @@ function patchItem({
   if (item.id !== itemId) return item;
 
   return { ...item, ...patch };
+}
+
+function createPostLocation(location: ResolvedLocation | null) {
+  if (!location) return undefined;
+
+  return {
+    googlePlaceId: location.googlePlaceId,
+    name: location.name,
+    provider: location.provider,
+    ...(location.formattedAddress
+      ? { formattedAddress: location.formattedAddress }
+      : {}),
+    ...(location.latitude === undefined ? {} : { latitude: location.latitude }),
+    ...(location.longitude === undefined
+      ? {}
+      : { longitude: location.longitude }),
+  };
 }
 
 export const { Store: CreateStore, useStore: useCreateStore } =
