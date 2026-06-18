@@ -115,10 +115,12 @@ function LocationPickerFrame({
   return (
     <>
       {children}
-      <LocationSearchDialog
-        isOpen={isSearchOpen}
-        onOpenChange={setIsSearchOpen}
-      />
+      {isSearchOpen ? (
+        <LocationSearchDialog
+          isOpen={isSearchOpen}
+          onOpenChange={setIsSearchOpen}
+        />
+      ) : null}
     </>
   );
 }

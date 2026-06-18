@@ -93,10 +93,12 @@ function LocationPickerFrame({
   return (
     <>
       {children}
-      <LocationSearchSheet
-        isOpen={isSearchOpen}
-        onOpenChange={setIsSearchOpen}
-      />
+      {isSearchOpen ? (
+        <LocationSearchSheet
+          isOpen={isSearchOpen}
+          onOpenChange={setIsSearchOpen}
+        />
+      ) : null}
     </>
   );
 }

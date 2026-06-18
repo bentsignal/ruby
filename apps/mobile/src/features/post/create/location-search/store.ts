@@ -1,7 +1,9 @@
 import { createStore } from "rostra";
 
+import { useLocationSearchState } from "@acme/features/post-create/location-search-state";
+
 import { useColor } from "~/hooks/use-color";
-import { useLocationSearch } from "./state";
+import { useCreateStore } from "../store";
 
 function useInternalStore({
   isOpen,
@@ -10,9 +12,10 @@ function useInternalStore({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
-  const search = useLocationSearch({ isOpen, onOpenChange });
   const foreground = useColor("foreground");
   const mutedForeground = useColor("muted-foreground");
+  const setLocation = useCreateStore((store) => store.setLocation);
+  const search = useLocationSearchState({ isOpen, onOpenChange, setLocation });
 
   return {
     foreground,
