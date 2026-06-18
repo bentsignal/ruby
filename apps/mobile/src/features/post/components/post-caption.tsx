@@ -7,5 +7,9 @@ export function PostCaption() {
 
   if (!caption) return null;
 
-  return <Text className="text-card-foreground mx-2 text-sm">{caption}</Text>;
+  return (
+    <Text className="text-card-foreground mx-2 text-sm leading-5">
+      {caption}
+    </Text>
+  );
 }

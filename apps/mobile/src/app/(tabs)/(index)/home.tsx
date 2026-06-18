@@ -28,6 +28,7 @@ export default function Home() {
       keyExtractor={keyExtractor}
       style={{ flex: 1 }}
       ListHeaderComponent={<ListHeader topPadding={inset.top} />}
+      ItemSeparatorComponent={PostSeparator}
       contentContainerStyle={{
         paddingBottom: inset.bottom + 24,
       }}
@@ -50,6 +51,10 @@ function ListHeader({ topPadding }: { topPadding: number }) {
 
 function renderItem(props: LegendListRenderItemProps<UIPost>) {
   return <Post post={props.item} />;
+}
+
+function PostSeparator() {
+  return <View className="h-10" />;
 }
 
 function keyExtractor(post: UIPost) {

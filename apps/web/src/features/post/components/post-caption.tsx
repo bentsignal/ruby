@@ -5,5 +5,9 @@ export function PostCaption() {
 
   if (!caption) return null;
 
-  return <p className="text-sm leading-relaxed">{caption}</p>;
+  return (
+    <p className="text-[0.9375rem] leading-relaxed whitespace-pre-wrap">
+      {caption}
+    </p>
+  );
 }

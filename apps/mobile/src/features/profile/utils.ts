@@ -2,6 +2,8 @@ import type { PFPVariant } from "./types";
 
 export function getPFPSizeNumber(variant: PFPVariant) {
   switch (variant) {
+    case "xs":
+      return 38;
     case "sm":
       return 48;
     case "md":
@@ -13,6 +15,8 @@ export function getPFPSizeNumber(variant: PFPVariant) {
 
 export function getPFPClassName(variant: PFPVariant) {
   switch (variant) {
+    case "xs":
+      return "size-9";
     case "sm":
       return "size-10";
     case "md":
