@@ -13,6 +13,7 @@ function useInternalStore({ post }: PostStoreProps) {
     caption: post.caption,
     createdAt: post._creationTime,
     creator: post.creator,
+    location: post.location,
     mediaItems: getPostMediaItems(post),
   };
 }

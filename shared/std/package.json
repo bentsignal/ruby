@@ -5,6 +5,8 @@
   "exports": {
     "./cn": "./src/cn.ts",
     "./display-error": "./src/display-error.ts",
+    "./maps": "./src/maps.ts",
+    "./relative-time": "./src/relative-time.ts",
     "./use-loading": "./src/use-loading.ts",
     "./use-debounced-input": "./src/use-debounced-input.ts",
     "./use-screen": "./src/use-screen/index.ts"

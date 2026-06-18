@@ -58,16 +58,20 @@ function Waitlist() {
           onClick={() => joinWaitlist({})}
           disabled={isOnWaitlist}
         >
-          {isOnWaitlist ? (
-            <>
-              <Check />
-              You're on the list
-            </>
-          ) : (
-            "Join the waitlist"
-          )}
+          <WaitlistButtonContent isOnWaitlist={isOnWaitlist} />
         </Button>
       </section>
     </main>
+  );
+}
+
+function WaitlistButtonContent({ isOnWaitlist }: { isOnWaitlist: boolean }) {
+  if (!isOnWaitlist) return "Join the waitlist";
+
+  return (
+    <>
+      <Check />
+      You're on the list
+    </>
   );
 }

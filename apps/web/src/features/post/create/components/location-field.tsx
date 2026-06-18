@@ -115,13 +115,28 @@ function LocationPickerFrame({
   return (
     <>
       {children}
-      {isSearchOpen ? (
-        <LocationSearchDialog
-          isOpen={isSearchOpen}
-          onOpenChange={setIsSearchOpen}
-        />
-      ) : null}
+      <LocationSearchDialogHost
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      />
     </>
+  );
+}
+
+function LocationSearchDialogHost({
+  isSearchOpen,
+  setIsSearchOpen,
+}: {
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isOpen: boolean) => void;
+}) {
+  if (!isSearchOpen) return null;
+
+  return (
+    <LocationSearchDialog
+      isOpen={isSearchOpen}
+      onOpenChange={setIsSearchOpen}
+    />
   );
 }
 

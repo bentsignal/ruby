@@ -6,8 +6,25 @@ type ImageProps = Omit<
 > & {
   width?: number;
   height?: number;
+  layout?: "fixed" | "constrained";
 };
 
-export function Image({ width = 64, height = 64, ...props }: ImageProps) {
+export function Image({
+  height = 64,
+  layout = "fixed",
+  width = 64,
+  ...props
+}: ImageProps) {
+  if (layout === "constrained") {
+    return (
+      <UnpicImage
+        layout="constrained"
+        width={width}
+        height={height}
+        {...props}
+      />
+    );
+  }
+
   return <UnpicImage layout="fixed" width={width} height={height} {...props} />;
 }

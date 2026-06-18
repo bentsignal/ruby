@@ -25,20 +25,31 @@ function HomePage() {
 
 function HomePostList({ posts }: { posts: UIPost[] }) {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 px-4 pt-6 pb-28">
+    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-4 pt-6 pb-28">
       <Image
         src={logoSmall}
         alt="Ruby"
-        className="mx-auto size-12 rounded-full"
+        className="mx-auto mb-6 size-12 rounded-full"
         height={48}
         layout="fixed"
         width={48}
       />
-      {posts.length === 0 && (
-        <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
-          No posts yet.
-        </div>
-      )}
+      <HomePosts posts={posts} />
+    </div>
+  );
+}
+
+function HomePosts({ posts }: { posts: UIPost[] }) {
+  if (posts.length === 0) {
+    return (
+      <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
+        No posts yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-10">
       {posts.map((post) => (
         <Post key={post._id} post={post} />
       ))}

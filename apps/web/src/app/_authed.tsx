@@ -54,9 +54,15 @@ function TabsLayout() {
   return (
     <>
       <Outlet />
-      {pathname === "/waitlist" ? null : <TabBar />}
+      <TabBarHost pathname={pathname} />
     </>
   );
+}
+
+function TabBarHost({ pathname }: { pathname: string }) {
+  if (pathname === "/waitlist") return null;
+
+  return <TabBar />;
 }
 
 function TabBarIcon({

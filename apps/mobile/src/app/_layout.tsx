@@ -74,6 +74,19 @@ function AppShell() {
                   },
                 }}
               />
+              <Stack.Screen
+                name="post-details"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.42],
+                  sheetGrabberVisible: true,
+                  contentStyle: {
+                    backgroundColor: liquidGlassIsAvailable
+                      ? "transparent"
+                      : backgroundColor,
+                  },
+                }}
+              />
             </Stack>
           </StrictMode>
         </SafeAreaProvider>

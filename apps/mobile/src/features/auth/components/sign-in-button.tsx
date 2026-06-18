@@ -18,20 +18,24 @@ export function SignInButton() {
       disabled={disabled}
       className="w-full max-w-[340px] flex-row items-center justify-center rounded-full border border-[#747775] bg-white disabled:opacity-50 dark:border-[#8E918F] dark:bg-[#131314]"
     >
-      {isLoading ? (
-        <LoadingSpinner color="foreground" />
-      ) : (
-        <>
-          <GoogleIcon />
-          <Text
-            style={{ fontFamily: "Roboto_500Medium" }}
-            className="text-[#1F1F1F] dark:text-[#E3E3E3]"
-          >
-            Sign in with Google
-          </Text>
-        </>
-      )}
+      <SignInButtonContent isLoading={isLoading} />
     </Pressable>
+  );
+}
+
+function SignInButtonContent({ isLoading }: { isLoading: boolean }) {
+  if (isLoading) return <LoadingSpinner color="foreground" />;
+
+  return (
+    <>
+      <GoogleIcon />
+      <Text
+        style={{ fontFamily: "Roboto_500Medium" }}
+        className="text-[#1F1F1F] dark:text-[#E3E3E3]"
+      >
+        Sign in with Google
+      </Text>
+    </>
   );
 }
 
