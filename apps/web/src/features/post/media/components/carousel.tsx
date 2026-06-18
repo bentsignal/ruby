@@ -67,7 +67,7 @@ function OpenImageButton({
 }
 
 function CarouselControls() {
-  const activeIndex = useMediaStore((store) => store.activeIndex);
+  const activeIndex = useMediaStore((store) => store.carouselActiveIndex);
   const goToIndex = useMediaStore((store) => store.goToIndex);
   const mediaItems = useMediaStore((store) => store.mediaItems);
 

@@ -14,7 +14,8 @@ function clampAspectRatio(ratio: number) {
 
 function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
+  const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [naturalSizes, setNaturalSizes] = useState<
@@ -42,27 +43,28 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
   }
 
   function openLightbox(index: number) {
-    setActiveIndex(index);
+    setLightboxActiveIndex(index);
     setIsLightboxOpen(true);
   }
 
   function syncActiveIndexFromScroll(scrollLeft: number, clientWidth: number) {
     const index = Math.round(scrollLeft / clientWidth);
-    if (index !== activeIndex) setActiveIndex(index);
+    if (index !== carouselActiveIndex) setCarouselActiveIndex(index);
   }
 
   return {
-    activeIndex,
     aspectRatio: aspectRatio ?? DEFAULT_ASPECT_RATIO,
+    carouselActiveIndex,
     closeLightbox: () => setIsLightboxOpen(false),
     goToIndex,
     isLightboxOpen,
+    lightboxActiveIndex,
     mediaItems,
     naturalSizes,
     openLightbox,
     reportNaturalSize,
     scrollRef,
-    setActiveIndex,
+    setLightboxActiveIndex,
     syncActiveIndexFromScroll,
   };
 }

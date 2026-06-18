@@ -28,9 +28,9 @@ export function PostMediaLightbox() {
 }
 
 function LightboxContent() {
-  const activeIndex = useMediaStore((store) => store.activeIndex);
+  const activeIndex = useMediaStore((store) => store.lightboxActiveIndex);
   const mediaItems = useMediaStore((store) => store.mediaItems);
-  const setActiveIndex = useMediaStore((store) => store.setActiveIndex);
+  const setActiveIndex = useMediaStore((store) => store.setLightboxActiveIndex);
 
   const activeItem = mediaItems[activeIndex];
   if (!activeItem) return null;
@@ -61,7 +61,7 @@ function LightboxContent() {
 }
 
 function ActiveLightboxMedia() {
-  const activeIndex = useMediaStore((store) => store.activeIndex);
+  const activeIndex = useMediaStore((store) => store.lightboxActiveIndex);
   const mediaItems = useMediaStore((store) => store.mediaItems);
   const naturalSizes = useMediaStore((store) => store.naturalSizes);
   const reportNaturalSize = useMediaStore((store) => store.reportNaturalSize);
@@ -139,9 +139,9 @@ function NavButton({
 }
 
 function ThumbnailStrip() {
-  const activeIndex = useMediaStore((store) => store.activeIndex);
+  const activeIndex = useMediaStore((store) => store.lightboxActiveIndex);
   const mediaItems = useMediaStore((store) => store.mediaItems);
-  const setActiveIndex = useMediaStore((store) => store.setActiveIndex);
+  const setActiveIndex = useMediaStore((store) => store.setLightboxActiveIndex);
 
   return (
     <div className="flex h-20 max-w-full items-center justify-center gap-2 overflow-x-auto px-1 py-1">
