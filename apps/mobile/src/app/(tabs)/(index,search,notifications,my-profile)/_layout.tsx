@@ -24,9 +24,13 @@ export default function Layout({ segment }: { segment: string }) {
         contentStyle: { backgroundColor },
       }}
     >
-      {segment === "(index)" && (
-        <Stack.Screen name="settings" options={{ headerShown: true }} />
-      )}
+      <SettingsScreen segment={segment} />
     </Stack>
   );
+}
+
+function SettingsScreen({ segment }: { segment: string }) {
+  if (segment !== "(index)") return null;
+
+  return <Stack.Screen name="settings" options={{ headerShown: true }} />;
 }

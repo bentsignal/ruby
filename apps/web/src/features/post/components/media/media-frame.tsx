@@ -23,34 +23,54 @@ export function MediaFrame({
         className,
       )}
     >
-      {media.mediaType === "video" ? (
-        <video
-          className="max-h-full max-w-full object-contain"
-          controls
-          playsInline
-          src={media.url}
-          onLoadedMetadata={(event) =>
-            reportNaturalSize(
-              index,
-              event.currentTarget.videoWidth,
-              event.currentTarget.videoHeight,
-            )
-          }
-        />
-      ) : (
-        <Image
-          alt={media.alt}
-          className="size-full object-cover"
-          height={1200}
-          layout="constrained"
-          src={media.url}
-          width={1200}
-          onLoad={(event) => {
-            const target = event.currentTarget;
-            reportNaturalSize(index, target.naturalWidth, target.naturalHeight);
-          }}
-        />
-      )}
+      <MediaFrameContent
+        index={index}
+        media={media}
+        reportNaturalSize={reportNaturalSize}
+      />
     </div>
+  );
+}
+
+function MediaFrameContent({
+  index,
+  media,
+  reportNaturalSize,
+}: {
+  index: number;
+  media: PostMediaItem;
+  reportNaturalSize: (index: number, width: number, height: number) => void;
+}) {
+  if (media.mediaType === "video") {
+    return (
+      <video
+        className="max-h-full max-w-full object-contain"
+        controls
+        playsInline
+        src={media.url}
+        onLoadedMetadata={(event) =>
+          reportNaturalSize(
+            index,
+            event.currentTarget.videoWidth,
+            event.currentTarget.videoHeight,
+          )
+        }
+      />
+    );
+  }
+
+  return (
+    <Image
+      alt={media.alt}
+      className="size-full object-cover"
+      height={1200}
+      layout="constrained"
+      src={media.url}
+      width={1200}
+      onLoad={(event) => {
+        const target = event.currentTarget;
+        reportNaturalSize(index, target.naturalWidth, target.naturalHeight);
+      }}
+    />
   );
 }

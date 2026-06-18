@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 
 import { cn } from "@acme/std/cn";
 import { Button } from "@acme/ui-web/button";
@@ -53,31 +53,12 @@ function LightboxContent() {
           onClick={() => setActiveIndex(activeIndex - 1)}
         />
         <div className="flex h-full min-h-0 items-center justify-center overflow-hidden">
-          {activeItem.mediaType === "video" ? (
-            <video
-              className="h-auto max-h-full w-auto max-w-full rounded-md object-contain"
-              controls
-              playsInline
-              src={activeItem.url}
-            />
-          ) : (
-            <Image
-              alt={activeItem.alt}
-              className="!h-auto !max-h-full !w-auto !max-w-full rounded-md object-contain"
-              height={naturalSize.height}
-              layout="constrained"
-              src={activeItem.url}
-              width={naturalSize.width}
-              onLoad={(event) => {
-                const target = event.currentTarget;
-                reportNaturalSize(
-                  activeIndex,
-                  target.naturalWidth,
-                  target.naturalHeight,
-                );
-              }}
-            />
-          )}
+          <ActiveLightboxMedia
+            activeIndex={activeIndex}
+            media={activeItem}
+            naturalSize={naturalSize}
+            reportNaturalSize={reportNaturalSize}
+          />
         </div>
         <NavButton
           direction="next"
@@ -85,9 +66,63 @@ function LightboxContent() {
           onClick={() => setActiveIndex(activeIndex + 1)}
         />
       </div>
-      {mediaItems.length > 1 && <ThumbnailStrip />}
+      <ThumbnailStripHost />
     </div>
   );
+}
+
+function ActiveLightboxMedia({
+  activeIndex,
+  media,
+  naturalSize,
+  reportNaturalSize,
+}: {
+  activeIndex: number;
+  media: {
+    alt: string;
+    mediaType: string;
+    url: string;
+  };
+  naturalSize: { height: number; width: number };
+  reportNaturalSize: (index: number, width: number, height: number) => void;
+}) {
+  if (media.mediaType === "video") {
+    return (
+      <video
+        className="h-auto max-h-full w-auto max-w-full rounded-md object-contain"
+        controls
+        playsInline
+        src={media.url}
+      />
+    );
+  }
+
+  return (
+    <Image
+      alt={media.alt}
+      className="!h-auto !max-h-full !w-auto !max-w-full rounded-md object-contain"
+      height={naturalSize.height}
+      layout="constrained"
+      src={media.url}
+      width={naturalSize.width}
+      onLoad={(event) => {
+        const target = event.currentTarget;
+        reportNaturalSize(
+          activeIndex,
+          target.naturalWidth,
+          target.naturalHeight,
+        );
+      }}
+    />
+  );
+}
+
+function ThumbnailStripHost() {
+  const mediaItems = useMediaStore((store) => store.mediaItems);
+
+  if (mediaItems.length <= 1) return null;
+
+  return <ThumbnailStrip />;
 }
 
 function NavButton({
@@ -136,15 +171,33 @@ function ThumbnailStrip() {
           onClick={() => setActiveIndex(index)}
           type="button"
         >
-          <Image
-            alt=""
-            className="size-full object-cover"
-            height={64}
-            src={media.url}
-            width={64}
-          />
+          <ThumbnailMedia media={media} />
         </button>
       ))}
     </div>
+  );
+}
+
+function ThumbnailMedia({
+  media,
+}: {
+  media: { mediaType: string; url: string };
+}) {
+  if (media.mediaType === "video") {
+    return (
+      <span className="grid size-full place-items-center bg-white/10">
+        <Play className="size-5 text-white" />
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      alt=""
+      className="size-full object-cover"
+      height={64}
+      src={media.url}
+      width={64}
+    />
   );
 }

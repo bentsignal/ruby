@@ -3,7 +3,6 @@ import { createStore } from "rostra";
 
 import type { PostMediaItem } from "../../store";
 
-/** Tallest (portrait) and widest (landscape) display ratios we allow. */
 const MIN_ASPECT_RATIO = 4 / 5;
 const MAX_ASPECT_RATIO = 1.91;
 const DEFAULT_ASPECT_RATIO = 4 / 5;

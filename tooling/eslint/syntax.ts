@@ -83,6 +83,18 @@ const strictReactSyntaxSelectors = [
     message:
       "Do not assign JSX to a variable inside a component or hook. Extract it to its own component function so the React Compiler can optimize it.",
   },
+  {
+    selector:
+      "ReturnStatement :matches(JSXElement, JSXFragment) > JSXExpressionContainer > ConditionalExpression",
+    message:
+      "Do not conditionally render JSX inside return statements. Make sure this conditional rendering is in its own separate component with an early return instead.",
+  },
+  {
+    selector:
+      "ReturnStatement :matches(JSXElement, JSXFragment) > JSXExpressionContainer > LogicalExpression[operator='&&']",
+    message:
+      "Do not conditionally render JSX inside return statements. Make sure this conditional rendering is in its own separate component with an early return instead.",
+  },
 ] as const;
 
 const reactImportRestrictions = [

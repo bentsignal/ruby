@@ -121,13 +121,25 @@ function LocationPickerFrame({
   return (
     <>
       {children}
-      {isSearchOpen ? (
-        <LocationSearchSheet
-          isOpen={isSearchOpen}
-          onOpenChange={setIsSearchOpen}
-        />
-      ) : null}
+      <LocationSearchSheetHost
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      />
     </>
+  );
+}
+
+function LocationSearchSheetHost({
+  isSearchOpen,
+  setIsSearchOpen,
+}: {
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isOpen: boolean) => void;
+}) {
+  if (!isSearchOpen) return null;
+
+  return (
+    <LocationSearchSheet isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
   );
 }
 

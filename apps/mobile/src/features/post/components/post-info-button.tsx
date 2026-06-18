@@ -3,11 +3,8 @@ import { useRouter } from "expo-router";
 import { Info } from "lucide-react-native";
 
 import { useColor } from "~/hooks/use-color";
+import { createPostDetailsParams } from "../details/params";
 import { usePostStore } from "../store";
-
-function optionalCoordinate(value?: number) {
-  return typeof value === "number" ? String(value) : "";
-}
 
 export function PostInfoButton() {
   const createdAt = usePostStore((store) => store.createdAt);
@@ -18,14 +15,7 @@ export function PostInfoButton() {
   function openDetails() {
     router.push({
       pathname: "/post-details",
-      params: {
-        createdAt: String(createdAt),
-        formattedAddress: location?.formattedAddress ?? "",
-        googlePlaceId: location?.googlePlaceId ?? "",
-        latitude: optionalCoordinate(location?.latitude),
-        locationName: location?.name ?? "",
-        longitude: optionalCoordinate(location?.longitude),
-      },
+      params: createPostDetailsParams({ createdAt, location }),
     });
   }
 

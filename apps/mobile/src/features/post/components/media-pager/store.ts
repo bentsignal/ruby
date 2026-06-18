@@ -1,0 +1,93 @@
+import { useEffect, useState } from "react";
+import { Animated, Image, useWindowDimensions } from "react-native";
+import { createStore } from "rostra";
+
+import { usePostStore } from "../../store";
+
+const MIN_ASPECT_RATIO = 4 / 5;
+const MAX_ASPECT_RATIO = 1.91;
+const DEFAULT_ASPECT_RATIO = 4 / 5;
+
+function clampAspectRatio(ratio: number) {
+  if (!Number.isFinite(ratio) || ratio <= 0) return DEFAULT_ASPECT_RATIO;
+  return Math.min(MAX_ASPECT_RATIO, Math.max(MIN_ASPECT_RATIO, ratio));
+}
+
+function useInternalStore() {
+  const mediaItems = usePostStore((store) => store.mediaItems);
+  const { width } = useWindowDimensions();
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  const [overlayOpacity] = useState(() => new Animated.Value(1));
+
+  const firstImageUrl = mediaItems.find(
+    (media) => media.mediaType === "image",
+  )?.url;
+
+  // eslint-disable-next-line no-restricted-syntax -- Measures remote media after render.
+  useEffect(() => {
+    if (!firstImageUrl) return;
+
+    let active = true;
+    Image.getSize(
+      firstImageUrl,
+      (imageWidth, imageHeight) => {
+        if (!active) return;
+        setAspectRatio(clampAspectRatio(imageWidth / imageHeight));
+      },
+      () => undefined,
+    );
+
+    return () => {
+      active = false;
+    };
+  }, [firstImageUrl]);
+
+  // eslint-disable-next-line no-restricted-syntax -- Runs the native counter fade sequence.
+  useEffect(() => {
+    overlayOpacity.stopAnimation();
+    if (isScrolling) {
+      overlayOpacity.setValue(1);
+      return;
+    }
+
+    const animation = Animated.sequence([
+      Animated.delay(5_000),
+      Animated.timing(overlayOpacity, {
+        duration: 400,
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+    ]);
+    animation.start();
+
+    return () => animation.stop();
+  }, [activeIndex, isScrolling, overlayOpacity]);
+
+  function openViewer(index: number) {
+    setViewerIndex(index);
+  }
+
+  function closeViewer() {
+    setViewerIndex(null);
+  }
+
+  return {
+    activeIndex,
+    closeViewer,
+    height: Math.round(width / (aspectRatio ?? DEFAULT_ASPECT_RATIO)),
+    isMulti: mediaItems.length > 1,
+    mediaItems,
+    openViewer,
+    overlayOpacity,
+    selectPage: setActiveIndex,
+    setPageIsScrolling: setIsScrolling,
+    viewerIndex,
+    width,
+  };
+}
+
+export const { Store: MediaPagerStore, useStore: useMediaPagerStore } =
+  createStore(useInternalStore);

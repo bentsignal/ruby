@@ -1,24 +1,13 @@
 import { useState } from "react";
 import { CalendarDays, Info, MapPin } from "lucide-react";
 
-import { googleMapsWebUrl } from "@acme/std/maps";
 import * as Dialog from "@acme/ui-web/dialog";
 
-import { usePostStore } from "../store";
-
-function formatFullDate(timestamp: number) {
-  return new Date(timestamp).toLocaleString(undefined, {
-    dateStyle: "long",
-    timeStyle: "short",
-  });
-}
+import { usePostDetails } from "../hooks/use-post-details";
 
 export function PostInfoButton() {
-  const createdAt = usePostStore((store) => store.createdAt);
-  const location = usePostStore((store) => store.location);
+  const { formattedDate } = usePostDetails();
   const [isOpen, setIsOpen] = useState(false);
-
-  const locationLabel = location?.name ?? location?.formattedAddress ?? null;
 
   return (
     <Dialog.Container open={isOpen} onOpenChange={setIsOpen}>
@@ -33,21 +22,29 @@ export function PostInfoButton() {
         <div className="flex flex-col gap-3 text-sm">
           <div className="flex items-center gap-3">
             <CalendarDays className="text-muted-foreground size-5 shrink-0" />
-            <span>{formatFullDate(createdAt)}</span>
+            <span>{formattedDate}</span>
           </div>
-          {locationLabel && location && (
-            <a
-              className="text-secondary hover:text-secondary/80 flex items-center gap-3 font-semibold transition-colors"
-              href={googleMapsWebUrl(location)}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <MapPin className="size-5 shrink-0" />
-              <span>{locationLabel}</span>
-            </a>
-          )}
+          <PostLocationLink />
         </div>
       </Dialog.Content>
     </Dialog.Container>
+  );
+}
+
+function PostLocationLink() {
+  const { locationLabel, mapUrl } = usePostDetails();
+
+  if (!locationLabel || !mapUrl) return null;
+
+  return (
+    <a
+      className="text-secondary hover:text-secondary/80 flex items-center gap-3 font-semibold transition-colors"
+      href={mapUrl}
+      rel="noreferrer"
+      target="_blank"
+    >
+      <MapPin className="size-5 shrink-0" />
+      <span>{locationLabel}</span>
+    </a>
   );
 }

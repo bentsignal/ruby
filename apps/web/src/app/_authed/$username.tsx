@@ -75,14 +75,20 @@ function ProfilePostList() {
   });
   return (
     <div className="flex min-h-screen flex-col gap-6 pb-28">
-      {posts.length === 0 && (
-        <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
-          No posts yet.
-        </div>
-      )}
+      <EmptyPosts posts={posts} />
       {posts.map((post) => (
         <Post key={post._id} post={post} />
       ))}
+    </div>
+  );
+}
+
+function EmptyPosts({ posts }: { posts: unknown[] }) {
+  if (posts.length > 0) return null;
+
+  return (
+    <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
+      No posts yet.
     </div>
   );
 }

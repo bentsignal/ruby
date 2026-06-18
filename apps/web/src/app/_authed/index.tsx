@@ -34,17 +34,25 @@ function HomePostList({ posts }: { posts: UIPost[] }) {
         layout="fixed"
         width={48}
       />
-      {posts.length === 0 ? (
-        <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
-          No posts yet.
-        </div>
-      ) : (
-        <div className="flex flex-col gap-10">
-          {posts.map((post) => (
-            <Post key={post._id} post={post} />
-          ))}
-        </div>
-      )}
+      <HomePosts posts={posts} />
+    </div>
+  );
+}
+
+function HomePosts({ posts }: { posts: UIPost[] }) {
+  if (posts.length === 0) {
+    return (
+      <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
+        No posts yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-10">
+      {posts.map((post) => (
+        <Post key={post._id} post={post} />
+      ))}
     </div>
   );
 }

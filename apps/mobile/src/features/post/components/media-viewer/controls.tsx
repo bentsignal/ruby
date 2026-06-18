@@ -117,15 +117,19 @@ function ThumbnailButton({
       ].join(" ")}
       onPress={onPress}
     >
-      {media.mediaType === "video" ? (
-        <Play color="white" size={20} />
-      ) : (
-        <Image
-          className="size-full"
-          resizeMode="cover"
-          source={{ uri: media.url }}
-        />
-      )}
+      <ThumbnailMedia media={media} />
     </Pressable>
+  );
+}
+
+function ThumbnailMedia({ media }: { media: PostMediaItem }) {
+  if (media.mediaType === "video") return <Play color="white" size={20} />;
+
+  return (
+    <Image
+      className="size-full"
+      resizeMode="cover"
+      source={{ uri: media.url }}
+    />
   );
 }

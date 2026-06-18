@@ -22,10 +22,6 @@ function searchQuery(location: MapsLocation) {
   );
 }
 
-/**
- * A Google Maps URL that works in any browser. Prefers the exact place via
- * `query_place_id`, falling back to a name/coordinate search.
- */
 export function googleMapsWebUrl(location: MapsLocation) {
   const params = new URLSearchParams({
     api: "1",
@@ -39,10 +35,6 @@ export function googleMapsWebUrl(location: MapsLocation) {
   return `https://www.google.com/maps/search/?${params.toString()}`;
 }
 
-/**
- * An Apple Maps URL (iOS). Uses the place name as the label and pins the exact
- * coordinates when available.
- */
 export function appleMapsUrl(location: MapsLocation) {
   const params = new URLSearchParams();
   const label = searchQuery(location);
@@ -54,9 +46,6 @@ export function appleMapsUrl(location: MapsLocation) {
   return `https://maps.apple.com/?${params.toString()}`;
 }
 
-/**
- * An Android `geo:` URL that hands off to the user's default maps app.
- */
 export function androidGeoUrl(location: MapsLocation) {
   const label = searchQuery(location);
   const coordinates = coordinatePair(location);
