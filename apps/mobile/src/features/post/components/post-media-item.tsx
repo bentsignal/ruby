@@ -1,30 +1,20 @@
 import { Image, Text, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS, useSharedValue } from "react-native-reanimated";
+import { GestureDetector } from "react-native-gesture-handler";
 import { Play } from "lucide-react-native";
 
 import type { PostMediaItem as UIPostMediaItem } from "../store";
 import { useColor } from "~/hooks/use-color";
+import { usePostMediaPinchOpen } from "../hooks/use-post-media-pinch-open";
 
 export function PostMediaItem({
+  index,
   media,
-  onPinchOpen,
 }: {
+  index: number;
   media: UIPostMediaItem;
-  onPinchOpen?: () => void;
 }) {
   const foreground = useColor("muted-foreground");
-  const hasOpened = useSharedValue(false);
-
-  const pinch = Gesture.Pinch()
-    .onBegin(() => {
-      hasOpened.value = false;
-    })
-    .onUpdate((event) => {
-      if (event.scale <= 1.08 || hasOpened.value || !onPinchOpen) return;
-      hasOpened.value = true;
-      runOnJS(onPinchOpen)();
-    });
+  const pinch = usePostMediaPinchOpen(index);
 
   if (media.mediaType === "video") {
     return (

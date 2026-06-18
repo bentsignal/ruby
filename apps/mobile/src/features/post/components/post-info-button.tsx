@@ -1,23 +1,12 @@
 import { Pressable } from "react-native";
-import { useRouter } from "expo-router";
 import { Info } from "lucide-react-native";
 
 import { useColor } from "~/hooks/use-color";
-import { createPostDetailsParams } from "../details/params";
-import { usePostStore } from "../store";
+import { useOpenPostDetails } from "../details/use-open-post-details";
 
 export function PostInfoButton() {
-  const createdAt = usePostStore((store) => store.createdAt);
-  const location = usePostStore((store) => store.location);
   const mutedForeground = useColor("muted-foreground");
-  const router = useRouter();
-
-  function openDetails() {
-    router.push({
-      pathname: "/post-details",
-      params: createPostDetailsParams({ createdAt, location }),
-    });
-  }
+  const openDetails = useOpenPostDetails();
 
   return (
     <Pressable

@@ -30,16 +30,10 @@ export function PostMediaLightbox() {
 function LightboxContent() {
   const activeIndex = useMediaStore((store) => store.activeIndex);
   const mediaItems = useMediaStore((store) => store.mediaItems);
-  const naturalSizes = useMediaStore((store) => store.naturalSizes);
-  const reportNaturalSize = useMediaStore((store) => store.reportNaturalSize);
   const setActiveIndex = useMediaStore((store) => store.setActiveIndex);
 
   const activeItem = mediaItems[activeIndex];
   if (!activeItem) return null;
-  const naturalSize = naturalSizes[activeIndex] ?? {
-    height: 1200,
-    width: 1600,
-  };
 
   return (
     <div className="grid h-full min-h-0 grid-rows-[24px_minmax(0,1fr)_80px] gap-3">
@@ -53,12 +47,7 @@ function LightboxContent() {
           onClick={() => setActiveIndex(activeIndex - 1)}
         />
         <div className="flex h-full min-h-0 items-center justify-center overflow-hidden">
-          <ActiveLightboxMedia
-            activeIndex={activeIndex}
-            media={activeItem}
-            naturalSize={naturalSize}
-            reportNaturalSize={reportNaturalSize}
-          />
+          <ActiveLightboxMedia />
         </div>
         <NavButton
           direction="next"
@@ -71,21 +60,19 @@ function LightboxContent() {
   );
 }
 
-function ActiveLightboxMedia({
-  activeIndex,
-  media,
-  naturalSize,
-  reportNaturalSize,
-}: {
-  activeIndex: number;
-  media: {
-    alt: string;
-    mediaType: string;
-    url: string;
+function ActiveLightboxMedia() {
+  const activeIndex = useMediaStore((store) => store.activeIndex);
+  const mediaItems = useMediaStore((store) => store.mediaItems);
+  const naturalSizes = useMediaStore((store) => store.naturalSizes);
+  const reportNaturalSize = useMediaStore((store) => store.reportNaturalSize);
+
+  const media = mediaItems[activeIndex];
+  if (!media) return null;
+  const naturalSize = naturalSizes[activeIndex] ?? {
+    height: 1200,
+    width: 1600,
   };
-  naturalSize: { height: number; width: number };
-  reportNaturalSize: (index: number, width: number, height: number) => void;
-}) {
+
   if (media.mediaType === "video") {
     return (
       <video

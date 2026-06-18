@@ -6,18 +6,17 @@ import { MediaFrame } from "./media-frame";
 import { useMediaStore } from "./store";
 
 export function PostMediaCarousel() {
-  const activeIndex = useMediaStore((store) => store.activeIndex);
   const aspectRatio = useMediaStore((store) => store.aspectRatio);
   const mediaItems = useMediaStore((store) => store.mediaItems);
-  const openLightbox = useMediaStore((store) => store.openLightbox);
   const scrollRef = useMediaStore((store) => store.scrollRef);
-  const setActiveIndex = useMediaStore((store) => store.setActiveIndex);
+  const syncActiveIndexFromScroll = useMediaStore(
+    (store) => store.syncActiveIndexFromScroll,
+  );
 
   function handleScroll() {
     const element = scrollRef.current;
     if (!element) return;
-    const index = Math.round(element.scrollLeft / element.clientWidth);
-    if (index !== activeIndex) setActiveIndex(index);
+    syncActiveIndexFromScroll(element.scrollLeft, element.clientWidth);
   }
 
   return (
@@ -36,11 +35,7 @@ export function PostMediaCarousel() {
             key={`${media.url}-${index}`}
           >
             <MediaFrame index={index} media={media} />
-            <OpenImageButton
-              index={index}
-              media={media}
-              openLightbox={openLightbox}
-            />
+            <OpenImageButton index={index} media={media} />
           </div>
         ))}
       </div>
@@ -53,12 +48,12 @@ export function PostMediaCarousel() {
 function OpenImageButton({
   index,
   media,
-  openLightbox,
 }: {
   index: number;
   media: { mediaType: string };
-  openLightbox: (index: number) => void;
 }) {
+  const openLightbox = useMediaStore((store) => store.openLightbox);
+
   if (media.mediaType !== "image") return null;
 
   return (

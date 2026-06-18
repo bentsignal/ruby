@@ -17,7 +17,6 @@ function PostMediaPagerContent() {
   const closeViewer = useMediaPagerStore((store) => store.closeViewer);
   const height = useMediaPagerStore((store) => store.height);
   const mediaItems = useMediaPagerStore((store) => store.mediaItems);
-  const openViewer = useMediaPagerStore((store) => store.openViewer);
   const selectPage = useMediaPagerStore((store) => store.selectPage);
   const setPageIsScrolling = useMediaPagerStore(
     (store) => store.setPageIsScrolling,
@@ -40,8 +39,8 @@ function PostMediaPagerContent() {
           {mediaItems.map((media, index) => (
             <PostMediaItem
               key={`${media.url}-${index}`}
+              index={index}
               media={media}
-              onPinchOpen={() => openViewer(index)}
             />
           ))}
         </PagerView>

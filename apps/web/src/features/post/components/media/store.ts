@@ -46,6 +46,11 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     setIsLightboxOpen(true);
   }
 
+  function syncActiveIndexFromScroll(scrollLeft: number, clientWidth: number) {
+    const index = Math.round(scrollLeft / clientWidth);
+    if (index !== activeIndex) setActiveIndex(index);
+  }
+
   return {
     activeIndex,
     aspectRatio: aspectRatio ?? DEFAULT_ASPECT_RATIO,
@@ -58,6 +63,7 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     reportNaturalSize,
     scrollRef,
     setActiveIndex,
+    syncActiveIndexFromScroll,
   };
 }
 
