@@ -1,19 +1,17 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 
-import type { ResolvedLocation } from "@acme/convex/places/types";
-
 import type { ComposerItem } from "../types";
 import { resetCaptionDraft } from "../lib/caption-draft";
 
 export function useComposerReset({
+  resetLocation,
   setCaptionState,
   setItems,
-  setLocation,
 }: {
+  resetLocation: () => void;
   setCaptionState: (caption: string) => void;
   setItems: Dispatch<SetStateAction<ComposerItem[]>>;
-  setLocation: (location: ResolvedLocation | null) => void;
 }) {
   const [resetKey, setResetKey] = useState(0);
 
@@ -21,7 +19,7 @@ export function useComposerReset({
     resetCaptionDraft();
     setItems([]);
     setCaptionState("");
-    setLocation(null);
+    resetLocation();
     setResetKey((current) => current + 1);
   }
 

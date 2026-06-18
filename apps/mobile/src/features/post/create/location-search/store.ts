@@ -14,8 +14,20 @@ function useInternalStore({
 }) {
   const foreground = useColor("foreground");
   const mutedForeground = useColor("muted-foreground");
+  const finishLocationResolve = useCreateStore(
+    (store) => store.finishLocationResolve,
+  );
   const setLocation = useCreateStore((store) => store.setLocation);
-  const search = useLocationSearchState({ isOpen, onOpenChange, setLocation });
+  const startLocationResolve = useCreateStore(
+    (store) => store.startLocationResolve,
+  );
+  const search = useLocationSearchState({
+    isOpen,
+    onOpenChange,
+    onResolveEnd: finishLocationResolve,
+    onResolveStart: startLocationResolve,
+    setLocation,
+  });
 
   return {
     foreground,

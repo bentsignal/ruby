@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -21,6 +21,8 @@ import {
 import { pickComposerFiles } from "./lib/pick-composer-files";
 import { createPostLocation } from "./lib/post-location";
 
+const LOCATION_REVEAL_DELAY_MS = 100;
+
 function useInternalStore() {
   const createPost = useConvexMutation(api.posts.mutations.create);
   const foreground = useColor("foreground");
@@ -32,10 +34,11 @@ function useInternalStore() {
   });
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const locationResolve = useLocationResolveState({ setLocation });
   const { resetComposer, resetKey } = useComposerReset({
     setCaptionState,
     setItems,
-    setLocation,
+    resetLocation: locationResolve.clearLocation,
   });
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
@@ -107,6 +110,7 @@ function useInternalStore() {
     confirmPost,
     foreground,
     hasUploadingItems,
+    isLocationResolving: locationResolve.isLocationResolving,
     isPosting,
     items,
     location,
@@ -116,10 +120,57 @@ function useInternalStore() {
     resetKey,
     removeItem,
     retryItem,
-    clearLocation: () => setLocation(null),
+    clearLocation: locationResolve.clearLocation,
+    finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
     setCaptionDraft,
-    setLocation,
+    setLocation: locationResolve.setLocation,
+    startLocationResolve: locationResolve.startLocationResolve,
+  };
+}
+
+function useLocationResolveState({
+  setLocation,
+}: {
+  setLocation: (location: ResolvedLocation | null) => void;
+}) {
+  const [isLocationResolving, setIsLocationResolving] = useState(false);
+  const locationRevealTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  function clearLocationRevealTimeout() {
+    if (!locationRevealTimeoutRef.current) return;
+    clearTimeout(locationRevealTimeoutRef.current);
+    locationRevealTimeoutRef.current = null;
+  }
+
+  // eslint-disable-next-line no-restricted-syntax -- Clears a pending delayed location reveal when the composer unmounts.
+  useEffect(() => {
+    return clearLocationRevealTimeout;
+  }, []);
+
+  return {
+    isLocationResolving,
+    clearLocation: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(false);
+    },
+    finishLocationResolve: () => setIsLocationResolving(false),
+    setLocation: (nextLocation: ResolvedLocation) => {
+      clearLocationRevealTimeout();
+      setLocation(nextLocation);
+      locationRevealTimeoutRef.current = setTimeout(() => {
+        locationRevealTimeoutRef.current = null;
+        setIsLocationResolving(false);
+      }, LOCATION_REVEAL_DELAY_MS);
+    },
+    startLocationResolve: () => {
+      clearLocationRevealTimeout();
+      setLocation(null);
+      setIsLocationResolving(true);
+    },
   };
 }
 

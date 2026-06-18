@@ -17,6 +17,9 @@ export function LocationField() {
 
 function LocationPicker() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const isLocationResolving = useCreateStore(
+    (store) => store.isLocationResolving,
+  );
   const location = useCreateStore((store) => store.location);
   const clearLocation = useCreateStore((store) => store.clearLocation);
   const foreground = useColor("foreground");
@@ -24,6 +27,17 @@ function LocationPicker() {
 
   function openSearch() {
     setIsSearchOpen(true);
+  }
+
+  if (isLocationResolving) {
+    return (
+      <LocationPickerFrame
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      >
+        <LocationShell foreground={foreground} />
+      </LocationPickerFrame>
+    );
   }
 
   if (!location) {
@@ -50,14 +64,11 @@ function LocationPicker() {
       isSearchOpen={isSearchOpen}
       setIsSearchOpen={setIsSearchOpen}
     >
-      <View className="bg-card border-border min-h-14 flex-row items-center gap-3 rounded-lg border px-3 py-2">
+      <LocationShell foreground={foreground}>
         <Pressable
           className="min-w-0 flex-1 flex-row items-center gap-3"
           onPress={openSearch}
         >
-          <View className="bg-secondary size-9 items-center justify-center rounded-full">
-            <MapPin color={foreground} size={16} />
-          </View>
           <View className="min-w-0 flex-1">
             <Text
               className="text-foreground text-sm font-bold"
@@ -76,8 +87,25 @@ function LocationPicker() {
         >
           <X color={mutedForeground} size={18} />
         </Pressable>
-      </View>
+      </LocationShell>
     </LocationPickerFrame>
+  );
+}
+
+function LocationShell({
+  children,
+  foreground,
+}: {
+  children?: React.ReactNode;
+  foreground: string;
+}) {
+  return (
+    <View className="bg-card border-border min-h-14 flex-row items-center gap-3 rounded-lg border px-3 py-2">
+      <View className="bg-secondary size-9 items-center justify-center rounded-full">
+        <MapPin color={foreground} size={16} />
+      </View>
+      {children}
+    </View>
   );
 }
 
