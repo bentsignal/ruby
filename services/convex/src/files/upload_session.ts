@@ -48,10 +48,11 @@ export function getUploadKey(args: {
   uploadId: string;
   userId: string;
 }) {
-  const storageKeyPrefix = createStorageKeyPrefix();
+  const storageKeyPrefix = createStorageKeyPrefix({
+    environment: env.ENVIRONMENT,
+  });
   return [
-    ...(storageKeyPrefix ? [storageKeyPrefix] : []),
-    "posts",
+    storageKeyPrefix,
     args.userId,
     `${args.now}-${args.uploadId}.${getExtension(args.fileName)}`,
   ].join("/");

@@ -9,6 +9,9 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as devSeed from "../devSeed.js";
+import type * as devSeedFixtures from "../devSeedFixtures.js";
+import type * as devSeedWrites from "../devSeedWrites.js";
 import type * as files_bunny from "../files/bunny.js";
 import type * as files_http from "../files/http.js";
 import type * as files_internal from "../files/internal.js";
@@ -58,6 +61,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  devSeed: typeof devSeed;
+  devSeedFixtures: typeof devSeedFixtures;
+  devSeedWrites: typeof devSeedWrites;
   "files/bunny": typeof files_bunny;
   "files/http": typeof files_http;
   "files/internal": typeof files_internal;

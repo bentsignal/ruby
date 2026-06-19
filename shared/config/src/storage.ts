@@ -1,9 +1,10 @@
 import { worktreeId as overrideWorktreeId } from "./overrides";
 import { normalizeWorktreeId } from "./worktrees";
 
-const WORKTREE_STORAGE_ROOT = "work-trees";
+const POST_STORAGE_ROOT = "posts";
 
 interface StorageKeyPrefixOptions {
+  environment?: "development" | "preview" | "production" | "test";
   worktreeId?: string;
 }
 
@@ -12,9 +13,13 @@ export function createStorageKeyPrefix(options: StorageKeyPrefixOptions = {}) {
     options.worktreeId ?? overrideWorktreeId,
   );
 
-  if (!worktreeId) {
-    return undefined;
+  if (options.environment === "production") {
+    return [POST_STORAGE_ROOT, "prod"].join("/");
   }
 
-  return [WORKTREE_STORAGE_ROOT, worktreeId].join("/");
+  if (worktreeId) {
+    return [POST_STORAGE_ROOT, "dev", "worktrees", worktreeId].join("/");
+  }
+
+  return [POST_STORAGE_ROOT, "dev"].join("/");
 }
