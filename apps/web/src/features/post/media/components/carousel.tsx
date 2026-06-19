@@ -25,7 +25,7 @@ export function PostMediaCarousel() {
 
   return (
     <div
-      className="group bg-muted ring-border/60 relative overflow-hidden rounded-2xl ring-1"
+      className="group ring-border/60 relative overflow-hidden rounded-2xl ring-1"
       style={{ aspectRatio }}
     >
       <div
