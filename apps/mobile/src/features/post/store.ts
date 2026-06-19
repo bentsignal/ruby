@@ -19,16 +19,10 @@ function useInternalStore({ post }: PostStoreProps) {
 }
 
 function getPostMediaItems(post: UIPost) {
-  return [
-    ...post.files.map((file) => ({
-      mediaType: file.mediaType,
-      url: file.url,
-    })),
-    ...post.images.map((image) => ({
-      mediaType: "image" as const,
-      url: image.url,
-    })),
-  ];
+  return post.files.map((file) => ({
+    mediaType: file.mediaType,
+    url: file.url,
+  }));
 }
 
 export const { Store: PostStore, useStore: usePostStore } =

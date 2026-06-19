@@ -59,8 +59,8 @@ function useInternalStore() {
     try {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
       await createPost({
+        attachments: uploadedFiles.map((file) => file._id),
         caption: caption.trim() || undefined,
-        fileIds: uploadedFiles.map((file) => file._id),
         location: createPostLocation(location),
       });
       await queryClient.invalidateQueries({

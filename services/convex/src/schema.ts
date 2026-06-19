@@ -2,18 +2,14 @@ import { defineSchema, defineTable } from "convex/server";
 
 import { vFile } from "./files/validators";
 import { vFriendship } from "./friends/validators";
-import { vImage } from "./images/validators";
 import { vUserPermissions } from "./permissions/validators";
 import { vPost } from "./posts/validators";
 import { vProfile } from "./profile/validators";
-import { vTrip } from "./trips/validators";
 import { vWaitlistEntry } from "./waitlist/validators";
 
 export default defineSchema(
   {
-    trips: defineTable(vTrip),
     posts: defineTable(vPost).index("by_profileId", ["profileId"]),
-    images: defineTable(vImage),
     files: defineTable(vFile)
       .index("by_uploadedBy", ["uploadedBy"])
       .index("by_key", ["key"]),

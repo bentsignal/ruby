@@ -10,10 +10,8 @@ export const vPostLocation = v.object({
 });
 
 export const vPost = v.object({
-  tripId: v.optional(v.id("trips")),
   profileId: v.id("profiles"),
-  fileIds: v.optional(v.array(v.id("files"))),
-  imagesIds: v.optional(v.array(v.id("images"))),
+  attachments: v.optional(v.array(v.id("files"))),
   caption: v.optional(v.string()),
   location: v.optional(vPostLocation),
 });

@@ -83,8 +83,8 @@ function useInternalStore() {
       const uploadedFiles = await Promise.all(items.map(uploadItem));
       const latestCaption = readCaptionDraft().trim();
       await createPost({
+        attachments: uploadedFiles.map((file) => file._id),
         caption: latestCaption || undefined,
-        fileIds: uploadedFiles.map((file) => file._id),
         location: createPostLocation(location),
       });
       resetComposer();

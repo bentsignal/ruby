@@ -18,19 +18,19 @@ import { hasWhitespaceOrControlCharacter } from "../places/validation";
 
 export function validatePostInput(
   rawCaption: string | undefined,
-  fileIds: Id<"files">[],
+  attachments: Id<"files">[],
 ) {
   const caption = rawCaption?.trim();
-  if (!caption && fileIds.length === 0) {
+  if (!caption && attachments.length === 0) {
     throw new ConvexError("Add media or a caption before posting");
   }
   if (caption && caption.length > POST_CAPTION_MAX_LENGTH) {
     throw new ConvexError("Caption is too long");
   }
-  if (fileIds.length > POST_MAX_FILES) {
+  if (attachments.length > POST_MAX_FILES) {
     throw new ConvexError("Too many files");
   }
-  if (new Set(fileIds).size !== fileIds.length) {
+  if (new Set(attachments).size !== attachments.length) {
     throw new ConvexError("Duplicate files are not supported");
   }
   return caption;
@@ -38,9 +38,9 @@ export function validatePostInput(
 
 export async function validatePostFiles(
   ctx: AuthedMutationCtx,
-  fileIds: Id<"files">[],
+  attachments: Id<"files">[],
 ) {
-  for (const fileId of fileIds) {
+  for (const fileId of attachments) {
     const file = await ctx.db.get(fileId);
     if (!file) throw new ConvexError("File not found");
     if (file.uploadedBy !== ctx.myProfile._id) {
