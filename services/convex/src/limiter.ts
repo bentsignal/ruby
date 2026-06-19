@@ -9,6 +9,12 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: MINUTE,
     capacity: 70,
   },
+  likePost: {
+    kind: "token bucket",
+    rate: 30,
+    period: MINUTE,
+    capacity: 120,
+  },
   placesAutocomplete: {
     kind: "token bucket",
     rate: 60,

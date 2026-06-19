@@ -3,6 +3,7 @@ import PagerView from "react-native-pager-view";
 
 import { MediaViewerModal } from "../../media-viewer/components/media-viewer-modal";
 import { MediaPagerStore, useMediaPagerStore } from "../store";
+import { HeartOverlay } from "./heart-overlay";
 import { PostMediaItem } from "./post-media-item";
 
 export function PostMediaPager() {
@@ -28,7 +29,7 @@ function PostMediaPagerContent() {
 
   return (
     <View>
-      <View className="bg-muted overflow-hidden" style={{ height, width }}>
+      <View className="overflow-hidden" style={{ height, width }}>
         <PagerView
           style={{ flex: 1 }}
           onPageScrollStateChanged={(event) =>
@@ -46,6 +47,7 @@ function PostMediaPagerContent() {
         </PagerView>
 
         <MediaOverlayHost />
+        <HeartOverlay />
       </View>
 
       <MediaViewerModal

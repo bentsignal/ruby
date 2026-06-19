@@ -14,10 +14,17 @@ export async function getUIPosts(ctx: AuthedQueryCtx, posts: Doc<"posts">[]) {
       const files = fileResults
         .filter((file) => file !== null)
         .map(({ uploadToken: _uploadToken, ...file }) => file);
+      const myLike = await ctx.db
+        .query("likes")
+        .withIndex("by_profile_post", (q) =>
+          q.eq("profileId", ctx.myProfile._id).eq("postId", post._id),
+        )
+        .first();
       return {
         ...post,
         creator: profile ? getPublicProfile(profile) : DeletedProfile,
         files,
+        likedByMe: myLike !== null,
       };
     }),
   );

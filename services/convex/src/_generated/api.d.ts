@@ -22,6 +22,8 @@ import type * as friends_mutations from "../friends/mutations.js";
 import type * as friends_types from "../friends/types.js";
 import type * as friends_validators from "../friends/validators.js";
 import type * as http from "../http.js";
+import type * as likes_mutations from "../likes/mutations.js";
+import type * as likes_validators from "../likes/validators.js";
 import type * as limiter from "../limiter.js";
 import type * as permissions_helpers from "../permissions/helpers.js";
 import type * as permissions_queries from "../permissions/queries.js";
@@ -69,6 +71,8 @@ declare const fullApi: ApiFromModules<{
   "friends/types": typeof friends_types;
   "friends/validators": typeof friends_validators;
   http: typeof http;
+  "likes/mutations": typeof likes_mutations;
+  "likes/validators": typeof likes_validators;
   limiter: typeof limiter;
   "permissions/helpers": typeof permissions_helpers;
   "permissions/queries": typeof permissions_queries;

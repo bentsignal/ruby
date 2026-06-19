@@ -21,6 +21,7 @@ function useInternalStore() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [overlayOpacity] = useState(() => new Animated.Value(1));
+  const [heartPopKey, setHeartPopKey] = useState(0);
 
   const firstImageUrl = mediaItems.find(
     (media) => media.mediaType === "image",
@@ -74,16 +75,22 @@ function useInternalStore() {
     setViewerIndex(null);
   }
 
+  function triggerHeartPop() {
+    setHeartPopKey((key) => key + 1);
+  }
+
   return {
     activeIndex,
     closeViewer,
     height: Math.round(width / (aspectRatio ?? DEFAULT_ASPECT_RATIO)),
+    heartPopKey,
     isMulti: mediaItems.length > 1,
     mediaItems,
     openViewer,
     overlayOpacity,
     selectPage: setActiveIndex,
     setPageIsScrolling: setIsScrolling,
+    triggerHeartPop,
     viewerIndex,
     width,
   };

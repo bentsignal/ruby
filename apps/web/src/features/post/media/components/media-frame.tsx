@@ -18,10 +18,7 @@ export function MediaFrame({
 
   return (
     <div
-      className={cn(
-        "bg-muted flex size-full items-center justify-center",
-        className,
-      )}
+      className={cn("flex size-full items-center justify-center", className)}
     >
       <MediaFrameContent
         index={index}

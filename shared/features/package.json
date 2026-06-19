@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     "./friends": "./src/friends/index.ts",
+    "./post": "./src/post/index.ts",
     "./post-create/location-search-state": "./src/post-create/location-search-state.ts"
   },
   "license": "MIT",

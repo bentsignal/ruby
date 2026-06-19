@@ -2,6 +2,7 @@ import { defineSchema, defineTable } from "convex/server";
 
 import { vFile } from "./files/validators";
 import { vFriendship } from "./friends/validators";
+import { vLike } from "./likes/validators";
 import { vUserPermissions } from "./permissions/validators";
 import { vPost } from "./posts/validators";
 import { vProfile } from "./profile/validators";
@@ -21,6 +22,9 @@ export default defineSchema(
     friends: defineTable(vFriendship)
       .index("by_profileA", ["profileIdA"])
       .index("by_profileB", ["profileIdB"]),
+    likes: defineTable(vLike)
+      .index("by_post", ["postId"])
+      .index("by_profile_post", ["profileId", "postId"]),
     waitlist: defineTable(vWaitlistEntry).index("by_userId", ["userId"]),
   },
   { schemaValidation: true },

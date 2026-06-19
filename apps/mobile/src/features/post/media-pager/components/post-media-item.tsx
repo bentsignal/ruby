@@ -1,9 +1,10 @@
 import { Image, Text, View } from "react-native";
-import { GestureDetector } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Play } from "lucide-react-native";
 
 import type { PostMediaItem as UIPostMediaItem } from "../../store";
 import { useColor } from "~/hooks/use-color";
+import { usePostMediaDoubleTapLike } from "../hooks/use-post-media-double-tap-like";
 import { usePostMediaPinchOpen } from "../hooks/use-post-media-pinch-open";
 
 export function PostMediaItem({
@@ -15,6 +16,7 @@ export function PostMediaItem({
 }) {
   const foreground = useColor("muted-foreground");
   const pinch = usePostMediaPinchOpen(index);
+  const doubleTap = usePostMediaDoubleTapLike();
 
   if (media.mediaType === "video") {
     return (
@@ -26,8 +28,8 @@ export function PostMediaItem({
   }
 
   return (
-    <GestureDetector gesture={pinch}>
-      <View className="bg-muted flex-1">
+    <GestureDetector gesture={Gesture.Race(doubleTap, pinch)}>
+      <View className="flex-1">
         <Image
           className="size-full"
           resizeMode="cover"

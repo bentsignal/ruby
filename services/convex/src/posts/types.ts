@@ -12,4 +12,5 @@ export type UIPost = Omit<Post, "profileId"> & {
   _creationTime: number;
   creator: UIProfile;
   files: UIFile[];
+  likedByMe: boolean;
 };
