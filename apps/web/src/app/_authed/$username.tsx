@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_authed/$username")({
       }),
     ]);
 
-    return { initialPosts };
+    return { initialPosts: initialPosts.page };
   },
   component: ProfilePage,
 });
@@ -91,41 +91,25 @@ function ProfilePostList() {
     { username, order: "newest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );
-  const visiblePosts =
-    status === "LoadingFirstPage" ? initialPosts.page : posts;
-  const visibleStatus =
-    status === "LoadingFirstPage"
-      ? initialPosts.isDone
-        ? "Exhausted"
-        : "CanLoadMore"
-      : status;
+  const visiblePosts = status === "LoadingFirstPage" ? initialPosts : posts;
 
   return (
     <div className="flex flex-col gap-6">
-      <EmptyPosts loadingStatus={visibleStatus} posts={visiblePosts} />
+      <EmptyPosts posts={visiblePosts} />
       {visiblePosts.map((post) => (
         <Post key={post._id} post={post} />
       ))}
       <LoadMoreSentinel
-        loadingStatus={visibleStatus}
+        loadingStatus={status}
         loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
       />
-      <ProfilePostListFooter
-        loadingStatus={visibleStatus}
-        posts={visiblePosts}
-      />
+      <ProfilePostListFooter loadingStatus={status} posts={visiblePosts} />
     </div>
   );
 }
 
-function EmptyPosts({
-  loadingStatus,
-  posts,
-}: {
-  loadingStatus: PaginationStatus;
-  posts: UIPost[];
-}) {
-  if (loadingStatus === "LoadingFirstPage" || posts.length > 0) return null;
+function EmptyPosts({ posts }: { posts: UIPost[] }) {
+  if (posts.length > 0) return null;
 
   return (
     <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">

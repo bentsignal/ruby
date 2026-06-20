@@ -1,3 +1,4 @@
+import type { PaginationStatus } from "convex/react";
 import type { ReactElement } from "react";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
@@ -16,7 +17,6 @@ import { Radio } from "lucide-react-native";
 
 import type { UIPost } from "@acme/convex/posts/types";
 
-import type { PostListLoadingStatus } from "~/features/post/post-list-store";
 import { LoadingSpinner } from "~/components/loading-spinner";
 import { Post } from "~/features/post/components/post";
 import { usePostListStore } from "~/features/post/post-list-store";
@@ -95,7 +95,7 @@ function PostListEmpty({
   loadingStatus,
 }: {
   emptyText: string;
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
 }) {
   if (loadingStatus === "LoadingFirstPage") return null;
 

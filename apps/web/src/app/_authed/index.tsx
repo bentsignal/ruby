@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authed/")({
       },
     );
 
-    return { initialPosts };
+    return { initialPosts: initialPosts.page };
   },
   component: HomePage,
 });
@@ -43,18 +43,11 @@ function HomePage() {
     { order: "oldest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );
-  const visiblePosts =
-    status === "LoadingFirstPage" ? initialPosts.page : posts;
-  const visibleStatus =
-    status === "LoadingFirstPage"
-      ? initialPosts.isDone
-        ? "Exhausted"
-        : "CanLoadMore"
-      : status;
+  const visiblePosts = status === "LoadingFirstPage" ? initialPosts : posts;
 
   return (
     <HomePostList
-      loadingStatus={visibleStatus}
+      loadingStatus={status}
       loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
       posts={visiblePosts}
     />
@@ -91,7 +84,7 @@ function HomePosts({
   loadMore: () => void;
   posts: UIPost[];
 }) {
-  if (loadingStatus !== "LoadingFirstPage" && posts.length === 0) {
+  if (posts.length === 0) {
     return (
       <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
         No posts yet.
