@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { UIPost } from "@acme/convex/posts/types";
+import { POST_FEED_PAGE_SIZE } from "@acme/config/posts";
 
 interface PostsPage {
   page: UIPost[];
@@ -8,31 +9,29 @@ interface PostsPage {
   continueCursor: string;
 }
 
-type FetchPostsPage = (paginationOpts: {
+export type FetchPostsPage = (paginationOpts: {
   cursor: string | null;
   numItems: number;
 }) => Promise<PostsPage>;
 
-type LoadingStatus =
+export type PostListLoadingStatus =
   | "LoadingFirstPage"
   | "CanLoadMore"
   | "LoadingMore"
   | "Refreshing"
   | "Exhausted";
 
-const PAGE_SIZE = 10;
-
 function useStablePaginatedPosts(fetchPage: FetchPostsPage, resetKey: string) {
   const [posts, setPosts] = useState<UIPost[]>([]);
   const [loadingStatus, setLoadingStatus] =
-    useState<LoadingStatus>("LoadingFirstPage");
+    useState<PostListLoadingStatus>("LoadingFirstPage");
   const cursorRef = useRef<string | null>(null);
   const isDoneRef = useRef(false);
   const loadingMoreRef = useRef(false);
-  const loadingStatusRef = useRef<LoadingStatus>("LoadingFirstPage");
+  const loadingStatusRef = useRef<PostListLoadingStatus>("LoadingFirstPage");
   const requestIdRef = useRef(0);
 
-  function setNextLoadingStatus(status: LoadingStatus) {
+  function setNextLoadingStatus(status: PostListLoadingStatus) {
     loadingStatusRef.current = status;
     setLoadingStatus(status);
   }
@@ -52,7 +51,7 @@ function useStablePaginatedPosts(fetchPage: FetchPostsPage, resetKey: string) {
     try {
       const nextPage = await fetchPage({
         cursor: null,
-        numItems: PAGE_SIZE,
+        numItems: POST_FEED_PAGE_SIZE,
       });
       if (requestIdRef.current !== requestId) return;
 
@@ -94,7 +93,7 @@ function useStablePaginatedPosts(fetchPage: FetchPostsPage, resetKey: string) {
     try {
       const nextPage = await fetchPage({
         cursor: cursorRef.current,
-        numItems: PAGE_SIZE,
+        numItems: POST_FEED_PAGE_SIZE,
       });
       if (requestIdRef.current !== requestId) return;
 

@@ -2,12 +2,14 @@ import type { PaginationOptions } from "convex/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
+import {
+  POST_FEED_PAGE_MAXIMUM_BYTES_READ,
+  POST_FEED_PAGE_MAXIMUM_ROWS_READ,
+  POST_FEED_PAGE_SIZE_MAX,
+} from "@acme/config/posts";
+
 import { authedQuery } from "../utils";
 import { getUIPosts } from "./read";
-
-const POST_PAGE_MAXIMUM_BYTES_READ = 1_000_000;
-const POST_PAGE_MAXIMUM_ROWS_READ = 250;
-const POST_PAGE_SIZE_MAX = 25;
 
 export const getAll = authedQuery({
   args: {},
@@ -116,16 +118,16 @@ function getPostPaginationOpts(paginationOpts: PaginationOptions) {
   return {
     ...paginationOpts,
     maximumBytesRead: Math.min(
-      paginationOpts.maximumBytesRead ?? POST_PAGE_MAXIMUM_BYTES_READ,
-      POST_PAGE_MAXIMUM_BYTES_READ,
+      paginationOpts.maximumBytesRead ?? POST_FEED_PAGE_MAXIMUM_BYTES_READ,
+      POST_FEED_PAGE_MAXIMUM_BYTES_READ,
     ),
     maximumRowsRead: Math.min(
-      paginationOpts.maximumRowsRead ?? POST_PAGE_MAXIMUM_ROWS_READ,
-      POST_PAGE_MAXIMUM_ROWS_READ,
+      paginationOpts.maximumRowsRead ?? POST_FEED_PAGE_MAXIMUM_ROWS_READ,
+      POST_FEED_PAGE_MAXIMUM_ROWS_READ,
     ),
     numItems: Math.min(
       Math.max(1, paginationOpts.numItems),
-      POST_PAGE_SIZE_MAX,
+      POST_FEED_PAGE_SIZE_MAX,
     ),
   };
 }

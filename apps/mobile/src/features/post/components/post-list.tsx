@@ -1,9 +1,4 @@
-import type { ReactElement, Ref } from "react";
-import type {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-} from "react-native";
+import type { ReactElement } from "react";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
@@ -11,70 +6,48 @@ import { LegendList } from "@legendapp/list";
 
 import type { UIPost } from "@acme/convex/posts/types";
 
-import type { PullToRefreshState } from "~/features/post/pull-to-refresh";
+import type { PostListLoadingStatus } from "~/features/post/hooks/use-stable-paginated-posts";
 import { LoadingSpinner } from "~/components/loading-spinner";
 import { Post } from "~/features/post/components/post";
-import { usePostListPullToRefresh } from "~/features/post/hooks/use-post-list-pull-to-refresh";
+import { usePostListStore } from "~/features/post/post-list-store";
 import { useColor } from "~/hooks/use-color";
 
 interface PostListProps {
-  posts: UIPost[];
-  loadingStatus:
-    | "LoadingFirstPage"
-    | "CanLoadMore"
-    | "LoadingMore"
-    | "Refreshing"
-    | "Exhausted";
-  onEndReached: () => void;
-  onRefresh: () => Promise<void> | void;
   contentTopPadding?: number;
   ListHeaderComponent?: ReactElement;
   emptyText?: string;
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  onPullToRefreshStateChange?: (state: PullToRefreshState) => void;
-  onPostLikedByMeChange?: (postId: UIPost["_id"], likedByMe: boolean) => void;
-  refScrollView?: Ref<ScrollView>;
   showEndMessage?: boolean;
 }
 
 function PostList({
-  posts,
-  loadingStatus,
-  onEndReached,
-  onRefresh,
   contentTopPadding = 0,
   ListHeaderComponent,
   emptyText = "No posts yet.",
-  onScroll,
-  onPullToRefreshStateChange,
-  onPostLikedByMeChange,
-  refScrollView,
   showEndMessage = false,
 }: PostListProps) {
   const inset = useSafeAreaInsets();
+  const posts = usePostListStore((store) => store.posts);
+  const loadingStatus = usePostListStore((store) => store.loadingStatus);
+  const loadMore = usePostListStore((store) => store.loadMore);
+  const handleMomentumScrollEnd = usePostListStore(
+    (store) => store.handleMomentumScrollEnd,
+  );
+  const handleScroll = usePostListStore((store) => store.handleScroll);
+  const handleScrollEndDrag = usePostListStore(
+    (store) => store.handleScrollEndDrag,
+  );
+  const refScrollView = usePostListStore((store) => store.refScrollView);
   const showLoadingSpinner =
     loadingStatus === "LoadingFirstPage" || loadingStatus === "LoadingMore";
   const shouldShowEndMessage =
     showEndMessage && loadingStatus === "Exhausted" && posts.length > 0;
-  const { handleMomentumScrollEnd, handleScroll, handleScrollEndDrag } =
-    usePostListPullToRefresh({
-      onPullToRefreshStateChange,
-      onRefresh,
-      onScroll,
-    });
 
   return (
     <LegendList
       data={posts}
-      renderItem={(props) => (
-        <Post
-          key={props.item._id}
-          post={props.item}
-          onLikedByMeChange={onPostLikedByMeChange}
-        />
-      )}
+      renderItem={(props) => <Post key={props.item._id} post={props.item} />}
       keyExtractor={keyExtractor}
-      onEndReached={onEndReached}
+      onEndReached={loadMore}
       onEndReachedThreshold={1.5}
       onMomentumScrollEnd={handleMomentumScrollEnd}
       onScroll={handleScroll}
@@ -120,7 +93,7 @@ function PostListEmpty({
   loadingStatus,
 }: {
   emptyText: string;
-  loadingStatus: PostListProps["loadingStatus"];
+  loadingStatus: PostListLoadingStatus;
 }) {
   if (loadingStatus === "LoadingFirstPage") return null;
 
