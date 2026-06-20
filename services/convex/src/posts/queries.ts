@@ -1,12 +1,5 @@
-import type { PaginationOptions } from "convex/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
-
-import {
-  POST_FEED_PAGE_MAXIMUM_BYTES_READ,
-  POST_FEED_PAGE_MAXIMUM_ROWS_READ,
-  POST_FEED_PAGE_SIZE_MAX,
-} from "@acme/config/posts";
 
 import { authedQuery } from "../utils";
 import { getUIPosts } from "./read";
@@ -58,7 +51,7 @@ export const getByUsernamePaginated = authedQuery({
       .query("posts")
       .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
       .order("asc")
-      .paginate(getPostPaginationOpts(args.paginationOpts));
+      .paginate(args.paginationOpts);
 
     return {
       ...posts,
@@ -105,7 +98,7 @@ export const getFriendsFeedPaginated = authedQuery({
           ),
         ),
       )
-      .paginate(getPostPaginationOpts(args.paginationOpts));
+      .paginate(args.paginationOpts);
 
     return {
       ...posts,
@@ -113,21 +106,3 @@ export const getFriendsFeedPaginated = authedQuery({
     };
   },
 });
-
-function getPostPaginationOpts(paginationOpts: PaginationOptions) {
-  return {
-    ...paginationOpts,
-    maximumBytesRead: Math.min(
-      paginationOpts.maximumBytesRead ?? POST_FEED_PAGE_MAXIMUM_BYTES_READ,
-      POST_FEED_PAGE_MAXIMUM_BYTES_READ,
-    ),
-    maximumRowsRead: Math.min(
-      paginationOpts.maximumRowsRead ?? POST_FEED_PAGE_MAXIMUM_ROWS_READ,
-      POST_FEED_PAGE_MAXIMUM_ROWS_READ,
-    ),
-    numItems: Math.min(
-      Math.max(1, paginationOpts.numItems),
-      POST_FEED_PAGE_SIZE_MAX,
-    ),
-  };
-}
