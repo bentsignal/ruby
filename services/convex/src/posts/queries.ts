@@ -1,8 +1,13 @@
+import type { PaginationOptions } from "convex/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
 import { authedQuery } from "../utils";
 import { getUIPosts } from "./read";
+
+const POST_PAGE_MAXIMUM_BYTES_READ = 1_000_000;
+const POST_PAGE_MAXIMUM_ROWS_READ = 250;
+const POST_PAGE_SIZE_MAX = 25;
 
 export const getAll = authedQuery({
   args: {},
@@ -51,7 +56,7 @@ export const getByUsernamePaginated = authedQuery({
       .query("posts")
       .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
       .order("desc")
-      .paginate(args.paginationOpts);
+      .paginate(getPostPaginationOpts(args.paginationOpts));
 
     return {
       ...posts,
@@ -76,10 +81,12 @@ export const getFriendsFeedPaginated = authedQuery({
       .filter((q) => q.eq(q.field("status"), "friends"))
       .collect();
 
-    const friendProfileIds = [
-      ...friendshipsByA.map((friendship) => friendship.profileIdB),
-      ...friendshipsByB.map((friendship) => friendship.profileIdA),
-    ];
+    const friendProfileIds = Array.from(
+      new Set([
+        ...friendshipsByA.map((friendship) => friendship.profileIdB),
+        ...friendshipsByB.map((friendship) => friendship.profileIdA),
+      ]),
+    );
     const [firstFriendProfileId, ...otherFriendProfileIds] = friendProfileIds;
     if (!firstFriendProfileId) {
       return { page: [], isDone: true, continueCursor: "" };
@@ -96,10 +103,7 @@ export const getFriendsFeedPaginated = authedQuery({
           ),
         ),
       )
-      .paginate({
-        ...args.paginationOpts,
-        maximumRowsRead: args.paginationOpts.maximumRowsRead ?? 250,
-      });
+      .paginate(getPostPaginationOpts(args.paginationOpts));
 
     return {
       ...posts,
@@ -107,3 +111,21 @@ export const getFriendsFeedPaginated = authedQuery({
     };
   },
 });
+
+function getPostPaginationOpts(paginationOpts: PaginationOptions) {
+  return {
+    ...paginationOpts,
+    maximumBytesRead: Math.min(
+      paginationOpts.maximumBytesRead ?? POST_PAGE_MAXIMUM_BYTES_READ,
+      POST_PAGE_MAXIMUM_BYTES_READ,
+    ),
+    maximumRowsRead: Math.min(
+      paginationOpts.maximumRowsRead ?? POST_PAGE_MAXIMUM_ROWS_READ,
+      POST_PAGE_MAXIMUM_ROWS_READ,
+    ),
+    numItems: Math.min(
+      Math.max(1, paginationOpts.numItems),
+      POST_PAGE_SIZE_MAX,
+    ),
+  };
+}

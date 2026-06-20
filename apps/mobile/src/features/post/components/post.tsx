@@ -13,16 +13,24 @@ import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
 
-export function Post({ post }: { post: UIPost }) {
+export function Post({
+  onLikedByMeChange,
+  post,
+}: {
+  onLikedByMeChange?: (postId: UIPost["_id"], likedByMe: boolean) => void;
+  post: UIPost;
+}) {
   const router = useRouter();
 
   return (
-    <PostStore post={post}>
+    <PostStore post={post} onLikedByMeChange={onLikedByMeChange}>
       <View className="gap-3">
         <ProfileStore profile={post.creator} key={post.creator.username}>
           <View className="mx-2 flex-row items-center gap-2">
             <Pressable
-              onPress={() => router.push(`/${post.creator.username}`)}
+              onPress={() =>
+                router.push(`/${encodeURIComponent(post.creator.username)}`)
+              }
               className="min-w-0 flex-1 flex-row items-center gap-2"
             >
               <PFP variant="xs" />

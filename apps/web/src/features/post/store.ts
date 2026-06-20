@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createStore } from "rostra";
 
 import type { UIPost } from "@acme/convex/posts/types";
@@ -12,23 +13,34 @@ export type PostMediaItem = ReturnType<typeof getPostMediaItems>[number];
 function useInternalStore({ post }: PostStoreProps) {
   const likeMutation = useLikePost();
   const unlikeMutation = useUnlikePost();
+  const [likedByMeOverride, setLikedByMeOverride] = useState<{
+    likedByMe: boolean;
+    postId: UIPost["_id"];
+  } | null>(null);
+  const likedByMe =
+    likedByMeOverride?.postId === post._id
+      ? likedByMeOverride.likedByMe
+      : post.likedByMe;
 
   async function like() {
-    if (post.likedByMe) return;
+    if (likedByMe) return;
+    setLikedByMeOverride({ likedByMe: true, postId: post._id });
     try {
       await likeMutation({ postId: post._id });
     } catch {
-      // Convex will roll back the optimistic update on failure.
+      setLikedByMeOverride({ likedByMe: false, postId: post._id });
     }
   }
 
   async function toggleLike() {
+    const nextLikedByMe = !likedByMe;
+    setLikedByMeOverride({ likedByMe: nextLikedByMe, postId: post._id });
     try {
-      await (post.likedByMe ? unlikeMutation : likeMutation)({
+      await (nextLikedByMe ? likeMutation : unlikeMutation)({
         postId: post._id,
       });
     } catch {
-      // Convex will roll back the optimistic update on failure.
+      setLikedByMeOverride({ likedByMe: !nextLikedByMe, postId: post._id });
     }
   }
 
@@ -39,7 +51,7 @@ function useInternalStore({ post }: PostStoreProps) {
     location: post.location,
     mediaItems: getPostMediaItems(post),
     postId: post._id,
-    likedByMe: post.likedByMe,
+    likedByMe,
     like,
     toggleLike,
   };

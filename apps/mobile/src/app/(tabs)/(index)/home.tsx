@@ -36,10 +36,8 @@ export default function Home() {
     });
   }
 
-  const { posts, loadingStatus, loadMore, refresh } = useStablePaginatedPosts(
-    fetchPage,
-    "friends-feed",
-  );
+  const { posts, loadingStatus, loadMore, refresh, setPostLikedByMe } =
+    useStablePaginatedPosts(fetchPage, "friends-feed");
 
   return (
     <PostList
@@ -48,6 +46,7 @@ export default function Home() {
       onEndReached={loadMore}
       onRefresh={refresh}
       onPullToRefreshStateChange={setPullToRefreshState}
+      onPostLikedByMeChange={setPostLikedByMe}
       ListHeaderComponent={
         <ListHeader
           pullToRefreshState={pullToRefreshState}

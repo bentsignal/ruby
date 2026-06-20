@@ -53,10 +53,8 @@ function MyProfileContent() {
     });
   }
 
-  const { posts, loadingStatus, loadMore, refresh } = useStablePaginatedPosts(
-    fetchPage,
-    username,
-  );
+  const { posts, loadingStatus, loadMore, refresh, setPostLikedByMe } =
+    useStablePaginatedPosts(fetchPage, username);
 
   if (!myProfile) {
     return <ProfileLoading />;
@@ -90,6 +88,7 @@ function MyProfileContent() {
             onRefresh={refreshPage}
             onScroll={handleScroll}
             onPullToRefreshStateChange={setPullToRefreshState}
+            onPostLikedByMeChange={setPostLikedByMe}
             ListHeaderComponent={<ProfileHeader />}
           />
           <PullToRefreshOverlay state={pullToRefreshState} />
@@ -105,12 +104,12 @@ function MyProfileContent() {
 
 function ProfileHeader() {
   return (
-    <View className="flex flex-col gap-4 pt-4">
+    <View className="w-full flex-col gap-4 pt-4">
       <View className="mx-4 flex-row items-center gap-4">
         <PFP variant="md" />
-        <View className="flex flex-col">
-          <Name />
-          <Username />
+        <View className="min-w-0 flex-1 flex-col">
+          <Name numberOfLines={1} />
+          <Username numberOfLines={1} />
         </View>
       </View>
       <Bio className="mx-4" />
@@ -141,8 +140,8 @@ function CompactProfileHeader({
       <View className="flex-row items-center gap-3">
         <PFP variant="xs" />
         <View className="min-w-0 flex-1">
-          <Name className="text-base leading-5" />
-          <Username className="text-sm leading-4" />
+          <Name className="text-base leading-5" numberOfLines={1} />
+          <Username className="text-sm leading-4" numberOfLines={1} />
         </View>
       </View>
     </Animated.View>

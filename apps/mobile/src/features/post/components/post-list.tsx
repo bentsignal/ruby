@@ -1,4 +1,3 @@
-import type { LegendListRenderItemProps } from "@legendapp/list";
 import type { ReactElement, Ref } from "react";
 import type {
   NativeScrollEvent,
@@ -33,6 +32,7 @@ interface PostListProps {
   emptyText?: string;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onPullToRefreshStateChange?: (state: PullToRefreshState) => void;
+  onPostLikedByMeChange?: (postId: UIPost["_id"], likedByMe: boolean) => void;
   refScrollView?: Ref<ScrollView>;
   showEndMessage?: boolean;
 }
@@ -47,6 +47,7 @@ function PostList({
   emptyText = "No posts yet.",
   onScroll,
   onPullToRefreshStateChange,
+  onPostLikedByMeChange,
   refScrollView,
   showEndMessage = false,
 }: PostListProps) {
@@ -65,7 +66,13 @@ function PostList({
   return (
     <LegendList
       data={posts}
-      renderItem={renderItem}
+      renderItem={(props) => (
+        <Post
+          key={props.item._id}
+          post={props.item}
+          onLikedByMeChange={onPostLikedByMeChange}
+        />
+      )}
       keyExtractor={keyExtractor}
       onEndReached={onEndReached}
       onEndReachedThreshold={1.5}
@@ -77,6 +84,7 @@ function PostList({
       refScrollView={refScrollView}
       style={{ flex: 1 }}
       ListHeaderComponent={<PostListHeader component={ListHeaderComponent} />}
+      ListHeaderComponentStyle={{ width: "100%" }}
       ListEmptyComponent={
         <PostListEmpty loadingStatus={loadingStatus} emptyText={emptyText} />
       }
@@ -100,10 +108,10 @@ function PostListHeader({ component }: { component?: ReactElement }) {
   if (!component) return null;
 
   return (
-    <>
+    <View className="w-full">
       {component}
       <View className="h-8" />
-    </>
+    </View>
   );
 }
 
@@ -177,10 +185,6 @@ function GradientDivider({ direction }: { direction: "left" | "right" }) {
       </Svg>
     </View>
   );
-}
-
-function renderItem(props: LegendListRenderItemProps<UIPost>) {
-  return <Post post={props.item} />;
 }
 
 function PostSeparator() {
