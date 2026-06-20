@@ -42,26 +42,31 @@ function updatePostQueries(
     }
   }
 
-  if (
-    localStore
-      .getAllQueries(api.posts.queries.getFriendsFeedPaginated)
-      .some(({ value }) => value !== undefined)
-  ) {
+  const updatedFeedOrders = new Set<string>();
+  for (const { args: queryArgs } of localStore.getAllQueries(
+    api.posts.queries.getFriendsFeedPaginated,
+  )) {
+    if (updatedFeedOrders.has(queryArgs.order)) continue;
+    updatedFeedOrders.add(queryArgs.order);
     optimisticallyUpdateValueInPaginatedQuery(
       localStore,
       api.posts.queries.getFriendsFeedPaginated,
-      {},
+      { order: queryArgs.order },
       (post) => updatePost(post, postId, likedByMe),
     );
   }
 
-  const updatedUsernames = new Set<string>();
+  const updatedProfileQueries = new Set<string>();
   for (const { args: queryArgs } of localStore.getAllQueries(
     api.posts.queries.getByUsernamePaginated,
   )) {
-    const argsToMatch = { username: queryArgs.username };
-    if (updatedUsernames.has(argsToMatch.username)) continue;
-    updatedUsernames.add(argsToMatch.username);
+    const argsToMatch = {
+      username: queryArgs.username,
+      order: queryArgs.order,
+    };
+    const queryKey = `${argsToMatch.username}:${argsToMatch.order}`;
+    if (updatedProfileQueries.has(queryKey)) continue;
+    updatedProfileQueries.add(queryKey);
     optimisticallyUpdateValueInPaginatedQuery(
       localStore,
       api.posts.queries.getByUsernamePaginated,

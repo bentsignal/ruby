@@ -22,6 +22,7 @@ export const Route = createFileRoute("/_authed/")({
     const initialPosts = await context.convexHttpClient.query(
       api.posts.queries.getFriendsFeedPaginated,
       {
+        order: "oldest first",
         paginationOpts: {
           cursor: null,
           numItems: POST_FEED_PAGE_SIZE,
@@ -44,7 +45,7 @@ function HomePage() {
     loadMore,
   } = usePaginatedQuery(
     api.posts.queries.getFriendsFeedPaginated,
-    {},
+    { order: "oldest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );
   const visiblePosts =

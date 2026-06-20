@@ -35,6 +35,7 @@ export const Route = createFileRoute("/_authed/$username")({
       ),
       context.convexHttpClient.query(api.posts.queries.getByUsernamePaginated, {
         username: params.username,
+        order: "newest first",
         paginationOpts: {
           cursor: null,
           numItems: POST_FEED_PAGE_SIZE,
@@ -92,7 +93,7 @@ function ProfilePostList() {
     loadMore,
   } = usePaginatedQuery(
     api.posts.queries.getByUsernamePaginated,
-    { username },
+    { username, order: "newest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );
   const visiblePosts =

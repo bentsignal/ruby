@@ -4,6 +4,11 @@ import { v } from "convex/values";
 import { authedQuery } from "../utils";
 import { getUIPosts } from "./read";
 
+const postOrderValidator = v.union(
+  v.literal("oldest first"),
+  v.literal("newest first"),
+);
+
 export const getAll = authedQuery({
   args: {},
   handler: async (ctx) => {
@@ -36,6 +41,7 @@ export const getByUsername = authedQuery({
 export const getByUsernamePaginated = authedQuery({
   args: {
     username: v.string(),
+    order: postOrderValidator,
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
@@ -50,7 +56,7 @@ export const getByUsernamePaginated = authedQuery({
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
-      .order("asc")
+      .order(getConvexOrder(args.order))
       .paginate(args.paginationOpts);
 
     return {
@@ -62,6 +68,7 @@ export const getByUsernamePaginated = authedQuery({
 
 export const getFriendsFeedPaginated = authedQuery({
   args: {
+    order: postOrderValidator,
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
@@ -89,7 +96,7 @@ export const getFriendsFeedPaginated = authedQuery({
 
     const posts = await ctx.db
       .query("posts")
-      .order("asc")
+      .order(getConvexOrder(args.order))
       .filter((q) =>
         q.or(
           q.eq(q.field("profileId"), firstFriendProfileId),
@@ -106,3 +113,7 @@ export const getFriendsFeedPaginated = authedQuery({
     };
   },
 });
+
+function getConvexOrder(order: "oldest first" | "newest first") {
+  return order === "oldest first" ? "asc" : "desc";
+}
