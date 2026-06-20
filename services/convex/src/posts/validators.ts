@@ -15,3 +15,9 @@ export const vPost = v.object({
   caption: v.optional(v.string()),
   location: v.optional(vPostLocation),
 });
+
+export const vFeedItem = v.object({
+  profileId: v.id("profiles"),
+  postId: v.id("posts"),
+  creatorProfileId: v.id("profiles"),
+});

@@ -28,26 +28,15 @@ function updatePostQueries(
   postId: UIPost["_id"],
   likedByMe: boolean,
 ) {
-  for (const { args: queryArgs, value } of localStore.getAllQueries(
-    api.posts.queries.getByUsername,
-  )) {
-    if (!value) continue;
-    localStore.setQuery(
-      api.posts.queries.getByUsername,
-      queryArgs,
-      value.map((post) => updatePost(post, postId, likedByMe)),
-    );
-  }
-
   const updatedFeedOrders = new Set<string>();
   for (const { args: queryArgs } of localStore.getAllQueries(
-    api.posts.queries.getFriendsFeedPaginated,
+    api.posts.queries.getFeed,
   )) {
     if (updatedFeedOrders.has(queryArgs.order)) continue;
     updatedFeedOrders.add(queryArgs.order);
     optimisticallyUpdateValueInPaginatedQuery(
       localStore,
-      api.posts.queries.getFriendsFeedPaginated,
+      api.posts.queries.getFeed,
       { order: queryArgs.order },
       (post) => updatePost(post, postId, likedByMe),
     );
@@ -55,7 +44,7 @@ function updatePostQueries(
 
   const updatedProfileQueries = new Set<string>();
   for (const { args: queryArgs } of localStore.getAllQueries(
-    api.posts.queries.getByUsernamePaginated,
+    api.posts.queries.getByUsername,
   )) {
     const argsToMatch = {
       username: queryArgs.username,
@@ -66,7 +55,7 @@ function updatePostQueries(
     updatedProfileQueries.add(queryKey);
     optimisticallyUpdateValueInPaginatedQuery(
       localStore,
-      api.posts.queries.getByUsernamePaginated,
+      api.posts.queries.getByUsername,
       argsToMatch,
       (post) => updatePost(post, postId, likedByMe),
     );

@@ -12,27 +12,6 @@ const postOrderValidator = v.union(
 export const getByUsername = authedQuery({
   args: {
     username: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_username", (q) => q.eq("username", args.username))
-      .first();
-    if (!profile) return [];
-
-    const posts = await ctx.db
-      .query("posts")
-      .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
-      .order("asc")
-      .collect();
-
-    return await getUIPosts(ctx, posts);
-  },
-});
-
-export const getByUsernamePaginated = authedQuery({
-  args: {
-    username: v.string(),
     order: postOrderValidator,
     paginationOpts: paginationOptsValidator,
   },
@@ -53,55 +32,34 @@ export const getByUsernamePaginated = authedQuery({
 
     return {
       ...posts,
-      page: await getUIPosts(ctx, posts.page),
+      page: await getUIPosts(ctx, posts.page, {
+        profilesById: new Map([[profile._id, profile]]),
+      }),
     };
   },
 });
 
-export const getFriendsFeedPaginated = authedQuery({
+export const getFeed = authedQuery({
   args: {
     order: postOrderValidator,
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const friendshipsByA = await ctx.db
-      .query("friends")
-      .withIndex("by_profileA", (q) => q.eq("profileIdA", ctx.myProfile._id))
-      .filter((q) => q.eq(q.field("status"), "friends"))
-      .collect();
-    const friendshipsByB = await ctx.db
-      .query("friends")
-      .withIndex("by_profileB", (q) => q.eq("profileIdB", ctx.myProfile._id))
-      .filter((q) => q.eq(q.field("status"), "friends"))
-      .collect();
-
-    const friendProfileIds = Array.from(
-      new Set([
-        ...friendshipsByA.map((friendship) => friendship.profileIdB),
-        ...friendshipsByB.map((friendship) => friendship.profileIdA),
-      ]),
-    );
-    const [firstFriendProfileId, ...otherFriendProfileIds] = friendProfileIds;
-    if (!firstFriendProfileId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
-    const posts = await ctx.db
-      .query("posts")
+    const feedItems = await ctx.db
+      .query("feedItems")
+      .withIndex("by_profileId", (q) => q.eq("profileId", ctx.myProfile._id))
       .order(getConvexOrder(args.order))
-      .filter((q) =>
-        q.or(
-          q.eq(q.field("profileId"), firstFriendProfileId),
-          ...otherFriendProfileIds.map((profileId) =>
-            q.eq(q.field("profileId"), profileId),
-          ),
-        ),
-      )
       .paginate(args.paginationOpts);
+    const postResults = await Promise.all(
+      feedItems.page.map(async (feedItem) => {
+        return await ctx.db.get(feedItem.postId);
+      }),
+    );
+    const posts = postResults.filter((post) => post !== null);
 
     return {
-      ...posts,
-      page: await getUIPosts(ctx, posts.page),
+      ...feedItems,
+      page: await getUIPosts(ctx, posts),
     };
   },
 });

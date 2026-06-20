@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 
+import { getFriendProfileIds } from "../friends/helpers";
 import { ensureUserPermissions } from "../permissions/helpers";
 import { authedMutation } from "../utils";
 import {
@@ -21,11 +22,24 @@ export const create = authedMutation({
     const location = validatePostLocation(args.location);
     await validatePostFiles(ctx, args.attachments);
 
-    return await ctx.db.insert("posts", {
+    const postId = await ctx.db.insert("posts", {
       attachments: args.attachments,
       caption: caption ?? undefined,
       location,
       profileId: ctx.myProfile._id,
     });
+
+    const friendProfileIds = await getFriendProfileIds(ctx, ctx.myProfile._id);
+    await Promise.all(
+      friendProfileIds.map(async (profileId) => {
+        return await ctx.db.insert("feedItems", {
+          profileId,
+          postId,
+          creatorProfileId: ctx.myProfile._id,
+        });
+      }),
+    );
+
+    return postId;
   },
 });

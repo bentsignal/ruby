@@ -84,7 +84,7 @@ function ProfilePostList({
     status,
     loadMore,
   } = usePaginatedQuery(
-    api.posts.queries.getByUsernamePaginated,
+    api.posts.queries.getByUsername,
     { username, order: "newest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );

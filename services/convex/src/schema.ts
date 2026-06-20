@@ -4,13 +4,16 @@ import { vFile } from "./files/validators";
 import { vFriendship } from "./friends/validators";
 import { vLike } from "./likes/validators";
 import { vUserPermissions } from "./permissions/validators";
-import { vPost } from "./posts/validators";
+import { vFeedItem, vPost } from "./posts/validators";
 import { vProfile } from "./profile/validators";
 import { vWaitlistEntry } from "./waitlist/validators";
 
 export default defineSchema(
   {
     posts: defineTable(vPost).index("by_profileId", ["profileId"]),
+    feedItems: defineTable(vFeedItem)
+      .index("by_profileId", ["profileId"])
+      .index("by_profile_creator", ["profileId", "creatorProfileId"]),
     files: defineTable(vFile)
       .index("by_uploadedBy", ["uploadedBy"])
       .index("by_key", ["key"]),

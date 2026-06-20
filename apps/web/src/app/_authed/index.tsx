@@ -15,7 +15,7 @@ import { Post } from "~/features/post/components/post";
 export const Route = createFileRoute("/_authed/")({
   loader: async ({ context }) => {
     const initialPosts = await context.convexHttpClient.query(
-      api.posts.queries.getFriendsFeedPaginated,
+      api.posts.queries.getFeed,
       {
         order: "oldest first",
         paginationOpts: {
@@ -39,7 +39,7 @@ function HomePage() {
     status,
     loadMore,
   } = usePaginatedQuery(
-    api.posts.queries.getFriendsFeedPaginated,
+    api.posts.queries.getFeed,
     { order: "oldest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );

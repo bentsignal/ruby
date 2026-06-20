@@ -24,7 +24,7 @@ export default function Home() {
     status,
     loadMore,
   } = usePaginatedQuery(
-    api.posts.queries.getFriendsFeedPaginated,
+    api.posts.queries.getFeed,
     { order: "oldest first" },
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );

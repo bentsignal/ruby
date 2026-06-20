@@ -80,6 +80,7 @@ export const seedFriendsAndPosts = internalMutation({
       postIds: content.postIds,
       fileIds: content.fileIds,
       created: {
+        feedItems: content.feedItemIds.length,
         profiles: content.friendIds.length,
         friendships: content.friendshipCount,
         posts: content.postIds.length,
@@ -181,6 +182,7 @@ async function seedContent(
   const friendIds = new Array<Id<"profiles">>();
   const postIds = new Array<Id<"posts">>();
   const fileIds = new Array<Id<"files">>();
+  const feedItemIds = new Array<Id<"feedItems">>();
   let friendshipCount = 0;
 
   for (
@@ -192,10 +194,11 @@ async function seedContent(
     friendIds.push(result.friendId);
     postIds.push(...result.postIds);
     fileIds.push(...result.fileIds);
+    feedItemIds.push(...result.feedItemIds);
     if (result.createdFriendship) friendshipCount++;
   }
 
-  return { friendIds, postIds, fileIds, friendshipCount };
+  return { friendIds, postIds, fileIds, feedItemIds, friendshipCount };
 }
 
 async function seedFriendContent(
@@ -217,12 +220,12 @@ async function seedFriendContent(
     profileId: args.profileId,
     friendId,
   });
-  const { postIds, fileIds } = await seedPostsForFriend(ctx, {
+  const { postIds, fileIds, feedItemIds } = await seedPostsForFriend(ctx, {
     ...args,
     friendId,
   });
 
-  return { friendId, postIds, fileIds, createdFriendship };
+  return { friendId, postIds, fileIds, feedItemIds, createdFriendship };
 }
 
 async function seedPostsForFriend(
@@ -232,11 +235,13 @@ async function seedPostsForFriend(
     friendId: Id<"profiles">;
     friendIndex: number;
     mediaAssets: SeedMediaAsset[];
+    profileId: Id<"profiles">;
     runLabel: string;
   },
 ) {
   const postIds = new Array<Id<"posts">>();
   const fileIds = new Array<Id<"files">>();
+  const feedItemIds = new Array<Id<"feedItems">>();
 
   for (let postIndex = 0; postIndex < args.counts.postsPerFriend; postIndex++) {
     const attachmentIds = await createSeedAttachments(ctx, {
@@ -252,9 +257,16 @@ async function seedPostsForFriend(
       profileId: args.friendId,
     });
     postIds.push(postId);
+    feedItemIds.push(
+      await ctx.db.insert("feedItems", {
+        profileId: args.profileId,
+        postId,
+        creatorProfileId: args.friendId,
+      }),
+    );
   }
 
-  return { postIds, fileIds };
+  return { postIds, fileIds, feedItemIds };
 }
 
 async function createSeedAttachments(

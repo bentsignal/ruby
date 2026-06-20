@@ -1,5 +1,7 @@
 import { ConvexError, v } from "convex/values";
 
+import type { Id } from "../_generated/dataModel";
+import type { AuthedMutationCtx } from "../utils";
 import { rateLimiter } from "../limiter";
 import { authedMutation } from "../utils";
 import { getOrderedProfileIds, getRelationshipHelper } from "./helpers";
@@ -165,6 +167,34 @@ export const remove = authedMutation({
     if (friendship === null) {
       throw new ConvexError("Friendship not found");
     }
+    await deleteFeedItemsForFriendship(ctx, ctx.myProfile._id, profile._id);
     await ctx.db.delete("friends", friendship._id);
   },
 });
+
+async function deleteFeedItemsForFriendship(
+  ctx: AuthedMutationCtx,
+  profileId: Id<"profiles">,
+  friendProfileId: Id<"profiles">,
+) {
+  const [myFeedItems, friendFeedItems] = await Promise.all([
+    ctx.db
+      .query("feedItems")
+      .withIndex("by_profile_creator", (q) =>
+        q.eq("profileId", profileId).eq("creatorProfileId", friendProfileId),
+      )
+      .collect(),
+    ctx.db
+      .query("feedItems")
+      .withIndex("by_profile_creator", (q) =>
+        q.eq("profileId", friendProfileId).eq("creatorProfileId", profileId),
+      )
+      .collect(),
+  ]);
+
+  await Promise.all(
+    [...myFeedItems, ...friendFeedItems].map(async (feedItem) => {
+      await ctx.db.delete(feedItem._id);
+    }),
+  );
+}
