@@ -1,3 +1,4 @@
+import type { PaginationStatus } from "convex/react";
 import { useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
@@ -10,12 +11,6 @@ import { api } from "@acme/convex/api";
 
 import logoSmall from "~/assets/logo-small.webp";
 import { Post } from "~/features/post/components/post";
-
-type PostListLoadingStatus =
-  | "LoadingFirstPage"
-  | "CanLoadMore"
-  | "LoadingMore"
-  | "Exhausted";
 
 export const Route = createFileRoute("/_authed/")({
   loader: async ({ context }) => {
@@ -71,7 +66,7 @@ function HomePostList({
   loadMore,
   posts,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   loadMore: () => void;
   posts: UIPost[];
 }) {
@@ -92,7 +87,7 @@ function HomePosts({
   loadMore,
   posts,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   loadMore: () => void;
   posts: UIPost[];
 }) {
@@ -134,7 +129,7 @@ function HomePostListFooter({
   loadingStatus,
   posts,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   posts: UIPost[];
 }) {
   if (posts.length === 0) {
@@ -169,7 +164,7 @@ function LoadMoreSentinel({
   loadingStatus,
   loadMore,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   loadMore: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);

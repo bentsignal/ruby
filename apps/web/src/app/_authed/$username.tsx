@@ -1,3 +1,4 @@
+import type { PaginationStatus } from "convex/react";
 import { useEffect, useRef } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, notFound } from "@tanstack/react-router";
@@ -18,12 +19,6 @@ import { PFP } from "~/features/profile/components/info/pfp";
 import { UserProvidedLink } from "~/features/profile/components/info/user-provided-link";
 import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
-
-type PostListLoadingStatus =
-  | "LoadingFirstPage"
-  | "CanLoadMore"
-  | "LoadingMore"
-  | "Exhausted";
 
 export const Route = createFileRoute("/_authed/$username")({
   loader: async ({ context, params }) => {
@@ -127,7 +122,7 @@ function EmptyPosts({
   loadingStatus,
   posts,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   posts: UIPost[];
 }) {
   if (loadingStatus === "LoadingFirstPage" || posts.length > 0) return null;
@@ -143,7 +138,7 @@ function ProfilePostListFooter({
   loadingStatus,
   posts,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   posts: unknown[];
 }) {
   if (posts.length === 0) return <div className="h-28" />;
@@ -163,7 +158,7 @@ function LoadMoreSentinel({
   loadingStatus,
   loadMore,
 }: {
-  loadingStatus: PostListLoadingStatus;
+  loadingStatus: PaginationStatus;
   loadMore: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
