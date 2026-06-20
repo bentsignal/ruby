@@ -16,7 +16,7 @@ export function PrimaryButton({ className }: { className?: string }) {
     case "pending-outgoing":
       return <OutgoingRequestButton className={className} />;
     case "friends":
-      return <FriendsButton />;
+      return <FriendsButton className={className} />;
     case null:
       return <AddFriendButton className={className} />;
   }

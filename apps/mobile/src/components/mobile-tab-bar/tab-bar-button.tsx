@@ -3,6 +3,7 @@ import * as Haptics from "expo-haptics";
 import { PlusIcon } from "lucide-react-native";
 
 import type { TabBarNavigation, TabBarOptions, TabBarRoute } from "./types";
+import { scrollHomeFeedToTop } from "~/features/post/home-feed-scroll";
 import { useRedirect } from "~/hooks/use-redirect";
 
 export function TabBarButton({
@@ -109,7 +110,16 @@ function useTabBarPress({
           canPreventDefault: true,
         });
 
-        if (!isFocused && !event.defaultPrevented) {
+        if (event.defaultPrevented) {
+          return;
+        }
+
+        if (isFocused && route.name === "(index)") {
+          scrollHomeFeedToTop();
+          return;
+        }
+
+        if (!isFocused) {
           navigation.navigate(route.name, route.params);
         }
       },

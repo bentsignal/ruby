@@ -85,6 +85,10 @@ function useInternalStore() {
     });
   }
 
+  async function refreshMyProfile() {
+    await profileQuery.refetch();
+  }
+
   return {
     myProfile,
     waitlistStatus,
@@ -94,6 +98,7 @@ function useInternalStore() {
     imSignedIn,
     signInWithGoogle,
     signOut,
+    refreshMyProfile,
     redirectURL,
     setRedirectURL,
   };

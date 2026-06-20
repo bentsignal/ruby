@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
 import { authedQuery } from "../utils";
@@ -29,5 +30,80 @@ export const getByUsername = authedQuery({
       .collect();
 
     return await getUIPosts(ctx, posts);
+  },
+});
+
+export const getByUsernamePaginated = authedQuery({
+  args: {
+    username: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .first();
+    if (!profile) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    return {
+      ...posts,
+      page: await getUIPosts(ctx, posts.page),
+    };
+  },
+});
+
+export const getFriendsFeedPaginated = authedQuery({
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const friendshipsByA = await ctx.db
+      .query("friends")
+      .withIndex("by_profileA", (q) => q.eq("profileIdA", ctx.myProfile._id))
+      .filter((q) => q.eq(q.field("status"), "friends"))
+      .collect();
+    const friendshipsByB = await ctx.db
+      .query("friends")
+      .withIndex("by_profileB", (q) => q.eq("profileIdB", ctx.myProfile._id))
+      .filter((q) => q.eq(q.field("status"), "friends"))
+      .collect();
+
+    const friendProfileIds = [
+      ...friendshipsByA.map((friendship) => friendship.profileIdB),
+      ...friendshipsByB.map((friendship) => friendship.profileIdA),
+    ];
+    const [firstFriendProfileId, ...otherFriendProfileIds] = friendProfileIds;
+    if (!firstFriendProfileId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    const posts = await ctx.db
+      .query("posts")
+      .order("desc")
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("profileId"), firstFriendProfileId),
+          ...otherFriendProfileIds.map((profileId) =>
+            q.eq(q.field("profileId"), profileId),
+          ),
+        ),
+      )
+      .paginate({
+        ...args.paginationOpts,
+        maximumRowsRead: args.paginationOpts.maximumRowsRead ?? 250,
+      });
+
+    return {
+      ...posts,
+      page: await getUIPosts(ctx, posts.page),
+    };
   },
 });

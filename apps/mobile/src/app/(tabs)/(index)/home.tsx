@@ -1,62 +1,109 @@
-import type { LegendListRenderItemProps } from "@legendapp/list";
+import type { ScrollView } from "react-native";
+import { useEffect, useRef, useState } from "react";
 import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { LegendList } from "@legendapp/list";
+import { useConvex } from "convex/react";
 
-import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
 
-import { Post } from "~/features/post/components/post";
+import type { PullToRefreshState } from "~/features/post/pull-to-refresh";
+import { PostList } from "~/features/post/components/post-list";
+import { setScrollHomeFeedToTopHandler } from "~/features/post/home-feed-scroll";
+import { useStablePaginatedPosts } from "~/features/post/hooks/use-stable-paginated-posts";
+import { PullToRefreshIndicator } from "~/features/post/pull-to-refresh";
 import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
-  const { data } = useQuery({
-    ...convexQuery(api.posts.queries.getAll, {}),
-    select: (posts) => posts,
-  });
-
-  const posts = data ?? [];
-
+  const convex = useConvex();
   const inset = useSafeAreaInsets();
+  const [pullToRefreshState, setPullToRefreshState] =
+    useState<PullToRefreshState>("idle");
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  // eslint-disable-next-line no-restricted-syntax -- Registers the home tab's external scroll-to-top command.
+  useEffect(() => {
+    return setScrollHomeFeedToTopHandler(() => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    });
+  }, []);
+
+  function fetchPage(paginationOpts: {
+    cursor: string | null;
+    numItems: number;
+  }) {
+    return convex.query(api.posts.queries.getFriendsFeedPaginated, {
+      paginationOpts,
+    });
+  }
+
+  const { posts, loadingStatus, loadMore, refresh } = useStablePaginatedPosts(
+    fetchPage,
+    "friends-feed",
+  );
 
   return (
-    <LegendList
-      data={posts}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      style={{ flex: 1 }}
-      ListHeaderComponent={<ListHeader topPadding={inset.top} />}
-      ItemSeparatorComponent={PostSeparator}
-      contentContainerStyle={{
-        paddingBottom: inset.bottom + 24,
-      }}
-      recycleItems={true}
+    <PostList
+      posts={posts}
+      loadingStatus={loadingStatus}
+      onEndReached={loadMore}
+      onRefresh={refresh}
+      onPullToRefreshStateChange={setPullToRefreshState}
+      ListHeaderComponent={
+        <ListHeader
+          pullToRefreshState={pullToRefreshState}
+          topPadding={inset.top}
+        />
+      }
+      emptyText="No posts from friends yet."
+      refScrollView={scrollViewRef}
+      showEndMessage={true}
     />
   );
 }
 
-function ListHeader({ topPadding }: { topPadding: number }) {
+function ListHeader({
+  pullToRefreshState,
+  topPadding,
+}: {
+  pullToRefreshState: PullToRefreshState;
+  topPadding: number;
+}) {
   return (
-    <View className="items-center pb-6" style={{ paddingTop: topPadding }}>
-      <Image
-        accessibilityLabel="Ruby"
-        source={roundedIcon}
-        style={{ borderRadius: 24, height: 48, width: 48 }}
-      />
+    <View className="items-center" style={{ paddingTop: topPadding }}>
+      <HeaderLogo pullToRefreshState={pullToRefreshState} />
     </View>
   );
 }
 
-function renderItem(props: LegendListRenderItemProps<UIPost>) {
-  return <Post post={props.item} />;
+function HeaderLogo({
+  pullToRefreshState,
+}: {
+  pullToRefreshState: PullToRefreshState;
+}) {
+  return (
+    <View
+      className="items-center justify-center"
+      style={{ height: 48, width: 48 }}
+    >
+      <HeaderLogoContent pullToRefreshState={pullToRefreshState} />
+    </View>
+  );
 }
 
-function PostSeparator() {
-  return <View className="h-10" />;
-}
+function HeaderLogoContent({
+  pullToRefreshState,
+}: {
+  pullToRefreshState: PullToRefreshState;
+}) {
+  if (pullToRefreshState !== "idle") {
+    return <PullToRefreshIndicator state={pullToRefreshState} />;
+  }
 
-function keyExtractor(post: UIPost) {
-  return post._id;
+  return (
+    <Image
+      accessibilityLabel="Ruby"
+      source={roundedIcon}
+      style={{ borderRadius: 24, height: 48, width: 48 }}
+    />
+  );
 }

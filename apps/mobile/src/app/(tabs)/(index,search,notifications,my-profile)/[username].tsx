@@ -1,18 +1,24 @@
-import type { LegendListRenderItemProps } from "@legendapp/list";
+import { useState } from "react";
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { LegendList } from "@legendapp/list";
+import { useConvex } from "convex/react";
 
-import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
 
+import type { PullToRefreshState } from "~/features/post/pull-to-refresh";
 import { BackButton } from "~/components/back-button";
 import { SafeAreaView } from "~/components/safe-area-view";
 import { useAuthStore } from "~/features/auth/store";
-import { Post } from "~/features/post/components/post";
+import { PostList } from "~/features/post/components/post-list";
+import { useStablePaginatedPosts } from "~/features/post/hooks/use-stable-paginated-posts";
+import { PullToRefreshOverlay } from "~/features/post/pull-to-refresh";
 import { AccountNotFound } from "~/features/profile/components/account-not-found";
 import { MoreButton } from "~/features/profile/components/buttons/more-button";
 import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
@@ -29,14 +35,9 @@ export default function ProfileByUsername() {
 
   const router = useRouter();
   const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
-  const { data: result } = useQuery({
+  const { data: result, refetch: refetchProfile } = useQuery({
     ...convexQuery(api.profile.queries.getByUsername, { username }),
     select: (profile) => profile,
-  });
-  const { data: posts } = useQuery({
-    ...convexQuery(api.posts.queries.getByUsername, { username }),
-    enabled: !!username,
-    select: (profilePosts) => profilePosts,
   });
 
   if (imNotSignedIn) {
@@ -61,50 +62,124 @@ export default function ProfileByUsername() {
   return (
     <SafeAreaView className="flex-1">
       <ProfileStore profile={profile} relationship={relationship}>
-        <View className="flex flex-col gap-4">
-          <View className="flex-row items-center justify-between px-4">
-            <BackButton />
-            <MoreButton />
-          </View>
-          <View className="mx-4 flex-row items-center gap-4">
-            <PFP variant="md" />
-            <View className="flex flex-col">
-              <Name />
-              <Username />
-            </View>
-          </View>
-          <Bio className="mx-4" />
-          <UserProvidedLink className="mx-4" />
-          <PrimaryButton className="mx-4" />
-          <View className="bg-border h-px" />
-        </View>
+        <ProfilePostList refetchProfile={refetchProfile} username={username} />
       </ProfileStore>
-      <PostList posts={posts ?? []} />
     </SafeAreaView>
   );
 }
 
-function PostList({ posts }: { posts: UIPost[] }) {
-  const inset = useSafeAreaInsets();
+function ProfilePostList({
+  refetchProfile,
+  username,
+}: {
+  refetchProfile: () => Promise<unknown>;
+  username: string;
+}) {
+  const convex = useConvex();
+  const [showStickyProfile, setShowStickyProfile] = useState(false);
+  const [pullToRefreshState, setPullToRefreshState] =
+    useState<PullToRefreshState>("idle");
+  const stickyOpacity = useSharedValue(0);
+  function fetchPage(paginationOpts: {
+    cursor: string | null;
+    numItems: number;
+  }) {
+    return convex.query(api.posts.queries.getByUsernamePaginated, {
+      username,
+      paginationOpts,
+    });
+  }
+
+  const { posts, loadingStatus, loadMore, refresh } = useStablePaginatedPosts(
+    fetchPage,
+    username,
+  );
+
+  async function refreshPage() {
+    await Promise.all([refresh(), refetchProfile()]);
+  }
+
+  function handleScroll(event: {
+    nativeEvent: { contentOffset: { y: number } };
+  }) {
+    const nextShowStickyProfile = event.nativeEvent.contentOffset.y > 112;
+    setShowStickyProfile((current) => {
+      if (current === nextShowStickyProfile) return current;
+      return nextShowStickyProfile;
+    });
+    stickyOpacity.value = withTiming(nextShowStickyProfile ? 1 : 0, {
+      duration: 160,
+    });
+  }
 
   return (
-    <LegendList
-      data={posts}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      style={{ flex: 1 }}
-      contentContainerStyle={{
-        paddingBottom: inset.bottom + 24,
-      }}
-      recycleItems={true}
-    />
+    <View className="relative flex-1">
+      <PostList
+        posts={posts}
+        loadingStatus={loadingStatus}
+        onEndReached={loadMore}
+        onRefresh={refreshPage}
+        onScroll={handleScroll}
+        onPullToRefreshStateChange={setPullToRefreshState}
+        ListHeaderComponent={<ProfileHeader />}
+      />
+      <PullToRefreshOverlay state={pullToRefreshState} />
+      <CompactProfileHeader
+        stickyOpacity={stickyOpacity}
+        visible={showStickyProfile}
+      />
+    </View>
   );
 }
 
-function renderItem(props: LegendListRenderItemProps<UIPost>) {
-  return <Post post={props.item} />;
+function ProfileHeader() {
+  return (
+    <View className="flex flex-col gap-4">
+      <View className="flex-row items-center justify-between px-4">
+        <BackButton />
+        <MoreButton />
+      </View>
+      <View className="mx-4 flex-row items-center gap-4">
+        <PFP variant="md" />
+        <View className="flex flex-col">
+          <Name />
+          <Username />
+        </View>
+      </View>
+      <Bio className="mx-4" />
+      <UserProvidedLink className="mx-4" />
+      <PrimaryButton className="mx-4" />
+      <View className="bg-border h-px" />
+    </View>
+  );
 }
 
-function keyExtractor(post: UIPost) {
-  return post._id;
+function CompactProfileHeader({
+  stickyOpacity,
+  visible,
+}: {
+  stickyOpacity: { value: number };
+  visible: boolean;
+}) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: stickyOpacity.value,
+  }));
+
+  return (
+    <Animated.View
+      pointerEvents={visible ? "auto" : "none"}
+      className="bg-background/95 border-border absolute top-0 right-0 left-0 z-20 border-b px-4 pt-3 pb-2"
+      style={animatedStyle}
+    >
+      <View className="flex-row items-center gap-3">
+        <BackButton />
+        <PFP variant="xs" />
+        <View className="min-w-0 flex-1">
+          <Name className="text-base leading-5" />
+          <Username className="text-sm leading-4" />
+        </View>
+        <MoreButton />
+      </View>
+    </Animated.View>
+  );
 }
