@@ -7,33 +7,39 @@ import type {
 import { useState } from "react";
 import { createStore } from "rostra";
 
-import type { FetchPostsPage } from "./hooks/use-stable-paginated-posts";
+import type { UIPost } from "@acme/convex/posts/types";
+
 import type { PullToRefreshState } from "~/features/post/pull-to-refresh";
 import { usePostListPullToRefresh } from "./hooks/use-post-list-pull-to-refresh";
-import { useStablePaginatedPosts } from "./hooks/use-stable-paginated-posts";
+
+export type PostListLoadingStatus =
+  | "LoadingFirstPage"
+  | "CanLoadMore"
+  | "LoadingMore"
+  | "Exhausted";
 
 interface PostListStoreProps {
-  fetchPage: FetchPostsPage;
+  loadingStatus: PostListLoadingStatus;
+  loadMore: () => void;
   onRefresh?: () => unknown;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  resetKey: string;
+  posts: UIPost[];
   refScrollView?: RefObject<ScrollView | null>;
 }
 
 function useInternalStore({
-  fetchPage,
+  loadingStatus,
+  loadMore,
   onRefresh,
   onScroll,
-  resetKey,
+  posts,
   refScrollView,
 }: PostListStoreProps) {
   const [pullToRefreshState, setPullToRefreshState] =
     useState<PullToRefreshState>("idle");
-  const { posts, loadingStatus, loadMore, refresh, setPostLikedByMe } =
-    useStablePaginatedPosts(fetchPage, resetKey);
 
   async function refreshList() {
-    await Promise.all([refresh(), onRefresh?.()]);
+    await onRefresh?.();
   }
 
   const { handleMomentumScrollEnd, handleScroll, handleScrollEndDrag } =
@@ -52,7 +58,6 @@ function useInternalStore({
     posts,
     pullToRefreshState,
     refScrollView,
-    setPostLikedByMe,
   };
 }
 

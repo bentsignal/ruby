@@ -33,7 +33,7 @@ export const getByUsername = authedQuery({
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
-      .order("desc")
+      .order("asc")
       .collect();
 
     return await getUIPosts(ctx, posts);
@@ -57,7 +57,7 @@ export const getByUsernamePaginated = authedQuery({
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
-      .order("desc")
+      .order("asc")
       .paginate(getPostPaginationOpts(args.paginationOpts));
 
     return {
@@ -96,7 +96,7 @@ export const getFriendsFeedPaginated = authedQuery({
 
     const posts = await ctx.db
       .query("posts")
-      .order("desc")
+      .order("asc")
       .filter((q) =>
         q.or(
           q.eq(q.field("profileId"), firstFriendProfileId),

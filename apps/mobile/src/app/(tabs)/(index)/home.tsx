@@ -2,8 +2,9 @@ import type { ScrollView } from "react-native";
 import { useEffect, useRef } from "react";
 import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useConvex } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 
+import { POST_FEED_PAGE_SIZE } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
 import type { PullToRefreshState } from "~/features/post/pull-to-refresh";
@@ -17,8 +18,16 @@ import { PullToRefreshIndicator } from "~/features/post/pull-to-refresh";
 import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
-  const convex = useConvex();
   const scrollViewRef = useRef<ScrollView>(null);
+  const {
+    results: posts,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
+    api.posts.queries.getFriendsFeedPaginated,
+    {},
+    { initialNumItems: POST_FEED_PAGE_SIZE },
+  );
 
   // eslint-disable-next-line no-restricted-syntax -- Registers the home tab's external scroll-to-top command.
   useEffect(() => {
@@ -29,12 +38,9 @@ export default function Home() {
 
   return (
     <PostListStore
-      fetchPage={(paginationOpts) =>
-        convex.query(api.posts.queries.getFriendsFeedPaginated, {
-          paginationOpts,
-        })
-      }
-      resetKey="friends-feed"
+      loadingStatus={status}
+      loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
+      posts={posts}
       refScrollView={scrollViewRef}
     >
       <PostList

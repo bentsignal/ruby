@@ -9,19 +9,15 @@ import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
 import { PostInfoButton } from "../details/components/post-info-button";
 import { PostMediaPager } from "../media-pager/components/post-media-pager";
-import { usePostListStore } from "../post-list-store";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
 
 export function Post({ post }: { post: UIPost }) {
   const router = useRouter();
-  const setPostLikedByMe = usePostListStore((store) => store.setPostLikedByMe, {
-    optional: true,
-  });
 
   return (
-    <PostStore post={post} onLikedByMeChange={setPostLikedByMe}>
+    <PostStore post={post}>
       <View className="gap-3">
         <ProfileStore profile={post.creator} key={post.creator.username}>
           <View className="mx-2 flex-row items-center gap-2">

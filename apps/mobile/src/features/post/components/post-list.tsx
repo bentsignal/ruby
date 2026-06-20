@@ -1,12 +1,22 @@
 import type { ReactElement } from "react";
+import { useEffect } from "react";
 import { Text, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { scheduleOnUI } from "react-native-worklets";
 import { LegendList } from "@legendapp/list";
+import { Radio } from "lucide-react-native";
 
 import type { UIPost } from "@acme/convex/posts/types";
 
-import type { PostListLoadingStatus } from "~/features/post/hooks/use-stable-paginated-posts";
+import type { PostListLoadingStatus } from "~/features/post/post-list-store";
 import { LoadingSpinner } from "~/components/loading-spinner";
 import { Post } from "~/features/post/components/post";
 import { usePostListStore } from "~/features/post/post-list-store";
@@ -123,12 +133,43 @@ function PostListFooter({
 
   if (!showEndMessage) return null;
 
+  return <LiveEdgeFooter />;
+}
+
+function LiveEdgeFooter() {
+  const primary = useColor("primary");
+  const opacity = useSharedValue(0.45);
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  // eslint-disable-next-line no-restricted-syntax -- Starts a native UI-thread animation for the live feed edge indicator.
+  useEffect(() => {
+    function breathe() {
+      "worklet";
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0.9, { duration: 1400 }),
+          withTiming(0.45, { duration: 1800 }),
+        ),
+        -1,
+        true,
+      );
+    }
+    scheduleOnUI(breathe);
+  }, [opacity]);
+
   return (
     <View className="flex-row items-center gap-5 px-2 pt-16 pb-12">
       <GradientDivider direction="right" />
-      <Text className="text-muted-foreground shrink-0 text-center text-sm">
-        You're all caught up for now.
-      </Text>
+      <View className="flex-row items-center gap-2">
+        <Animated.View style={animatedStyle}>
+          <Radio color={primary} size={14} strokeWidth={2.4} />
+        </Animated.View>
+        <Text className="text-muted-foreground shrink-0 text-center text-sm">
+          New updates will appear here
+        </Text>
+      </View>
       <GradientDivider direction="left" />
     </View>
   );

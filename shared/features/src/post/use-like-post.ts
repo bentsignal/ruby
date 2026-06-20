@@ -1,5 +1,8 @@
 import type { OptimisticLocalStore } from "convex/browser";
-import { useMutation } from "convex/react";
+import {
+  optimisticallyUpdateValueInPaginatedQuery,
+  useMutation,
+} from "convex/react";
 
 import type { UIPost } from "@acme/convex/posts/types";
 import { api } from "@acme/convex/api";
@@ -39,24 +42,32 @@ function updatePostQueries(
     }
   }
 
-  for (const { args: queryArgs, value } of localStore.getAllQueries(
-    api.posts.queries.getFriendsFeedPaginated,
-  )) {
-    if (!value) continue;
-    localStore.setQuery(api.posts.queries.getFriendsFeedPaginated, queryArgs, {
-      ...value,
-      page: value.page.map((post) => updatePost(post, postId, likedByMe)),
-    });
+  if (
+    localStore
+      .getAllQueries(api.posts.queries.getFriendsFeedPaginated)
+      .some(({ value }) => value !== undefined)
+  ) {
+    optimisticallyUpdateValueInPaginatedQuery(
+      localStore,
+      api.posts.queries.getFriendsFeedPaginated,
+      {},
+      (post) => updatePost(post, postId, likedByMe),
+    );
   }
 
-  for (const { args: queryArgs, value } of localStore.getAllQueries(
+  const updatedUsernames = new Set<string>();
+  for (const { args: queryArgs } of localStore.getAllQueries(
     api.posts.queries.getByUsernamePaginated,
   )) {
-    if (!value) continue;
-    localStore.setQuery(api.posts.queries.getByUsernamePaginated, queryArgs, {
-      ...value,
-      page: value.page.map((post) => updatePost(post, postId, likedByMe)),
-    });
+    const argsToMatch = { username: queryArgs.username };
+    if (updatedUsernames.has(argsToMatch.username)) continue;
+    updatedUsernames.add(argsToMatch.username);
+    optimisticallyUpdateValueInPaginatedQuery(
+      localStore,
+      api.posts.queries.getByUsernamePaginated,
+      argsToMatch,
+      (post) => updatePost(post, postId, likedByMe),
+    );
   }
 }
 

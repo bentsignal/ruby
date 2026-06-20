@@ -1,7 +1,8 @@
 import { View } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
-import { useConvex } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 
+import { POST_FEED_PAGE_SIZE } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
 import { SafeAreaView } from "~/components/safe-area-view";
@@ -49,21 +50,25 @@ function MyProfilePostList({
 }: {
   onRefreshProfile: () => unknown;
 }) {
-  const convex = useConvex();
   const username = useProfileStore((store) => store.username);
   const handleScroll = useMobileProfileFeedStore((store) => store.handleScroll);
+  const {
+    results: posts,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
+    api.posts.queries.getByUsernamePaginated,
+    { username },
+    { initialNumItems: POST_FEED_PAGE_SIZE },
+  );
 
   return (
     <PostListStore
-      fetchPage={(paginationOpts) =>
-        convex.query(api.posts.queries.getByUsernamePaginated, {
-          username,
-          paginationOpts,
-        })
-      }
+      loadingStatus={status}
+      loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
       onRefresh={onRefreshProfile}
       onScroll={handleScroll}
-      resetKey={username}
+      posts={posts}
     >
       <View className="relative flex-1">
         <PostList ListHeaderComponent={<ProfileHeader />} />

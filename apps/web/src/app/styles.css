@@ -59,6 +59,17 @@
   }
 }
 
+@keyframes feed-live {
+  0%,
+  100% {
+    opacity: 0.42;
+  }
+
+  48% {
+    opacity: 0.95;
+  }
+}
+
 .animate-heart-pop {
   animation: heart-pop 800ms ease-out forwards;
 }
