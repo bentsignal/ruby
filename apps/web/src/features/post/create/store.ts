@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
 import type { ResolvedLocation } from "@acme/convex/places/types";
@@ -19,7 +18,6 @@ function useInternalStore() {
   const createPost = useConvexMutation(api.posts.mutations.create);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [caption, setCaption] = useState("");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
@@ -62,9 +60,6 @@ function useInternalStore() {
         attachments: uploadedFiles.map((file) => file._id),
         caption: caption.trim() || undefined,
         location: createPostLocation(location),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: convexQuery(api.posts.queries.getAll, {}).queryKey,
       });
       revokeItemPreviewUrls(items);
       locationResolve.clearLocation();

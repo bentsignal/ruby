@@ -9,14 +9,6 @@ const postOrderValidator = v.union(
   v.literal("newest first"),
 );
 
-export const getAll = authedQuery({
-  args: {},
-  handler: async (ctx) => {
-    const posts = await ctx.db.query("posts").order("desc").collect();
-    return await getUIPosts(ctx, posts);
-  },
-});
-
 export const getByUsername = authedQuery({
   args: {
     username: v.string(),

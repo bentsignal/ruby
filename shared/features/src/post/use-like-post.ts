@@ -28,18 +28,15 @@ function updatePostQueries(
   postId: UIPost["_id"],
   likedByMe: boolean,
 ) {
-  for (const query of [
-    api.posts.queries.getAll,
+  for (const { args: queryArgs, value } of localStore.getAllQueries(
     api.posts.queries.getByUsername,
-  ]) {
-    for (const { args: queryArgs, value } of localStore.getAllQueries(query)) {
-      if (!value) continue;
-      localStore.setQuery(
-        query,
-        queryArgs,
-        value.map((post) => updatePost(post, postId, likedByMe)),
-      );
-    }
+  )) {
+    if (!value) continue;
+    localStore.setQuery(
+      api.posts.queries.getByUsername,
+      queryArgs,
+      value.map((post) => updatePost(post, postId, likedByMe)),
+    );
   }
 
   const updatedFeedOrders = new Set<string>();
