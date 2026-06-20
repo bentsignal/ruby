@@ -7,14 +7,9 @@ import { usePaginatedQuery } from "convex/react";
 import { POST_FEED_PAGE_SIZE } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
-import type { PullToRefreshState } from "~/features/post/pull-to-refresh";
 import { PostList } from "~/features/post/components/post-list";
 import { setScrollHomeFeedToTopHandler } from "~/features/post/home-feed-scroll";
-import {
-  PostListStore,
-  usePostListStore,
-} from "~/features/post/post-list-store";
-import { PullToRefreshIndicator } from "~/features/post/pull-to-refresh";
+import { PostListStore } from "~/features/post/post-list-store";
 import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
@@ -63,30 +58,16 @@ function HomeFeedHeader() {
 }
 
 function HeaderLogo() {
-  const pullToRefreshState = usePostListStore(
-    (store) => store.pullToRefreshState,
-  );
-
   return (
     <View
       className="items-center justify-center"
       style={{ height: 48, width: 48 }}
     >
-      <HeaderLogoContent state={pullToRefreshState} />
+      <Image
+        accessibilityLabel="Ruby"
+        source={roundedIcon}
+        style={{ borderRadius: 24, height: 48, width: 48 }}
+      />
     </View>
-  );
-}
-
-function HeaderLogoContent({ state }: { state: PullToRefreshState }) {
-  if (state !== "idle") {
-    return <PullToRefreshIndicator state={state} />;
-  }
-
-  return (
-    <Image
-      accessibilityLabel="Ruby"
-      source={roundedIcon}
-      style={{ borderRadius: 24, height: 48, width: 48 }}
-    />
   );
 }

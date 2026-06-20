@@ -39,13 +39,7 @@ function PostList({
   const posts = usePostListStore((store) => store.posts);
   const loadingStatus = usePostListStore((store) => store.loadingStatus);
   const loadMore = usePostListStore((store) => store.loadMore);
-  const handleMomentumScrollEnd = usePostListStore(
-    (store) => store.handleMomentumScrollEnd,
-  );
-  const handleScroll = usePostListStore((store) => store.handleScroll);
-  const handleScrollEndDrag = usePostListStore(
-    (store) => store.handleScrollEndDrag,
-  );
+  const onScroll = usePostListStore((store) => store.onScroll);
   const refScrollView = usePostListStore((store) => store.refScrollView);
   const showLoadingSpinner =
     loadingStatus === "LoadingFirstPage" || loadingStatus === "LoadingMore";
@@ -59,9 +53,7 @@ function PostList({
       keyExtractor={keyExtractor}
       onEndReached={loadMore}
       onEndReachedThreshold={1.5}
-      onMomentumScrollEnd={handleMomentumScrollEnd}
-      onScroll={handleScroll}
-      onScrollEndDrag={handleScrollEndDrag}
+      onScroll={onScroll}
       scrollEventThrottle={16}
       maintainVisibleContentPosition={true}
       refScrollView={refScrollView}

@@ -26,13 +26,16 @@ function useInternalStore() {
     api.profile.mutations.ensureProfileExists,
   );
 
-  const profileQuery = useTanStackQuery({
+  const profileBootstrapQuery = useTanStackQuery({
     queryKey: ["auth", "profile"],
     queryFn: async () => await ensureProfileExists(),
     enabled: imSignedIn,
     select: (profile) => profile,
   });
-  const { data: myProfile } = profileQuery;
+  const myProfile = useConvexQuery(
+    api.profile.queries.getMine,
+    imSignedIn && profileBootstrapQuery.isSuccess ? {} : "skip",
+  );
   const waitlistStatusQueryEnabled = imSignedIn && !!myProfile;
   const waitlistStatus = useConvexQuery(
     api.waitlist.queries.getMyStatus,
@@ -47,14 +50,14 @@ function useInternalStore() {
   useEffect(() => {
     if (!imSignedIn) return;
     const authError =
-      profileQuery.error instanceof ConvexError
-        ? profileQuery.error
+      profileBootstrapQuery.error instanceof ConvexError
+        ? profileBootstrapQuery.error
         : undefined;
     if (authError?.data !== "Unauthenticated") return;
 
     router.replace("/login");
     void authClient.signOut();
-  }, [imSignedIn, profileQuery.error, router]);
+  }, [imSignedIn, profileBootstrapQuery.error, router]);
 
   function signInWithGoogle() {
     if (imSignedIn) return;
@@ -85,10 +88,6 @@ function useInternalStore() {
     });
   }
 
-  async function refreshMyProfile() {
-    await profileQuery.refetch();
-  }
-
   return {
     myProfile,
     waitlistStatus,
@@ -98,7 +97,6 @@ function useInternalStore() {
     imSignedIn,
     signInWithGoogle,
     signOut,
-    refreshMyProfile,
     redirectURL,
     setRedirectURL,
   };

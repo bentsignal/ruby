@@ -12,11 +12,7 @@ import { BackButton } from "~/components/back-button";
 import { SafeAreaView } from "~/components/safe-area-view";
 import { useAuthStore } from "~/features/auth/store";
 import { PostList } from "~/features/post/components/post-list";
-import {
-  PostListStore,
-  usePostListStore,
-} from "~/features/post/post-list-store";
-import { PullToRefreshOverlay } from "~/features/post/pull-to-refresh";
+import { PostListStore } from "~/features/post/post-list-store";
 import { AccountNotFound } from "~/features/profile/components/account-not-found";
 import { MoreButton } from "~/features/profile/components/buttons/more-button";
 import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
@@ -37,7 +33,7 @@ export default function ProfileByUsername() {
 
   const router = useRouter();
   const imNotSignedIn = useAuthStore((s) => s.imSignedIn === false);
-  const { data: result, refetch: refetchProfile } = useQuery({
+  const { data: result } = useQuery({
     ...convexQuery(api.profile.queries.getByUsername, { username }),
     select: (profile) => profile,
   });
@@ -65,18 +61,14 @@ export default function ProfileByUsername() {
     <SafeAreaView className="flex-1">
       <ProfileStore profile={profile} relationship={relationship}>
         <MobileProfileFeedStore stickyThreshold={112}>
-          <ProfilePostList onRefreshProfile={refetchProfile} />
+          <ProfilePostList />
         </MobileProfileFeedStore>
       </ProfileStore>
     </SafeAreaView>
   );
 }
 
-function ProfilePostList({
-  onRefreshProfile,
-}: {
-  onRefreshProfile: () => unknown;
-}) {
+function ProfilePostList() {
   const username = useProfileStore((store) => store.username);
   const handleScroll = useMobileProfileFeedStore((store) => store.handleScroll);
   const {
@@ -93,13 +85,11 @@ function ProfilePostList({
     <PostListStore
       loadingStatus={status}
       loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
-      onRefresh={onRefreshProfile}
       onScroll={handleScroll}
       posts={posts}
     >
       <View className="relative flex-1">
         <PostList ListHeaderComponent={<ProfileHeader />} />
-        <ProfileRefreshOverlay />
         <CompactProfileHeader />
       </View>
     </PostListStore>
@@ -126,11 +116,6 @@ function ProfileHeader() {
       <View className="bg-border h-px" />
     </View>
   );
-}
-
-function ProfileRefreshOverlay() {
-  const state = usePostListStore((store) => store.pullToRefreshState);
-  return <PullToRefreshOverlay state={state} />;
 }
 
 function CompactProfileHeader() {
