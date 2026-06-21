@@ -102,7 +102,7 @@ function ProfilePostList() {
 function ProfileHeader() {
   return (
     <View className="w-full flex-col gap-4">
-      <View className="flex-row items-center justify-between px-4">
+      <View className="flex-row items-center justify-between px-2">
         <BackButton />
         <MoreButton />
       </View>
@@ -133,7 +133,7 @@ function CompactProfileHeader() {
   return (
     <Animated.View
       pointerEvents={visible ? "auto" : "none"}
-      className="bg-background/95 border-border absolute top-0 right-0 left-0 z-20 border-b px-4 pt-3 pb-2"
+      className="bg-background/95 border-border absolute top-0 right-0 left-0 z-20 border-b px-2 pt-3 pb-2"
       style={animatedStyle}
     >
       <View className="flex-row items-center gap-3">
