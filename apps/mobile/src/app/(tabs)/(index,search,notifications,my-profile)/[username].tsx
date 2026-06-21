@@ -89,7 +89,10 @@ function ProfilePostList() {
       posts={posts}
     >
       <View className="relative flex-1">
-        <PostList ListHeaderComponent={<ProfileHeader />} />
+        <PostList
+          headerBottomSpacing={16}
+          ListHeaderComponent={<ProfileHeader />}
+        />
         <CompactProfileHeader />
       </View>
     </PostListStore>
@@ -99,20 +102,20 @@ function ProfilePostList() {
 function ProfileHeader() {
   return (
     <View className="w-full flex-col gap-4">
-      <View className="flex-row items-center justify-between px-4">
+      <View className="flex-row items-center justify-between px-2">
         <BackButton />
         <MoreButton />
       </View>
-      <View className="mx-4 flex-row items-center gap-4">
+      <View className="mx-2 flex-row items-center gap-4">
         <PFP variant="md" />
         <View className="min-w-0 flex-1 flex-col">
           <Name numberOfLines={1} />
           <Username numberOfLines={1} />
         </View>
       </View>
-      <Bio className="mx-4" />
-      <UserProvidedLink className="mx-4" />
-      <PrimaryButton className="mx-4" />
+      <Bio className="mx-2" />
+      <UserProvidedLink className="mx-2" />
+      <PrimaryButton className="mx-2" />
       <View className="bg-border h-px" />
     </View>
   );
@@ -130,7 +133,7 @@ function CompactProfileHeader() {
   return (
     <Animated.View
       pointerEvents={visible ? "auto" : "none"}
-      className="bg-background/95 border-border absolute top-0 right-0 left-0 z-20 border-b px-4 pt-3 pb-2"
+      className="bg-background/95 border-border absolute top-0 right-0 left-0 z-20 border-b px-2 pt-3 pb-2"
       style={animatedStyle}
     >
       <View className="flex-row items-center gap-3">

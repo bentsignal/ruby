@@ -61,7 +61,10 @@ function MyProfilePostList() {
       posts={posts}
     >
       <View className="relative flex-1">
-        <PostList ListHeaderComponent={<ProfileHeader />} />
+        <PostList
+          headerBottomSpacing={16}
+          ListHeaderComponent={<ProfileHeader />}
+        />
         <CompactProfileHeader />
       </View>
     </PostListStore>
@@ -71,16 +74,16 @@ function MyProfilePostList() {
 function ProfileHeader() {
   return (
     <View className="w-full flex-col gap-4 pt-4">
-      <View className="mx-4 flex-row items-center gap-4">
+      <View className="mx-2 flex-row items-center gap-4">
         <PFP variant="md" />
         <View className="min-w-0 flex-1 flex-col">
           <Name numberOfLines={1} />
           <Username numberOfLines={1} />
         </View>
       </View>
-      <Bio className="mx-4" />
-      <UserProvidedLink className="mx-4" />
-      <MyProfileButtons className="mx-4" />
+      <Bio className="mx-2" />
+      <UserProvidedLink className="mx-2" />
+      <MyProfileButtons className="mx-2" />
       <View className="bg-border h-px" />
     </View>
   );

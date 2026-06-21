@@ -24,6 +24,7 @@ import { useColor } from "~/hooks/use-color";
 
 interface PostListProps {
   contentTopPadding?: number;
+  headerBottomSpacing?: number;
   ListHeaderComponent?: ReactElement;
   emptyText?: string;
   showEndMessage?: boolean;
@@ -31,6 +32,7 @@ interface PostListProps {
 
 export function PostList({
   contentTopPadding = 0,
+  headerBottomSpacing = 32,
   ListHeaderComponent,
   emptyText = "No posts yet.",
   showEndMessage = false,
@@ -58,7 +60,12 @@ export function PostList({
       maintainVisibleContentPosition={true}
       refScrollView={refScrollView}
       style={{ flex: 1 }}
-      ListHeaderComponent={<PostListHeader component={ListHeaderComponent} />}
+      ListHeaderComponent={
+        <PostListHeader
+          bottomSpacing={headerBottomSpacing}
+          component={ListHeaderComponent}
+        />
+      }
       ListHeaderComponentStyle={{ width: "100%" }}
       ListEmptyComponent={
         <PostListEmpty loadingStatus={loadingStatus} emptyText={emptyText} />
@@ -79,13 +86,19 @@ export function PostList({
   );
 }
 
-function PostListHeader({ component }: { component?: ReactElement }) {
+function PostListHeader({
+  bottomSpacing,
+  component,
+}: {
+  bottomSpacing: number;
+  component?: ReactElement;
+}) {
   if (!component) return null;
 
   return (
     <View className="w-full">
       {component}
-      <View className="h-8" />
+      <View style={{ height: bottomSpacing }} />
     </View>
   );
 }
@@ -194,7 +207,32 @@ function GradientDivider({ direction }: { direction: "left" | "right" }) {
 }
 
 function PostSeparator() {
-  return <View className="h-10" />;
+  return (
+    <View className="h-9 justify-center px-4">
+      <FadedDivider />
+    </View>
+  );
+}
+
+function FadedDivider() {
+  const border = useColor("border");
+
+  return (
+    <View className="h-px w-full">
+      <Svg height="1" width="100%">
+        <Defs>
+          <LinearGradient id="post-separator" x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0" stopColor={border} stopOpacity={0} />
+            <Stop offset="0.08" stopColor={border} stopOpacity={0.46} />
+            <Stop offset="0.5" stopColor={border} stopOpacity={0.62} />
+            <Stop offset="0.92" stopColor={border} stopOpacity={0.46} />
+            <Stop offset="1" stopColor={border} stopOpacity={0} />
+          </LinearGradient>
+        </Defs>
+        <Rect fill="url(#post-separator)" height="1" width="100%" />
+      </Svg>
+    </View>
+  );
 }
 
 function keyExtractor(post: UIPost) {
