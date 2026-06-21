@@ -16,6 +16,7 @@ import { api } from "@acme/convex/api";
 import { Separator } from "@acme/ui-web/separator";
 
 import { Post } from "~/features/post/components/post";
+import { PostSeparator } from "~/features/post/components/post-separator";
 import { PrimaryButton } from "~/features/profile/components/buttons/primary-button";
 import { Bio } from "~/features/profile/components/info/bio";
 import { Name } from "~/features/profile/components/info/name";
@@ -119,7 +120,7 @@ function ProfilePostList({
           />
         }
         ListEmptyComponent={<EmptyPosts />}
-        ItemSeparatorComponent={PostSeparator}
+        ItemSeparatorComponent={ProfilePostSeparator}
         ListFooterComponent={
           <ProfilePostListFooter loadingStatus={status} posts={visiblePosts} />
         }
@@ -137,7 +138,7 @@ function ProfilePostListHeader({
 }) {
   return (
     <ProfileStore profile={profile} relationship={relationship}>
-      <div className="mx-auto flex w-full flex-col gap-4 px-4 pt-8 pb-6 sm:max-w-md sm:pt-12 lg:max-w-xl">
+      <div className="mx-auto flex w-full flex-col gap-4 px-4 pt-8 pb-4 sm:max-w-md sm:pt-12 lg:max-w-xl">
         <div className="flex items-center gap-4">
           <PFP variant="md" />
           <div className="flex flex-col">
@@ -195,8 +196,13 @@ function ProfilePostListFooter({
   return <div className="mx-auto h-28 w-full px-4 sm:max-w-md lg:max-w-xl" />;
 }
 
-function PostSeparator() {
-  return <div className="h-6" />;
+function ProfilePostSeparator({ leadingItem }: { leadingItem: UIPost }) {
+  return (
+    <PostSeparator
+      className="sm:max-w-md lg:max-w-xl"
+      leadingItem={leadingItem}
+    />
+  );
 }
 
 function keyExtractor(post: UIPost) {

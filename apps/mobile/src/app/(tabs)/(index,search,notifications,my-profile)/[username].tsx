@@ -89,7 +89,10 @@ function ProfilePostList() {
       posts={posts}
     >
       <View className="relative flex-1">
-        <PostList ListHeaderComponent={<ProfileHeader />} />
+        <PostList
+          headerBottomSpacing={16}
+          ListHeaderComponent={<ProfileHeader />}
+        />
         <CompactProfileHeader />
       </View>
     </PostListStore>
@@ -103,16 +106,16 @@ function ProfileHeader() {
         <BackButton />
         <MoreButton />
       </View>
-      <View className="mx-4 flex-row items-center gap-4">
+      <View className="mx-2 flex-row items-center gap-4">
         <PFP variant="md" />
         <View className="min-w-0 flex-1 flex-col">
           <Name numberOfLines={1} />
           <Username numberOfLines={1} />
         </View>
       </View>
-      <Bio className="mx-4" />
-      <UserProvidedLink className="mx-4" />
-      <PrimaryButton className="mx-4" />
+      <Bio className="mx-2" />
+      <UserProvidedLink className="mx-2" />
+      <PrimaryButton className="mx-2" />
       <View className="bg-border h-px" />
     </View>
   );

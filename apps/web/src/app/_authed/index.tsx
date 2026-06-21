@@ -13,6 +13,7 @@ import { api } from "@acme/convex/api";
 
 import logoSmall from "~/assets/logo-small.webp";
 import { Post } from "~/features/post/components/post";
+import { PostSeparator } from "~/features/post/components/post-separator";
 
 export const Route = createFileRoute("/_authed/")({
   loader: async ({ context }) => {
@@ -112,7 +113,7 @@ function HomePosts({
         }}
         ListHeaderComponent={<HomePostListHeader />}
         ListEmptyComponent={<HomePostListEmpty />}
-        ItemSeparatorComponent={PostSeparator}
+        ItemSeparatorComponent={HomePostSeparator}
         ListFooterComponent={
           <HomePostListFooter loadingStatus={loadingStatus} posts={posts} />
         }
@@ -189,8 +190,8 @@ function HomePostListFooter({
   );
 }
 
-function PostSeparator() {
-  return <div className="h-10" />;
+function HomePostSeparator({ leadingItem }: { leadingItem: UIPost }) {
+  return <PostSeparator className="max-w-xl" leadingItem={leadingItem} />;
 }
 
 function keyExtractor(post: UIPost) {
