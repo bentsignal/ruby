@@ -1,5 +1,6 @@
-import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
+import { Bookmark, Heart, MessageCircle } from "lucide-react";
 
+import { PostInfoButton } from "../details/components/post-info-button";
 import { usePostStore } from "../store";
 
 export function PostActions() {
@@ -18,9 +19,7 @@ export function PostActions() {
         <span>Open comments</span>
       </CommentButton>
       <div className="flex-1" />
-      <ActionButton label="Share">
-        <Share className="size-5" />
-      </ActionButton>
+      <PostInfoButton />
       <ActionButton label="Bookmark">
         <Bookmark className="size-5" />
       </ActionButton>
@@ -32,7 +31,7 @@ function CommentButton({ children }: { children: React.ReactNode }) {
   return (
     <button
       aria-label="Comment"
-      className="hover:text-primary focus-visible:text-primary flex h-9 cursor-pointer items-center gap-2 rounded-full pr-2 text-sm font-medium transition-colors active:scale-95"
+      className="hover:text-primary focus-visible:text-primary flex h-9 cursor-pointer items-center gap-2 rounded-full px-2 text-sm font-medium transition-colors active:scale-95"
       type="button"
     >
       {children}

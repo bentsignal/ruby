@@ -7,7 +7,6 @@ import { Name } from "~/features/profile/components/info/name";
 import { PFP } from "~/features/profile/components/info/pfp";
 import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
-import { PostInfoButton } from "../details/components/post-info-button";
 import { PostMediaPager } from "../media-pager/components/post-media-pager";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
@@ -34,7 +33,6 @@ export function Post({ post }: { post: UIPost }) {
                 <Username className="text-muted-foreground text-[13px]" />
               </View>
             </Pressable>
-            <PostInfoButton />
             <PostMoreButton />
           </View>
         </ProfileStore>

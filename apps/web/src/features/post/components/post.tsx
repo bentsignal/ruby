@@ -5,7 +5,6 @@ import { Name } from "~/features/profile/components/info/name";
 import { PFP } from "~/features/profile/components/info/pfp";
 import { Username } from "~/features/profile/components/info/username";
 import { ProfileStore } from "~/features/profile/store";
-import { PostInfoButton } from "../details/components/post-info-button";
 import { PostMedia } from "../media/components/post-media";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
@@ -29,10 +28,7 @@ export function Post({ post }: { post: UIPost }) {
                 <Username className="text-muted-foreground truncate text-xs leading-tight font-medium" />
               </div>
             </QuickLink>
-            <div className="-mr-2 ml-auto shrink-0 pl-2">
-              <PostInfoButton />
-            </div>
-            <div className="-mr-2 shrink-0">
+            <div className="-mr-2 ml-auto shrink-0">
               <PostMoreButton />
             </div>
           </div>
