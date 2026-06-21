@@ -1,7 +1,6 @@
-import { Heart, MessageCircle } from "lucide-react";
+import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
 
 import { usePostStore } from "../store";
-import { PostMoreButton } from "./post-more-button";
 
 export function PostActions() {
   const likedByMe = usePostStore((store) => store.likedByMe);
@@ -14,12 +13,30 @@ export function PostActions() {
           className={likedByMe ? "text-primary fill-primary size-5" : "size-5"}
         />
       </ActionButton>
-      <ActionButton label="Comment">
+      <CommentButton>
         <MessageCircle className="size-5" />
-      </ActionButton>
+        <span>Open comments</span>
+      </CommentButton>
       <div className="flex-1" />
-      <PostMoreButton />
+      <ActionButton label="Share">
+        <Share className="size-5" />
+      </ActionButton>
+      <ActionButton label="Bookmark">
+        <Bookmark className="size-5" />
+      </ActionButton>
     </div>
+  );
+}
+
+function CommentButton({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      aria-label="Comment"
+      className="hover:text-primary focus-visible:text-primary flex h-9 cursor-pointer items-center gap-2 rounded-full pr-2 text-sm font-medium transition-colors active:scale-95"
+      type="button"
+    >
+      {children}
+    </button>
   );
 }
 

@@ -10,6 +10,7 @@ import { PostMedia } from "../media/components/post-media";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
+import { PostMoreButton } from "./post-more-button";
 
 export function Post({ post }: { post: UIPost }) {
   return (
@@ -30,6 +31,9 @@ export function Post({ post }: { post: UIPost }) {
             </QuickLink>
             <div className="-mr-2 ml-auto shrink-0 pl-2">
               <PostInfoButton />
+            </div>
+            <div className="-mr-2 shrink-0">
+              <PostMoreButton />
             </div>
           </div>
         </ProfileStore>
