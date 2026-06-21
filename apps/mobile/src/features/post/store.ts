@@ -1,3 +1,4 @@
+import { useState } from "react";
 import * as Haptics from "expo-haptics";
 import { createStore } from "rostra";
 
@@ -5,33 +6,50 @@ import type { UIPost } from "@acme/convex/posts/types";
 import { useLikePost, useUnlikePost } from "@acme/features/post";
 
 interface PostStoreProps {
+  onLikedByMeChange?: (postId: UIPost["_id"], likedByMe: boolean) => void;
   post: UIPost;
 }
 
 export type PostMediaItem = ReturnType<typeof getPostMediaItems>[number];
 
-function useInternalStore({ post }: PostStoreProps) {
+function useInternalStore({ onLikedByMeChange, post }: PostStoreProps) {
   const likeMutation = useLikePost();
   const unlikeMutation = useUnlikePost();
+  const [likedByMeOverride, setLikedByMeOverride] = useState<{
+    likedByMe: boolean;
+    postId: UIPost["_id"];
+  } | null>(null);
+  const likedByMe =
+    likedByMeOverride?.postId === post._id
+      ? likedByMeOverride.likedByMe
+      : post.likedByMe;
+
+  function updateLikedByMe(nextLikedByMe: boolean) {
+    setLikedByMeOverride({ likedByMe: nextLikedByMe, postId: post._id });
+    onLikedByMeChange?.(post._id, nextLikedByMe);
+  }
 
   async function like() {
-    if (post.likedByMe) return;
+    if (likedByMe) return;
+    updateLikedByMe(true);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await likeMutation({ postId: post._id });
     } catch {
-      // Convex will roll back the optimistic update on failure.
+      updateLikedByMe(false);
     }
   }
 
   async function toggleLike() {
+    const nextLikedByMe = !likedByMe;
+    updateLikedByMe(nextLikedByMe);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await (post.likedByMe ? unlikeMutation : likeMutation)({
+      await (nextLikedByMe ? likeMutation : unlikeMutation)({
         postId: post._id,
       });
     } catch {
-      // Convex will roll back the optimistic update on failure.
+      updateLikedByMe(!nextLikedByMe);
     }
   }
 
@@ -42,7 +60,7 @@ function useInternalStore({ post }: PostStoreProps) {
     location: post.location,
     mediaItems: getPostMediaItems(post),
     postId: post._id,
-    likedByMe: post.likedByMe,
+    likedByMe,
     like,
     toggleLike,
   };

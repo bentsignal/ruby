@@ -1,4 +1,5 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 
 import type { UIPost } from "@acme/convex/posts/types";
 
@@ -13,16 +14,25 @@ import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
 
 export function Post({ post }: { post: UIPost }) {
+  const router = useRouter();
+
   return (
     <PostStore post={post}>
       <View className="gap-3">
-        <ProfileStore profile={post.creator}>
+        <ProfileStore profile={post.creator} key={post.creator.username}>
           <View className="mx-2 flex-row items-center gap-2">
-            <PFP variant="xs" />
-            <View className="flex-1">
-              <Name className="text-[15px] font-semibold" />
-              <Username className="text-muted-foreground text-[13px]" />
-            </View>
+            <Pressable
+              onPress={() =>
+                router.push(`/${encodeURIComponent(post.creator.username)}`)
+              }
+              className="min-w-0 flex-1 flex-row items-center gap-2"
+            >
+              <PFP variant="xs" />
+              <View className="min-w-0 flex-1">
+                <Name className="text-[15px] font-semibold" />
+                <Username className="text-muted-foreground text-[13px]" />
+              </View>
+            </Pressable>
             <PostInfoButton />
           </View>
         </ProfileStore>

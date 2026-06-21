@@ -163,7 +163,7 @@ function ArrowButton({
     <button
       aria-label={direction === "previous" ? "Previous" : "Next"}
       className={cn(
-        "absolute top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white opacity-0 backdrop-blur-md transition group-hover:opacity-100 hover:bg-black/65 focus-visible:opacity-100",
+        "absolute top-1/2 grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-black/45 text-white opacity-0 backdrop-blur-md transition group-hover:opacity-100 hover:bg-black/65 focus-visible:opacity-100",
         direction === "previous" ? "left-2" : "right-2",
         hidden && "pointer-events-none !opacity-0",
       )}

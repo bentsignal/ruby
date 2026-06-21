@@ -14,6 +14,29 @@ export function getOrderedProfileIds(
   return { profileIdA: profileTwo, profileIdB: profileOne };
 }
 
+export async function getFriendProfileIds(
+  ctx: AuthedMutationCtx | AuthedQueryCtx,
+  profileId: Id<"profiles">,
+) {
+  const friendshipsByA = await ctx.db
+    .query("friends")
+    .withIndex("by_profileA", (q) => q.eq("profileIdA", profileId))
+    .filter((q) => q.eq(q.field("status"), "friends"))
+    .collect();
+  const friendshipsByB = await ctx.db
+    .query("friends")
+    .withIndex("by_profileB", (q) => q.eq("profileIdB", profileId))
+    .filter((q) => q.eq(q.field("status"), "friends"))
+    .collect();
+
+  return Array.from(
+    new Set([
+      ...friendshipsByA.map((friendship) => friendship.profileIdB),
+      ...friendshipsByB.map((friendship) => friendship.profileIdA),
+    ]),
+  );
+}
+
 async function getFriendshipStatusHelper(
   ctx: AuthedMutationCtx | AuthedQueryCtx,
   profileOne: Id<"profiles">,

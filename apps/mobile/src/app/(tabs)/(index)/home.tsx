@@ -1,45 +1,68 @@
-import type { LegendListRenderItemProps } from "@legendapp/list";
+import type { ScrollView } from "react-native";
+import { useEffect, useRef } from "react";
 import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { LegendList } from "@legendapp/list";
+import { usePaginatedQuery } from "convex/react";
 
-import type { UIPost } from "@acme/convex/posts/types";
+import { POST_FEED_PAGE_SIZE } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
-import { Post } from "~/features/post/components/post";
+import { PostList } from "~/features/post/components/post-list";
+import { setScrollHomeFeedToTopHandler } from "~/features/post/home-feed-scroll";
+import { PostListStore } from "~/features/post/post-list-store";
 import roundedIcon from "../../../../assets/rounded-icon.png";
 
 export default function Home() {
-  const { data } = useQuery({
-    ...convexQuery(api.posts.queries.getAll, {}),
-    select: (posts) => posts,
-  });
+  const scrollViewRef = useRef<ScrollView>(null);
+  const {
+    results: posts,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
+    api.posts.queries.getFeed,
+    { order: "oldest first" },
+    { initialNumItems: POST_FEED_PAGE_SIZE },
+  );
 
-  const posts = data ?? [];
-
-  const inset = useSafeAreaInsets();
+  // eslint-disable-next-line no-restricted-syntax -- Registers the home tab's external scroll-to-top command.
+  useEffect(() => {
+    return setScrollHomeFeedToTopHandler(() => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    });
+  }, []);
 
   return (
-    <LegendList
-      data={posts}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      style={{ flex: 1 }}
-      ListHeaderComponent={<ListHeader topPadding={inset.top} />}
-      ItemSeparatorComponent={PostSeparator}
-      contentContainerStyle={{
-        paddingBottom: inset.bottom + 24,
-      }}
-      recycleItems={true}
-    />
+    <PostListStore
+      loadingStatus={status}
+      loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
+      posts={posts}
+      refScrollView={scrollViewRef}
+    >
+      <PostList
+        ListHeaderComponent={<HomeFeedHeader />}
+        emptyText="No posts from friends yet."
+        showEndMessage={true}
+      />
+    </PostListStore>
   );
 }
 
-function ListHeader({ topPadding }: { topPadding: number }) {
+function HomeFeedHeader() {
+  const inset = useSafeAreaInsets();
+
   return (
-    <View className="items-center pb-6" style={{ paddingTop: topPadding }}>
+    <View className="items-center" style={{ paddingTop: inset.top }}>
+      <HeaderLogo />
+    </View>
+  );
+}
+
+function HeaderLogo() {
+  return (
+    <View
+      className="items-center justify-center"
+      style={{ height: 48, width: 48 }}
+    >
       <Image
         accessibilityLabel="Ruby"
         source={roundedIcon}
@@ -47,16 +70,4 @@ function ListHeader({ topPadding }: { topPadding: number }) {
       />
     </View>
   );
-}
-
-function renderItem(props: LegendListRenderItemProps<UIPost>) {
-  return <Post post={props.item} />;
-}
-
-function PostSeparator() {
-  return <View className="h-10" />;
-}
-
-function keyExtractor(post: UIPost) {
-  return post._id;
 }

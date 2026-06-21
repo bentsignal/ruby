@@ -47,10 +47,19 @@ Ask each subagent to return either a patch or concrete findings. The main agent 
 ## Refactor Standards
 
 - Make the top-level flow obvious before polishing details.
+- Route/page files should read like a clear overlay of the route: data loading/gates, providers, and the named components that make up the screen should be visible in the route file.
+- Do not over-correct by turning route files into one-line wrappers around opaque feature components. If opening the route no longer shows what the page contains, the abstraction went too far.
+- Prefer the web `$username` route shape in this repo: route-level data query/load, data passed into the relevant store provider, then a readable in-file outline of the profile/header/list/empty-state composition.
 - Prefer feature-local files over dumping unrelated helpers into shared utilities.
 - Use existing project conventions before inventing new patterns.
 - Keep state ownership clear. A reader should quickly see which store or component owns state, which components consume it, and which functions mutate it.
 - Avoid prop drilling for feature state and actions. Prefer a feature-scoped store when multiple nested components need shared state.
+- Keep UI components primarily presentational. Component bodies should not accumulate pagination, fetch orchestration, optimistic updates, scroll thresholds, refresh coordination, query construction, or other business rules.
+- Extract business logic into named hooks or feature-scoped Rostra stores. Hoist state high enough to cover the feature subtree, then consume it directly in leaf components with `useStore` selectors instead of threading values through intermediate props.
+- Use props for true component configuration and composition boundaries, not as a transport layer for shared feature state or actions.
+- When a component needs only one piece of state or one action, import the relevant store hook and select that piece locally. Do not pass broad state bags through the tree.
+- Keep reusable feature behavior in feature hooks/stores, but keep route-specific composition in the route file when that makes the page easier to understand.
+- Keep server and app configuration in the shared config package when the value represents a product or platform rule. Query/mutation files should consume config, not define duplicated limits inline.
 - Remove dead code created by the refactor.
 - Keep comments rare. Add comments only when code cannot clearly explain the decision.
 - Do not turn a cleanup pass into a redesign, framework migration, or broad style rewrite unless explicitly requested.

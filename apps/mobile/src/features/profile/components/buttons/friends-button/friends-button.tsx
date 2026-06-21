@@ -1,19 +1,20 @@
 import { Modal, Pressable, View } from "react-native";
 import { UserRound } from "lucide-react-native";
 
+import { cn } from "@acme/std/cn";
 import { Button, ButtonText } from "@acme/ui-mobile/button";
 
 import { useColor } from "~/hooks/use-color";
 import { useFriendsButtonStore } from "./store";
 
-export function FriendsButton() {
+export function FriendsButton({ className }: { className?: string }) {
   const removeFriend = useFriendsButtonStore((s) => s.removeFriend);
   const isModalVisible = useFriendsButtonStore((s) => s.isModalVisible);
   const setModalVisibility = useFriendsButtonStore((s) => s.setModalVisibility);
   const foreground = useColor("foreground");
 
   return (
-    <View className="mx-4">
+    <View className={cn(className)}>
       <Button
         variant="outline"
         className="w-full"

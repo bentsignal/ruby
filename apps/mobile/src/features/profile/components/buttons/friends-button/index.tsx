@@ -1,10 +1,10 @@
 import { FriendsButton } from "./friends-button";
 import { FriendsButtonStore } from "./store";
 
-function Wrapper() {
+function Wrapper({ className }: { className?: string }) {
   return (
     <FriendsButtonStore>
-      <FriendsButton />
+      <FriendsButton className={className} />
     </FriendsButtonStore>
   );
 }

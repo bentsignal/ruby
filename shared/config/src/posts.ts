@@ -14,3 +14,4 @@ export const POST_UPLOAD_CONTENT_TYPE_MAX_LENGTH = 128;
 export const POST_UPLOAD_BLOCKED_CONTENT_TYPES = ["image/svg+xml"] as const;
 export const POST_CAPTION_MAX_LENGTH = 2_200;
 export const POST_MAX_FILES = 20;
+export const POST_FEED_PAGE_SIZE = 10;

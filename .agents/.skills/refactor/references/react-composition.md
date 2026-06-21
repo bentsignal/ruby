@@ -12,20 +12,88 @@ This reference is a guide for what to look for: composition shape, state access,
 
 The final code should feel like a reviewer can open the entry file and understand the feature in one pass. Prefer a parent that reads as a stable outline. Put conditional rendering inside named sub-components, and use early returns there instead of ternaries in the parent's return statement.
 
+For routes/pages, preserve a visible outline of the page in the route file. The route should show the meaningful data query/loading gates, provider setup, and the named page sections in order. Do not hide the whole route behind a one-line `<FeaturePage />` or `<FeatureFeed />` wrapper when the route-specific composition would be clearer inline.
+
+In this repo, the web `$username` route is the model: the route component fetches/consumes profile data, passes it into `ProfileStore`, and then shows the actual profile header layout, actions, separator, and post list in the same file. Business logic still belongs in hooks/stores, but route-specific UI composition should remain readable at the route.
+
 ```tsx
-function CreatePost() {
+export const Route = createFileRoute("/_authed/$username")({
+  loader: async ({ context, params }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(
+        convexQuery(api.profile.queries.getByUsername, {
+          username: params.username,
+        }),
+      ),
+      context.queryClient.ensureQueryData(
+        convexQuery(api.posts.queries.getByUsername, {
+          username: params.username,
+        }),
+      ),
+    ]);
+  },
+  component: ProfilePage,
+});
+
+function ProfilePage() {
+  const result = useSuspenseQuery({
+    ...convexQuery(api.profile.queries.getByUsername, {
+      username: Route.useParams({ select: (p) => p.username }),
+    }),
+    select: (data) => data,
+  });
+
+  if (result.data === null) {
+    throw notFound();
+  }
+
+  const { info: profile, relationship } = result.data;
   return (
-    <CreatePostStore>
-      <main className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-        <CreatePostHeader />
-        <MediaFileInput />
-        <MediaDropzone />
-        <MediaGrid />
-        <CaptionField />
-        <ComposerError />
-        <PostConfirmationDialog />
-      </main>
-    </CreatePostStore>
+    <div className="max-w-auto mx-auto flex flex-col gap-4 px-4 pt-8 sm:max-w-md sm:pt-12 lg:max-w-xl">
+      <ProfileStore profile={profile} relationship={relationship}>
+        <div className="flex items-center gap-4">
+          <PFP variant="md" />
+          <div className="flex flex-col">
+            <Name className="font-bold" />
+            <Username />
+          </div>
+          <PrimaryButton className="ml-auto hidden lg:flex" />
+        </div>
+        <Bio />
+        <UserProvidedLink className="mb-1" />
+        <PrimaryButton className="flex lg:hidden" />
+        <Separator />
+      </ProfileStore>
+      <ProfilePostList />
+    </div>
+  );
+}
+
+function ProfilePostList() {
+  const { data: posts } = useSuspenseQuery({
+    ...convexQuery(api.posts.queries.getByUsername, {
+      username: Route.useParams({ select: (p) => p.username }),
+    }),
+    select: (data) => data,
+  });
+
+  return (
+    <div className="flex min-h-screen flex-col gap-6 pb-28">
+      <EmptyPosts posts={posts} />
+      {posts.map((post) => (
+        <Post key={post._id} post={post} />
+      ))}
+    </div>
+  );
+}
+
+function EmptyPosts({ posts }: { posts: unknown[] }) {
+  if (posts.length > 0) return null;
+
+  return (
+    <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
+      No posts yet.
+    </div>
   );
 }
 ```
@@ -37,93 +105,78 @@ This is the review feel to aim for: clear ordering, named responsibilities, and 
 Sub-components should pull the feature state they need and decide whether they render. This keeps the parent linear.
 
 ```tsx
-function MediaDropzone() {
-  const addFiles = useCreatePostStore((store) => store.addFiles);
-  const inputRef = useCreatePostStore((store) => store.inputRef);
-  const isVisible = useCreatePostStore((store) => store.items.length === 0);
-
-  if (!isVisible) return null;
+function EmptyPosts({ posts }: { posts: unknown[] }) {
+  if (posts.length > 0) return null;
 
   return (
-    <button
-      type="button"
-      onClick={() => inputRef.current?.click()}
-      onDrop={(event) => {
-        event.preventDefault();
-        addFiles(event.dataTransfer.files);
-      }}
-    >
-      Click to upload, or drop files here
-    </button>
+    <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
+      No posts yet.
+    </div>
   );
 }
 ```
 
-## Example: Component Choice Without Parent Ternaries
+## Example: Route Outline Without Opaque Wrappers
 
-When a section chooses between an empty state and an add-more state, put that decision inside a named component. The parent should render `<MediaPicker />`, not a ternary expression.
+When a route has meaningful page sections, keep that composition visible in the route. Extract the behavior and state mechanics, not the outline that helps a reviewer see what page they are on.
 
 ```tsx
-function MediaPicker() {
-  const hasMedia = useCreatePostStore((store) => store.items.length > 0);
-
-  if (hasMedia) return <AddMoreMediaButton />;
-
-  return <EmptyMediaDropzone />;
-}
-
-function EmptyMediaDropzone() {
-  const addFiles = useCreatePostStore((store) => store.addFiles);
-  const inputRef = useCreatePostStore((store) => store.inputRef);
-
+function ProfilePage() {
   return (
-    <button
-      type="button"
-      onClick={() => inputRef.current?.click()}
-      onDrop={(event) => {
-        event.preventDefault();
-        addFiles(event.dataTransfer.files);
-      }}
-    >
-      Click to upload, or drop files here
-    </button>
-  );
-}
-
-function AddMoreMediaButton() {
-  const inputRef = useCreatePostStore((store) => store.inputRef);
-
-  return (
-    <button type="button" onClick={() => inputRef.current?.click()}>
-      Add more
-    </button>
+    <div className="max-w-auto mx-auto flex flex-col gap-4 px-4 pt-8 sm:max-w-md sm:pt-12 lg:max-w-xl">
+      <ProfileStore profile={profile} relationship={relationship}>
+        <div className="flex items-center gap-4">
+          <PFP variant="md" />
+          <div className="flex flex-col">
+            <Name className="font-bold" />
+            <Username />
+          </div>
+          <PrimaryButton className="ml-auto hidden lg:flex" />
+        </div>
+        <Bio />
+        <UserProvidedLink className="mb-1" />
+        <PrimaryButton className="flex lg:hidden" />
+        <Separator />
+      </ProfileStore>
+      <ProfilePostList />
+    </div>
   );
 }
 ```
+
+Do not replace that route with an opaque wrapper unless the wrapper is already a well-known app shell or layout abstraction:
+
+```tsx
+function ProfilePage() {
+  return <ProfileFeaturePage profile={profile} relationship={relationship} />;
+}
+```
+
+That version hides the page from the route file. A reviewer has to jump files before they can see the profile image/name/username row, responsive actions, separator, and post list.
 
 This is not a ban on every ternary in all React code. It is a rule against using ternaries inside return JSX to make parent components choose which feature sub-component should render. If a branch affects feature structure, name the branch with a component and let that component use early returns.
 
-Do not make the parent carry structural branches:
+Do not make the parent carry structural branches or feature state just to decide which section appears:
 
 ```tsx
-function CreatePost() {
-  const items = useCreatePostStore((store) => store.items);
-  const error = useCreatePostStore((store) => store.error);
-
+function ProfilePostList({ posts }: { posts: Post[] }) {
   return (
-    <main>
-      {items.length === 0 ? <MediaDropzone /> : <MediaGrid />}
-      {error ? <ComposerError error={error} /> : null}
-    </main>
+    <div>
+      {posts.length === 0 ? <EmptyPosts posts={posts} /> : null}
+      {posts.map((post) => (
+        <Post key={post._id} post={post} />
+      ))}
+    </div>
   );
 }
 ```
 
-The parent version above makes reviewers parse state and branching before they can understand the feature structure. Prefer `<MediaPicker />`, `<MediaGrid />`, and `<ComposerError />` in the parent, with each component deciding whether it should render or which sub-component it should delegate to.
+The parent version above makes reviewers parse branching before they can understand the feature structure. Prefer `<EmptyPosts posts={posts} />` in the parent, with that component deciding whether it should render.
 
 ## Refactor Heuristics
 
 Move code out of the page or route when it:
+
 - Owns a distinct interaction, such as drag/drop, confirmation, uploading, removing, selecting, filtering, or editing.
 - Has its own loading, empty, error, disabled, confirmation, or optimistic state.
 - Would be easier to review if named by domain responsibility.
@@ -134,6 +187,7 @@ Keep code together when splitting would force an awkward abstraction or create a
 ## Component Boundaries
 
 Prefer components that answer one clear question:
+
 - "How does the user add media?"
 - "How is one preview tile rendered?"
 - "What happens when the primary action is clicked?"
@@ -151,6 +205,7 @@ Avoid prop drilling feature state and actions through intermediate components. I
 When implementing or changing a Rostra store, read the project-local `rostra` skill at `.agents/.skills/rostra/SKILL.md`. This reference intentionally does not duplicate the Rostra API rules.
 
 Aim for this data shape:
+
 - A feature entrypoint wraps the relevant subtree in a store provider.
 - Leaf components select only the state/actions they use.
 - Actions live near the feature store or feature hook that owns the state.
@@ -161,6 +216,7 @@ Props are still appropriate for reusable presentational components, primitive UI
 ## Local Helpers
 
 Use private helpers inside the same file when they are only meaningful to one component family. Split into a separate file when:
+
 - The helper is reused by multiple files.
 - The file has multiple independent responsibilities.
 - The helper contains domain logic that deserves direct tests.
@@ -179,6 +235,7 @@ Avoid duplicating the same state in both places. If local state and feature stat
 ## Reviewability Checklist
 
 Before finishing, check that:
+
 - The route/page reads as a short feature outline.
 - Each extracted component has a clear responsibility and a useful name.
 - Parent components are not cluttered with ternaries for child visibility that could live as early returns inside child components.

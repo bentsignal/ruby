@@ -1,5 +1,6 @@
 import type { UIPost } from "@acme/convex/posts/types";
 
+import { QuickLink } from "~/components/quick-link";
 import { Name } from "~/features/profile/components/info/name";
 import { PFP } from "~/features/profile/components/info/pfp";
 import { Username } from "~/features/profile/components/info/username";
@@ -16,11 +17,17 @@ export function Post({ post }: { post: UIPost }) {
       <article className="flex flex-col gap-3">
         <ProfileStore profile={post.creator}>
           <div className="flex items-center gap-3">
-            <PFP variant="sm" />
-            <div className="flex min-w-0 flex-col">
-              <Name className="text-sm leading-tight font-bold" />
-              <Username className="text-muted-foreground truncate text-xs leading-tight font-medium" />
-            </div>
+            <QuickLink
+              to="/$username"
+              params={{ username: post.creator.username }}
+              className="flex min-w-0 items-center gap-3"
+            >
+              <PFP variant="sm" />
+              <div className="flex min-w-0 flex-col">
+                <Name className="text-sm leading-tight font-bold" />
+                <Username className="text-muted-foreground truncate text-xs leading-tight font-medium" />
+              </div>
+            </QuickLink>
             <div className="-mr-2 ml-auto shrink-0 pl-2">
               <PostInfoButton />
             </div>

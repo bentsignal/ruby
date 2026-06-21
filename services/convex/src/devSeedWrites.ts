@@ -145,8 +145,17 @@ export async function wipeSeedData(ctx: MutationCtx) {
     (like) =>
       seedProfileIdSet.has(like.profileId) || seedPostIdSet.has(like.postId),
   );
+  const seedFeedItems = (await ctx.db.query("feedItems").collect()).filter(
+    (feedItem) =>
+      seedProfileIdSet.has(feedItem.profileId) ||
+      seedProfileIdSet.has(feedItem.creatorProfileId) ||
+      seedPostIdSet.has(feedItem.postId),
+  );
 
   await Promise.all(seedLikes.map((like) => ctx.db.delete(like._id)));
+  await Promise.all(
+    seedFeedItems.map((feedItem) => ctx.db.delete(feedItem._id)),
+  );
   await Promise.all(
     seedFriends.map((friendship) => ctx.db.delete(friendship._id)),
   );
@@ -155,6 +164,7 @@ export async function wipeSeedData(ctx: MutationCtx) {
   await Promise.all(seedProfiles.map((profile) => ctx.db.delete(profile._id)));
 
   return {
+    feedItems: seedFeedItems.length,
     profiles: seedProfiles.length,
     friendships: seedFriends.length,
     posts: seedPosts.length,
