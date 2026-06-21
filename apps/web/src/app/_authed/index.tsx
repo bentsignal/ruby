@@ -1,6 +1,8 @@
+import type { LegendListRenderItemProps } from "@legendapp/list/react";
 import type { PaginationStatus } from "convex/react";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { LegendList } from "@legendapp/list/react";
 import { Image } from "@unpic/react";
 import { usePaginatedQuery } from "convex/react";
 import { Loader, Radio } from "lucide-react";
@@ -64,8 +66,7 @@ function HomePostList({
   posts: UIPost[];
 }) {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-4 pt-6 pb-28">
-      <HomePostListHeader />
+    <div className="h-screen w-full overflow-hidden">
       <HomePosts
         loadingStatus={loadingStatus}
         loadMore={loadMore}
@@ -84,37 +85,72 @@ function HomePosts({
   loadMore: () => void;
   posts: UIPost[];
 }) {
-  if (posts.length === 0) {
-    return (
-      <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
-        No posts yet.
-      </div>
-    );
+  const { containerHeight, containerRef } = useListContainerHeight();
+
+  function loadMorePosts() {
+    if (loadingStatus === "CanLoadMore") {
+      loadMore();
+    }
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col gap-10">
-        {posts.map((post) => (
-          <Post key={post._id} post={post} />
-        ))}
-      </div>
-      <LoadMoreSentinel loadingStatus={loadingStatus} loadMore={loadMore} />
-      <HomePostListFooter loadingStatus={loadingStatus} posts={posts} />
+    <div className="h-full min-h-0" ref={containerRef}>
+      <LegendList
+        data={posts}
+        renderItem={(props) => <HomePostItem {...props} />}
+        keyExtractor={keyExtractor}
+        maintainVisibleContentPosition={true}
+        onEndReached={loadMorePosts}
+        onEndReachedThreshold={1.5}
+        recycleItems={true}
+        style={{
+          height: containerHeight,
+        }}
+        contentContainerStyle={{
+          paddingTop: 24,
+          paddingBottom: 112,
+        }}
+        ListHeaderComponent={<HomePostListHeader />}
+        ListEmptyComponent={<HomePostListEmpty />}
+        ItemSeparatorComponent={PostSeparator}
+        ListFooterComponent={
+          <HomePostListFooter loadingStatus={loadingStatus} posts={posts} />
+        }
+      />
+    </div>
+  );
+}
+
+function HomePostItem({ item }: LegendListRenderItemProps<UIPost>) {
+  return (
+    <div className="mx-auto w-full max-w-xl px-4">
+      <Post post={item} />
     </div>
   );
 }
 
 function HomePostListHeader() {
   return (
-    <Image
-      src={logoSmall}
-      alt="Ruby"
-      className="mx-auto mb-6 size-12 rounded-full"
-      height={48}
-      layout="fixed"
-      width={48}
-    />
+    <div className="mx-auto w-full max-w-xl px-4">
+      <Image
+        src={logoSmall}
+        alt="Ruby"
+        className="mx-auto mb-6 size-12 rounded-full"
+        height={48}
+        layout="fixed"
+        width={48}
+      />
+    </div>
+  );
+}
+
+function HomePostListEmpty() {
+  return (
+    <div className="mx-auto w-full max-w-xl px-4">
+      <div className="border-border bg-card text-muted-foreground rounded-lg border p-6 text-center text-sm">
+        No posts yet.
+      </div>
+    </div>
   );
 }
 
@@ -126,7 +162,7 @@ function HomePostListFooter({
   posts: UIPost[];
 }) {
   if (posts.length === 0) {
-    return <div className="h-28" />;
+    return <div className="mx-auto h-28 w-full max-w-xl px-4" />;
   }
 
   if (
@@ -135,14 +171,14 @@ function HomePostListFooter({
     loadingStatus === "CanLoadMore"
   ) {
     return (
-      <div className="flex h-20 w-full items-center justify-center">
+      <div className="mx-auto flex h-20 w-full max-w-xl items-center justify-center px-4">
         <Loader className="text-muted-foreground size-5 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="text-muted-foreground flex items-center gap-5 px-2 pt-16 pb-12 text-center text-sm">
+    <div className="text-muted-foreground mx-auto flex w-full max-w-xl items-center gap-5 px-6 pt-16 pb-12 text-center text-sm">
       <div className="from-border h-px flex-1 bg-gradient-to-l to-transparent" />
       <div className="flex shrink-0 items-center gap-2">
         <Radio className="text-primary size-3.5 animate-[feed-live_3.2s_ease-in-out_infinite]" />
@@ -153,32 +189,33 @@ function HomePostListFooter({
   );
 }
 
-function LoadMoreSentinel({
-  loadingStatus,
-  loadMore,
-}: {
-  loadingStatus: PaginationStatus;
-  loadMore: () => void;
-}) {
+function PostSeparator() {
+  return <div className="h-10" />;
+}
+
+function keyExtractor(post: UIPost) {
+  return post._id;
+}
+
+function useListContainerHeight() {
   const ref = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
 
-  // eslint-disable-next-line no-restricted-syntax -- Observes page scroll position to trigger infinite feed loading before the user reaches the bottom.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = ref.current;
-    if (!element || loadingStatus !== "CanLoadMore") return;
+    if (!element) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          loadMore();
-        }
-      },
-      { rootMargin: "1400px 0px" },
-    );
-
+    setHeight(element.clientHeight);
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) {
+        setHeight(entry.contentRect.height);
+      }
+    });
     observer.observe(element);
-    return () => observer.disconnect();
-  }, [loadingStatus, loadMore]);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
-  return <div ref={ref} className="h-px" />;
+  return { containerHeight: height, containerRef: ref };
 }

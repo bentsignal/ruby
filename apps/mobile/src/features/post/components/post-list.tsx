@@ -29,7 +29,7 @@ interface PostListProps {
   showEndMessage?: boolean;
 }
 
-function PostList({
+export function PostList({
   contentTopPadding = 0,
   ListHeaderComponent,
   emptyText = "No posts yet.",
@@ -200,5 +200,3 @@ function PostSeparator() {
 function keyExtractor(post: UIPost) {
   return post._id;
 }
-
-export { PostList };
