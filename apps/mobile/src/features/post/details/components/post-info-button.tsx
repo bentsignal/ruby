@@ -10,6 +10,8 @@ export function PostInfoButton() {
 
   return (
     <Pressable
+      accessibilityLabel="Post details"
+      accessibilityRole="button"
       className="size-[22px] items-center justify-center"
       hitSlop={8}
       onPress={openDetails}

@@ -12,6 +12,7 @@ import { PostMediaPager } from "../media-pager/components/post-media-pager";
 import { PostStore } from "../store";
 import { PostActions } from "./post-actions";
 import { PostCaption } from "./post-caption";
+import { PostMoreButton } from "./post-more-button";
 
 export function Post({ post }: { post: UIPost }) {
   const router = useRouter();
@@ -34,6 +35,7 @@ export function Post({ post }: { post: UIPost }) {
               </View>
             </Pressable>
             <PostInfoButton />
+            <PostMoreButton />
           </View>
         </ProfileStore>
         <PostMediaPager />
