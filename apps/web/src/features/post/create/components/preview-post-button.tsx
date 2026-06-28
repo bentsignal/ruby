@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouteContext } from "@tanstack/react-router";
-import { Eye } from "lucide-react";
+import { Eye, X } from "lucide-react";
 
 import type { ResolvedLocation } from "@acme/convex/places/types";
 import { Button } from "@acme/ui-web/button";
@@ -29,17 +29,25 @@ export function PreviewPostButton() {
         <Eye className="size-4" />
         Preview
       </Button>
-      <Dialog.Content className="max-h-[min(90vh,860px)] max-w-[min(94vw,680px)] overflow-y-auto p-0">
-        <Dialog.Title className="sr-only">Post preview</Dialog.Title>
-        <div className="border-border flex items-center justify-between border-b px-5 py-4">
-          <div>
-            <p className="text-foreground text-lg font-bold">Post preview</p>
-            <p className="text-muted-foreground text-sm">
-              Check the feed version before posting.
-            </p>
-          </div>
+      <Dialog.Content
+        className="max-h-[min(90vh,860px)] max-w-[min(94vw,680px)] gap-0 overflow-y-auto p-0"
+        showCloseButton={false}
+      >
+        <div className="border-border flex h-14 items-center justify-between border-b pr-2.5 pl-5">
+          <Dialog.Title>Post preview</Dialog.Title>
+          <Dialog.Close asChild>
+            <Button
+              aria-label="Close preview"
+              className="size-9 rounded-md"
+              size="icon"
+              type="button"
+              variant="outline"
+            >
+              <X className="size-4" />
+            </Button>
+          </Dialog.Close>
         </div>
-        <div className="px-5 py-5">
+        <div className="px-5 pt-3 pb-5">
           <DraftPostPreview />
         </div>
       </Dialog.Content>
