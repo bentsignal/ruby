@@ -11,17 +11,17 @@ export function AspectRatioField() {
   const displayAspectRatio = useCreateStore(
     (store) => store.displayAspectRatio,
   );
-  const itemCount = useCreateStore((store) => store.items.length);
+  const hasImageItems = useCreateStore((store) => store.hasImageItems);
   const setDisplayAspectRatio = useCreateStore(
     (store) => store.setDisplayAspectRatio,
   );
 
-  if (itemCount <= 1) return null;
+  if (!hasImageItems) return null;
 
   return (
     <section className="flex flex-col gap-2">
       <p className="text-foreground text-sm font-semibold">Post shape</p>
-      <div className="grid max-w-md grid-cols-3 gap-2">
+      <div className="grid max-w-lg grid-cols-2 gap-2 sm:grid-cols-4">
         {POST_DISPLAY_ASPECT_RATIOS.map((ratio) => {
           const isSelected = displayAspectRatio === ratio;
 

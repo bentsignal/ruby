@@ -13,12 +13,12 @@ export function AspectRatioField() {
   const displayAspectRatio = useCreateStore(
     (store) => store.displayAspectRatio,
   );
-  const itemCount = useCreateStore((store) => store.items.length);
+  const hasImageItems = useCreateStore((store) => store.hasImageItems);
   const setDisplayAspectRatio = useCreateStore(
     (store) => store.setDisplayAspectRatio,
   );
 
-  if (itemCount <= 1) return null;
+  if (!hasImageItems) return null;
 
   return (
     <View className="gap-2 px-2">

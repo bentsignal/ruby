@@ -10,6 +10,7 @@ export const vPostLocation = v.object({
 });
 
 export const vPostDisplayAspectRatio = v.union(
+  v.literal("1:1"),
   v.literal("4:3"),
   v.literal("3:4"),
   v.literal("16:9"),

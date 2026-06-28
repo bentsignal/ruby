@@ -5,11 +5,15 @@ import { createStore } from "rostra";
 
 import type { PostDisplayAspectRatio } from "@acme/config/posts";
 import type { ResolvedLocation } from "@acme/convex/places/types";
-import { DEFAULT_POST_DISPLAY_ASPECT_RATIO } from "@acme/config/posts";
+import {
+  DEFAULT_POST_DISPLAY_ASPECT_RATIO,
+  getClosestPostDisplayAspectRatio,
+} from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 import { getDisplayErrorMessage } from "@acme/std/display-error";
 import { toast } from "@acme/ui-web/toast";
 
+import type { ComposerItem } from "./types";
 import { useComposerItems } from "./hooks/use-composer-items";
 import { uploadComposerFile } from "./lib/composer-upload";
 
@@ -25,8 +29,6 @@ function useInternalStore() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
-  const [displayAspectRatio, setDisplayAspectRatio] =
-    useState<PostDisplayAspectRatio>(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
   const locationResolve = useLocationResolveState({ setLocation });
   const {
     addFiles,
@@ -36,6 +38,7 @@ function useInternalStore() {
     revokeItemPreviewUrls,
     updateItem,
   } = useComposerItems();
+  const displayAspectRatioState = useDisplayAspectRatioState(items);
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
   const hasPostContent = items.length > 0 || caption.trim().length > 0;
@@ -64,8 +67,11 @@ function useInternalStore() {
       await createPost({
         attachments: uploadedFiles.map((file) => file._id),
         caption: caption.trim() || undefined,
-        displayAspectRatio:
-          uploadedFiles.length > 1 ? displayAspectRatio : undefined,
+        displayAspectRatio: uploadedFiles.some(
+          (file) => file.mediaType === "image",
+        )
+          ? displayAspectRatioState.displayAspectRatio
+          : undefined,
         location: createPostLocation(location),
       });
       revokeItemPreviewUrls(items);
@@ -85,7 +91,8 @@ function useInternalStore() {
     addFiles,
     canPost,
     caption,
-    displayAspectRatio,
+    displayAspectRatio: displayAspectRatioState.displayAspectRatio,
+    hasImageItems: displayAspectRatioState.hasImageItems,
     hasUploadingItems,
     inputRef,
     isConfirmOpen,
@@ -101,11 +108,55 @@ function useInternalStore() {
     clearLocation: locationResolve.clearLocation,
     finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
-    setDisplayAspectRatio,
+    setDisplayAspectRatio: displayAspectRatioState.setDisplayAspectRatio,
     setIsConfirmOpen,
     setIsPreviewOpen,
     setLocation: locationResolve.setLocation,
     startLocationResolve: locationResolve.startLocationResolve,
+  };
+}
+
+function isImageItem(item: ComposerItem) {
+  return item.file.type.startsWith("image/");
+}
+
+function useDisplayAspectRatioState(items: ComposerItem[]) {
+  const [displayAspectRatio, setDisplayAspectRatioState] =
+    useState<PostDisplayAspectRatio>(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
+  const [hasSelectedDisplayAspectRatio, setHasSelectedDisplayAspectRatio] =
+    useState(false);
+  const hasImageItems = items.some((item) => isImageItem(item));
+  const firstImagePreviewUrl = items.find(isImageItem)?.previewUrl;
+
+  // eslint-disable-next-line no-restricted-syntax -- Reads selected image dimensions to seed the default post shape.
+  useEffect(() => {
+    if (hasSelectedDisplayAspectRatio || !firstImagePreviewUrl) return;
+
+    let active = true;
+    const image = new Image();
+    image.onload = () => {
+      if (!active) return;
+      setDisplayAspectRatioState(
+        getClosestPostDisplayAspectRatio({
+          height: image.naturalHeight,
+          width: image.naturalWidth,
+        }),
+      );
+    };
+    image.src = firstImagePreviewUrl;
+
+    return () => {
+      active = false;
+    };
+  }, [firstImagePreviewUrl, hasSelectedDisplayAspectRatio]);
+
+  return {
+    displayAspectRatio,
+    hasImageItems,
+    setDisplayAspectRatio: (ratio: PostDisplayAspectRatio) => {
+      setHasSelectedDisplayAspectRatio(true);
+      setDisplayAspectRatioState(ratio);
+    },
   };
 }
 

@@ -44,9 +44,12 @@ export function validatePostInput(
 
 export function validatePostDisplayAspectRatio(
   ratio: PostDisplayAspectRatio | undefined,
-  attachments: Id<"files">[],
+  hasImageAttachment: boolean,
 ) {
-  if (attachments.length <= 1) return undefined;
+  if (!hasImageAttachment) {
+    if (ratio !== undefined) throw new ConvexError("Invalid post aspect ratio");
+    return undefined;
+  }
   if (ratio === undefined) return DEFAULT_POST_DISPLAY_ASPECT_RATIO;
   if (!POST_DISPLAY_ASPECT_RATIOS.includes(ratio)) {
     throw new ConvexError("Invalid post aspect ratio");
@@ -58,16 +61,19 @@ export async function validatePostFiles(
   ctx: AuthedMutationCtx,
   attachments: Id<"files">[],
 ) {
-  for (const fileId of attachments) {
-    const file = await ctx.db.get(fileId);
-    if (!file) throw new ConvexError("File not found");
-    if (file.uploadedBy !== ctx.myProfile._id) {
-      throw new ConvexError("You can only post your own uploads");
-    }
-    if (file.status !== "uploaded") {
-      throw new ConvexError("Wait for uploads to finish before posting");
-    }
-  }
+  return await Promise.all(
+    attachments.map(async (fileId) => {
+      const file = await ctx.db.get(fileId);
+      if (!file) throw new ConvexError("File not found");
+      if (file.uploadedBy !== ctx.myProfile._id) {
+        throw new ConvexError("You can only post your own uploads");
+      }
+      if (file.status !== "uploaded") {
+        throw new ConvexError("Wait for uploads to finish before posting");
+      }
+      return file;
+    }),
+  );
 }
 
 export function validatePostLocation(rawLocation: PostLocation | undefined) {

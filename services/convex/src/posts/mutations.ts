@@ -21,12 +21,12 @@ export const create = authedMutation({
   handler: async (ctx, args) => {
     await ensureUserPermissions(ctx, ["can-post"]);
     const caption = validatePostInput(args.caption, args.attachments);
+    const files = await validatePostFiles(ctx, args.attachments);
     const displayAspectRatio = validatePostDisplayAspectRatio(
       args.displayAspectRatio,
-      args.attachments,
+      files.some((file) => file.mediaType === "image"),
     );
     const location = validatePostLocation(args.location);
-    await validatePostFiles(ctx, args.attachments);
 
     const postId = await ctx.db.insert("posts", {
       attachments: args.attachments,

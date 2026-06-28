@@ -15,13 +15,39 @@ export const POST_UPLOAD_BLOCKED_CONTENT_TYPES = ["image/svg+xml"] as const;
 export const POST_CAPTION_MAX_LENGTH = 2_200;
 export const POST_MAX_FILES = 20;
 export const POST_FEED_PAGE_SIZE = 10;
-export const POST_DISPLAY_ASPECT_RATIOS = ["4:3", "3:4", "16:9"] as const;
+export const POST_DISPLAY_ASPECT_RATIOS = [
+  "1:1",
+  "4:3",
+  "3:4",
+  "16:9",
+] as const;
 export type PostDisplayAspectRatio =
   (typeof POST_DISPLAY_ASPECT_RATIOS)[number];
 export const DEFAULT_POST_DISPLAY_ASPECT_RATIO = "4:3";
 
 export function getPostDisplayAspectRatioValue(ratio: PostDisplayAspectRatio) {
+  if (ratio === "1:1") return 1;
   if (ratio === "3:4") return 3 / 4;
   if (ratio === "16:9") return 16 / 9;
   return 4 / 3;
+}
+
+export function getClosestPostDisplayAspectRatio({
+  height,
+  width,
+}: {
+  height: number;
+  width: number;
+}) {
+  const value = width / height;
+  if (!Number.isFinite(value) || value <= 0) {
+    return DEFAULT_POST_DISPLAY_ASPECT_RATIO;
+  }
+
+  const distances = POST_DISPLAY_ASPECT_RATIOS.map((ratio) => ({
+    distance: Math.abs(getPostDisplayAspectRatioValue(ratio) - value),
+    ratio,
+  })).sort((a, b) => a.distance - b.distance);
+
+  return distances[0]?.ratio ?? DEFAULT_POST_DISPLAY_ASPECT_RATIO;
 }
