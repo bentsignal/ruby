@@ -1,4 +1,7 @@
+import { literals } from "convex-helpers/validators";
 import { v } from "convex/values";
+
+import { POST_DISPLAY_ASPECT_RATIOS } from "@acme/config/posts";
 
 export const vPostLocation = v.object({
   provider: v.literal("google"),
@@ -9,12 +12,7 @@ export const vPostLocation = v.object({
   longitude: v.optional(v.number()),
 });
 
-export const vPostDisplayAspectRatio = v.union(
-  v.literal("1:1"),
-  v.literal("4:3"),
-  v.literal("3:4"),
-  v.literal("16:9"),
-);
+export const vPostDisplayAspectRatio = literals(...POST_DISPLAY_ASPECT_RATIOS);
 
 export const vPost = v.object({
   profileId: v.id("profiles"),

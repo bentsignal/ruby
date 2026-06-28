@@ -26,10 +26,16 @@ export type PostDisplayAspectRatio =
 export const DEFAULT_POST_DISPLAY_ASPECT_RATIO = "4:3";
 
 export function getPostDisplayAspectRatioValue(ratio: PostDisplayAspectRatio) {
-  if (ratio === "1:1") return 1;
-  if (ratio === "3:4") return 3 / 4;
-  if (ratio === "16:9") return 16 / 9;
-  return 4 / 3;
+  switch (ratio) {
+    case "1:1":
+      return 1;
+    case "3:4":
+      return 3 / 4;
+    case "4:3":
+      return 4 / 3;
+    case "16:9":
+      return 16 / 9;
+  }
 }
 
 export function getClosestPostDisplayAspectRatio({
