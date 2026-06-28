@@ -127,35 +127,32 @@ function OpenImageButton({
 }
 
 function CarouselControls() {
-  const activeIndex = useMediaStore((store) => store.carouselActiveIndex);
-  const goToIndex = useMediaStore((store) => store.goToIndex);
-  const hasCarouselInteracted = useMediaStore(
-    (store) => store.hasCarouselInteracted,
-  );
-  const mediaItems = useMediaStore((store) => store.mediaItems);
+  const controls = useMediaStore((store) => store.carouselControls);
+  const goToNext = useMediaStore((store) => store.goToNext);
+  const goToPrevious = useMediaStore((store) => store.goToPrevious);
 
-  if (mediaItems.length <= 1) return null;
+  if (!controls) return null;
 
   return (
     <>
       <ArrowButton
         direction="previous"
-        hidden={activeIndex === 0}
-        onClick={() => goToIndex(activeIndex - 1)}
+        hidden={controls.previousHidden}
+        onClick={goToPrevious}
       />
       <ArrowButton
         direction="next"
-        hidden={activeIndex === mediaItems.length - 1}
-        onClick={() => goToIndex(activeIndex + 1)}
+        hidden={controls.nextHidden}
+        onClick={goToNext}
       />
       <div
-        key={`${activeIndex}-${hasCarouselInteracted}`}
+        key={controls.counterAnimationKey}
         className={cn(
           "pointer-events-none absolute top-3 right-3 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white tabular-nums opacity-100 shadow-sm backdrop-blur-md transition group-focus-within:animate-none group-hover:animate-none",
-          hasCarouselInteracted && "animate-post-media-counter-fade",
+          controls.isCounterFadeEnabled && "animate-post-media-counter-fade",
         )}
       >
-        {activeIndex + 1} / {mediaItems.length}
+        {controls.counterLabel}
       </div>
     </>
   );

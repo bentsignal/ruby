@@ -44,6 +44,14 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     });
   }
 
+  function goToNext() {
+    goToIndex(carouselActiveIndex + 1);
+  }
+
+  function goToPrevious() {
+    goToIndex(carouselActiveIndex - 1);
+  }
+
   function markCarouselInteracted() {
     setHasCarouselInteracted(true);
   }
@@ -61,12 +69,23 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     }
   }
 
+  const carouselControls =
+    mediaItems.length > 1
+      ? {
+          counterAnimationKey: `${carouselActiveIndex}-${hasCarouselInteracted}`,
+          counterLabel: `${carouselActiveIndex + 1} / ${mediaItems.length}`,
+          isCounterFadeEnabled: hasCarouselInteracted,
+          nextHidden: carouselActiveIndex === mediaItems.length - 1,
+          previousHidden: carouselActiveIndex === 0,
+        }
+      : null;
+
   return {
     aspectRatio: aspectRatio ?? DEFAULT_ASPECT_RATIO,
-    carouselActiveIndex,
+    carouselControls,
     closeLightbox: () => setIsLightboxOpen(false),
-    goToIndex,
-    hasCarouselInteracted,
+    goToNext,
+    goToPrevious,
     isLightboxOpen,
     lightboxActiveIndex,
     mediaItems,
