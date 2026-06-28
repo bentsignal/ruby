@@ -15,6 +15,7 @@ function clampAspectRatio(ratio: number) {
 function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
+  const [hasCarouselInteracted, setHasCarouselInteracted] = useState(false);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -36,10 +37,15 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     const element = scrollRef.current;
     if (!element) return;
     const clamped = Math.min(Math.max(index, 0), mediaItems.length - 1);
+    setHasCarouselInteracted(true);
     element.scrollTo({
       behavior: "smooth",
       left: clamped * element.clientWidth,
     });
+  }
+
+  function markCarouselInteracted() {
+    setHasCarouselInteracted(true);
   }
 
   function openLightbox(index: number) {
@@ -49,7 +55,10 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
 
   function syncActiveIndexFromScroll(scrollLeft: number, clientWidth: number) {
     const index = Math.round(scrollLeft / clientWidth);
-    if (index !== carouselActiveIndex) setCarouselActiveIndex(index);
+    if (index !== carouselActiveIndex) {
+      setHasCarouselInteracted(true);
+      setCarouselActiveIndex(index);
+    }
   }
 
   return {
@@ -57,9 +66,11 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     carouselActiveIndex,
     closeLightbox: () => setIsLightboxOpen(false),
     goToIndex,
+    hasCarouselInteracted,
     isLightboxOpen,
     lightboxActiveIndex,
     mediaItems,
+    markCarouselInteracted,
     naturalSizes,
     openLightbox,
     reportNaturalSize,

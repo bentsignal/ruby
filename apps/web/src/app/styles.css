@@ -70,6 +70,21 @@
   }
 }
 
+@keyframes post-media-counter-fade {
+  0%,
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 .animate-heart-pop {
   animation: heart-pop 800ms ease-out forwards;
+}
+
+.animate-post-media-counter-fade {
+  animation: post-media-counter-fade 5.4s ease forwards;
 }

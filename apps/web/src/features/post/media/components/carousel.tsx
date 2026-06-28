@@ -12,6 +12,9 @@ export function PostMediaCarousel() {
   const aspectRatio = useMediaStore((store) => store.aspectRatio);
   const mediaItems = useMediaStore((store) => store.mediaItems);
   const scrollRef = useMediaStore((store) => store.scrollRef);
+  const markCarouselInteracted = useMediaStore(
+    (store) => store.markCarouselInteracted,
+  );
   const syncActiveIndexFromScroll = useMediaStore(
     (store) => store.syncActiveIndexFromScroll,
   );
@@ -31,6 +34,7 @@ export function PostMediaCarousel() {
       <div
         className="flex size-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         onScroll={handleScroll}
+        onPointerDown={markCarouselInteracted}
         ref={scrollRef}
       >
         {mediaItems.map((media, index) => (
@@ -125,6 +129,9 @@ function OpenImageButton({
 function CarouselControls() {
   const activeIndex = useMediaStore((store) => store.carouselActiveIndex);
   const goToIndex = useMediaStore((store) => store.goToIndex);
+  const hasCarouselInteracted = useMediaStore(
+    (store) => store.hasCarouselInteracted,
+  );
   const mediaItems = useMediaStore((store) => store.mediaItems);
 
   if (mediaItems.length <= 1) return null;
@@ -141,7 +148,13 @@ function CarouselControls() {
         hidden={activeIndex === mediaItems.length - 1}
         onClick={() => goToIndex(activeIndex + 1)}
       />
-      <div className="pointer-events-none absolute top-3 right-3 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white tabular-nums opacity-0 shadow-sm backdrop-blur-md transition group-hover:opacity-100">
+      <div
+        key={`${activeIndex}-${hasCarouselInteracted}`}
+        className={cn(
+          "pointer-events-none absolute top-3 right-3 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white tabular-nums opacity-100 shadow-sm backdrop-blur-md transition group-focus-within:animate-none group-hover:animate-none",
+          hasCarouselInteracted && "animate-post-media-counter-fade",
+        )}
+      >
         {activeIndex + 1} / {mediaItems.length}
       </div>
     </>
