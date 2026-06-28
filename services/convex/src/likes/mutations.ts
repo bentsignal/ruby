@@ -1,5 +1,8 @@
 import { ConvexError, v } from "convex/values";
 
+import type { Id } from "../_generated/dataModel";
+import type { AuthedMutationCtx } from "../utils";
+import { canViewPostsByProfile } from "../friends/helpers";
 import { rateLimiter } from "../limiter";
 import { authedMutation } from "../utils";
 
@@ -16,6 +19,8 @@ export const like = authedMutation({
         "Rate limit exceeded, retry after " + retryAfter + " seconds",
       );
     }
+
+    await ensureCanInteractWithPost(ctx, args.postId);
 
     const existing = await ctx.db
       .query("likes")
@@ -46,6 +51,8 @@ export const unlike = authedMutation({
       );
     }
 
+    await ensureCanInteractWithPost(ctx, args.postId);
+
     const existing = await ctx.db
       .query("likes")
       .withIndex("by_profile_post", (q) =>
@@ -57,3 +64,22 @@ export const unlike = authedMutation({
     await ctx.db.delete("likes", existing._id);
   },
 });
+
+async function ensureCanInteractWithPost(
+  ctx: AuthedMutationCtx,
+  postId: Id<"posts">,
+) {
+  const post = await ctx.db.get(postId);
+  if (!post) {
+    throw new ConvexError("Post not found");
+  }
+
+  const canViewPosts = await canViewPostsByProfile(
+    ctx,
+    ctx.myProfile._id,
+    post.profileId,
+  );
+  if (!canViewPosts) {
+    throw new ConvexError("You can only interact with posts from friends");
+  }
+}
