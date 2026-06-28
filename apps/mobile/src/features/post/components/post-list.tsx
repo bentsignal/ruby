@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { scheduleOnUI } from "react-native-worklets";
 import { LegendList } from "@legendapp/list";
-import { Radio } from "lucide-react-native";
+import { LockKeyhole, Radio } from "lucide-react-native";
 
 import type { UIPost } from "@acme/convex/posts/types";
 
@@ -26,6 +26,8 @@ interface PostListProps {
   contentTopPadding?: number;
   headerBottomSpacing?: number;
   ListHeaderComponent?: ReactElement;
+  emptyMarker?: "dot" | "lock";
+  emptyTitle?: string;
   emptyText?: string;
   showEndMessage?: boolean;
 }
@@ -34,6 +36,8 @@ export function PostList({
   contentTopPadding = 0,
   headerBottomSpacing = 32,
   ListHeaderComponent,
+  emptyMarker = "dot",
+  emptyTitle,
   emptyText = "No posts yet.",
   showEndMessage = false,
 }: PostListProps) {
@@ -68,7 +72,12 @@ export function PostList({
       }
       ListHeaderComponentStyle={{ width: "100%" }}
       ListEmptyComponent={
-        <PostListEmpty loadingStatus={loadingStatus} emptyText={emptyText} />
+        <PostListEmpty
+          emptyMarker={emptyMarker}
+          emptyText={emptyText}
+          emptyTitle={emptyTitle}
+          loadingStatus={loadingStatus}
+        />
       }
       ItemSeparatorComponent={PostSeparator}
       ListFooterComponent={
@@ -104,20 +113,57 @@ function PostListHeader({
 }
 
 function PostListEmpty({
+  emptyMarker,
   emptyText,
+  emptyTitle,
   loadingStatus,
 }: {
+  emptyMarker: "dot" | "lock";
   emptyText: string;
+  emptyTitle?: string;
   loadingStatus: PaginationStatus;
 }) {
   if (loadingStatus === "LoadingFirstPage") return null;
 
   return (
-    <View className="border-border bg-card mx-4 rounded-lg border p-6">
-      <Text className="text-muted-foreground text-center text-sm">
+    <View className="items-center px-8 pt-10 pb-16">
+      <EmptyMarker marker={emptyMarker} />
+      <EmptyTitle>{emptyTitle}</EmptyTitle>
+      <Text className="text-muted-foreground mt-2 max-w-72 text-center text-[13px] leading-5">
         {emptyText}
       </Text>
     </View>
+  );
+}
+
+function EmptyMarker({ marker }: { marker: "dot" | "lock" }) {
+  const primary = useColor("primary");
+  const mutedForeground = useColor("muted-foreground");
+
+  if (marker === "lock") {
+    return <LockKeyhole color={primary} size={26} strokeWidth={2} />;
+  }
+
+  return (
+    <View
+      className="rounded-full"
+      style={{
+        backgroundColor: mutedForeground,
+        height: 7,
+        opacity: 0.5,
+        width: 7,
+      }}
+    />
+  );
+}
+
+function EmptyTitle({ children }: { children?: string }) {
+  if (!children) return null;
+
+  return (
+    <Text className="text-foreground mt-5 max-w-72 text-center text-[15px] leading-5 font-semibold">
+      {children}
+    </Text>
   );
 }
 

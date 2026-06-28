@@ -11,6 +11,7 @@ function useInternalStore() {
   const mediaItems = usePostStore((store) => store.mediaItems);
   const { width } = useWindowDimensions();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [overlayOpacity] = useState(() => new Animated.Value(1));
@@ -21,6 +22,11 @@ function useInternalStore() {
   // eslint-disable-next-line no-restricted-syntax -- Runs the native counter fade sequence.
   useEffect(() => {
     overlayOpacity.stopAnimation();
+    if (!hasInteracted) {
+      overlayOpacity.setValue(1);
+      return;
+    }
+
     if (isScrolling) {
       overlayOpacity.setValue(1);
       return;
@@ -37,7 +43,7 @@ function useInternalStore() {
     animation.start();
 
     return () => animation.stop();
-  }, [activeIndex, isScrolling, overlayOpacity]);
+  }, [activeIndex, hasInteracted, isScrolling, overlayOpacity]);
 
   function openViewer(index: number) {
     setViewerIndex(index);
@@ -51,6 +57,16 @@ function useInternalStore() {
     setHeartPopKey((key) => key + 1);
   }
 
+  function selectPage(index: number) {
+    if (index !== activeIndex) setHasInteracted(true);
+    setActiveIndex(index);
+  }
+
+  function setPageIsScrolling(scrolling: boolean) {
+    if (scrolling) setHasInteracted(true);
+    setIsScrolling(scrolling);
+  }
+
   return {
     activeIndex,
     closeViewer,
@@ -60,8 +76,8 @@ function useInternalStore() {
     mediaItems,
     openViewer,
     overlayOpacity,
-    selectPage: setActiveIndex,
-    setPageIsScrolling: setIsScrolling,
+    selectPage,
+    setPageIsScrolling,
     triggerHeartPop,
     viewerIndex,
     width,

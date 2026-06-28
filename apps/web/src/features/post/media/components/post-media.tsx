@@ -1,7 +1,7 @@
 import { usePostStore } from "../../store";
+import { PostMediaLightbox } from "../lightbox";
 import { MediaStore } from "../store";
 import { PostMediaCarousel } from "./carousel";
-import { PostMediaLightbox } from "./lightbox";
 
 export function PostMedia() {
   const displayAspectRatio = usePostStore((store) => store.displayAspectRatio);

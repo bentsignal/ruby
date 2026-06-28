@@ -2,7 +2,7 @@
 
 ## Repository Summary
 
-A social media app for users to share updates on their travel adventures.
+A social media app for users to share posts with their friends.
 
 ## Required Validation After Changes
 

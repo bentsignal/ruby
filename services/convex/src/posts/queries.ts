@@ -1,6 +1,7 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
+import { canViewPostsByProfile } from "../friends/helpers";
 import { authedQuery } from "../utils";
 import { getUIPosts } from "./read";
 
@@ -24,6 +25,15 @@ export const getByUsername = authedQuery({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
+    const canViewPosts = await canViewPostsByProfile(
+      ctx,
+      ctx.myProfile._id,
+      profile._id,
+    );
+    if (!canViewPosts) {
+      return { page: [], isDone: true, continueCursor: "", canViewPosts };
+    }
+
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_profileId", (q) => q.eq("profileId", profile._id))
@@ -32,6 +42,7 @@ export const getByUsername = authedQuery({
 
     return {
       ...posts,
+      canViewPosts,
       page: await getUIPosts(ctx, posts.page, {
         profilesById: new Map([[profile._id, profile]]),
       }),
@@ -55,10 +66,23 @@ export const getFeed = authedQuery({
         return await ctx.db.get(feedItem.postId);
       }),
     );
-    const posts = postResults.filter((post) => post !== null);
+    const posts = (
+      await Promise.all(
+        postResults.map(async (post) => {
+          if (post === null) return null;
+          const canViewPosts = await canViewPostsByProfile(
+            ctx,
+            ctx.myProfile._id,
+            post.profileId,
+          );
+          return canViewPosts ? post : null;
+        }),
+      )
+    ).filter((post) => post !== null);
 
     return {
       ...feedItems,
+      canViewPosts: true,
       page: await getUIPosts(ctx, posts),
     };
   },
