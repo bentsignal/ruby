@@ -15,6 +15,7 @@ function clampAspectRatio(ratio: number) {
 function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
+  const [hasCarouselInteracted, setHasCarouselInteracted] = useState(false);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -36,10 +37,23 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
     const element = scrollRef.current;
     if (!element) return;
     const clamped = Math.min(Math.max(index, 0), mediaItems.length - 1);
+    setHasCarouselInteracted(true);
     element.scrollTo({
       behavior: "smooth",
       left: clamped * element.clientWidth,
     });
+  }
+
+  function goToNext() {
+    goToIndex(carouselActiveIndex + 1);
+  }
+
+  function goToPrevious() {
+    goToIndex(carouselActiveIndex - 1);
+  }
+
+  function markCarouselInteracted() {
+    setHasCarouselInteracted(true);
   }
 
   function openLightbox(index: number) {
@@ -49,17 +63,33 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
 
   function syncActiveIndexFromScroll(scrollLeft: number, clientWidth: number) {
     const index = Math.round(scrollLeft / clientWidth);
-    if (index !== carouselActiveIndex) setCarouselActiveIndex(index);
+    if (index !== carouselActiveIndex) {
+      setHasCarouselInteracted(true);
+      setCarouselActiveIndex(index);
+    }
   }
+
+  const carouselControls =
+    mediaItems.length > 1
+      ? {
+          counterAnimationKey: `${carouselActiveIndex}-${hasCarouselInteracted}`,
+          counterLabel: `${carouselActiveIndex + 1} / ${mediaItems.length}`,
+          isCounterFadeEnabled: hasCarouselInteracted,
+          nextHidden: carouselActiveIndex === mediaItems.length - 1,
+          previousHidden: carouselActiveIndex === 0,
+        }
+      : null;
 
   return {
     aspectRatio: aspectRatio ?? DEFAULT_ASPECT_RATIO,
-    carouselActiveIndex,
+    carouselControls,
     closeLightbox: () => setIsLightboxOpen(false),
-    goToIndex,
+    goToNext,
+    goToPrevious,
     isLightboxOpen,
     lightboxActiveIndex,
     mediaItems,
+    markCarouselInteracted,
     naturalSizes,
     openLightbox,
     reportNaturalSize,
