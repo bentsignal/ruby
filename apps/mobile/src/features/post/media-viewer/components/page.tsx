@@ -1,17 +1,18 @@
-import { Text, View } from "react-native";
-import { GestureDetector } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
+import { Image, Text, useWindowDimensions, View } from "react-native";
 import { Play } from "lucide-react-native";
 
 import type { PostMediaItem } from "../../store";
-import { useViewerPageGesture } from "../hooks/use-viewer-page-gesture";
 
 export function ViewerPage({ media }: { media: PostMediaItem }) {
-  const { animatedStyle, gesture, imageFrameStyle } = useViewerPageGesture();
+  const { height, width } = useWindowDimensions();
+  const pageStyle = { height, width };
 
   if (media.mediaType === "video") {
     return (
-      <View className="flex-1 items-center justify-center gap-2 bg-black">
+      <View
+        className="items-center justify-center gap-2 bg-black"
+        style={pageStyle}
+      >
         <Play color="white" size={40} />
         <Text className="text-sm text-white/70">Video</Text>
       </View>
@@ -19,14 +20,11 @@ export function ViewerPage({ media }: { media: PostMediaItem }) {
   }
 
   return (
-    <GestureDetector gesture={gesture}>
-      <View className="flex-1 items-center justify-center bg-black">
-        <Animated.Image
-          resizeMode="contain"
-          source={{ uri: media.url }}
-          style={[imageFrameStyle, animatedStyle]}
-        />
-      </View>
-    </GestureDetector>
+    <Image
+      className="bg-black"
+      resizeMode="contain"
+      source={{ uri: media.url }}
+      style={pageStyle}
+    />
   );
 }

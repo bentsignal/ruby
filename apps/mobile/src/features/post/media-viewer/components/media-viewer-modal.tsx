@@ -1,6 +1,7 @@
 import { Modal, View } from "react-native";
-import { GestureDetector } from "react-native-gesture-handler";
-import PagerView from "react-native-pager-view";
+import { runOnJS, useSharedValue } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+import { Gallery } from "react-native-zoom-toolkit";
 
 import type { PostMediaItem } from "../../store";
 import { MediaViewerStore, useMediaViewerStore } from "../store";
@@ -40,28 +41,57 @@ export function MediaViewerModal({
 }
 
 function MediaViewerContent() {
-  const dismissGesture = useMediaViewerStore((store) => store.dismissGesture);
+  const closeRequested = useSharedValue(false);
+  const isZoomed = useSharedValue(false);
+  const galleryRef = useMediaViewerStore((store) => store.galleryRef);
+  const handleZoomChange = useMediaViewerStore(
+    (store) => store.handleZoomChange,
+  );
   const initialIndex = useMediaViewerStore((store) => store.initialIndex);
-  const isZoomed = useMediaViewerStore((store) => store.isZoomed);
   const items = useMediaViewerStore((store) => store.items);
-  const pagerRef = useMediaViewerStore((store) => store.pagerRef);
+  const onClose = useMediaViewerStore((store) => store.onClose);
   const selectImage = useMediaViewerStore((store) => store.selectImage);
+  const toggleControls = useMediaViewerStore((store) => store.toggleControls);
 
   return (
     <View className="flex-1 bg-black">
-      <GestureDetector gesture={dismissGesture}>
-        <PagerView
-          ref={pagerRef}
-          initialPage={initialIndex}
-          scrollEnabled={!isZoomed}
-          style={{ flex: 1 }}
-          onPageSelected={(event) => selectImage(event.nativeEvent.position)}
-        >
-          {items.map((media, index) => (
-            <ViewerPage key={`${media.url}-${index}`} media={media} />
-          ))}
-        </PagerView>
-      </GestureDetector>
+      <Gallery
+        ref={galleryRef}
+        data={items}
+        gap={12}
+        initialIndex={initialIndex}
+        keyExtractor={(media, index) => `${media.url}-${index}`}
+        maxScale={4}
+        renderItem={(media) => <ViewerPage media={media} />}
+        tapOnEdgeToItem={false}
+        onIndexChange={selectImage}
+        onTap={toggleControls}
+        onUpdate={({ scale }) => {
+          "worklet";
+
+          const nextIsZoomed = scale > 1.01;
+          if (nextIsZoomed === isZoomed.value) return;
+
+          isZoomed.value = nextIsZoomed;
+          runOnJS(handleZoomChange)(nextIsZoomed);
+        }}
+        onVerticalPull={({ released, translateY, velocityY }) => {
+          "worklet";
+
+          if (!released) {
+            closeRequested.value = false;
+            return;
+          }
+
+          const shouldClose =
+            translateY > 110 || (translateY > 36 && velocityY > 900);
+
+          if (!shouldClose || closeRequested.value) return;
+
+          closeRequested.value = true;
+          scheduleOnRN(onClose);
+        }}
+      />
 
       <ViewerCounter />
       <CloseButton />
