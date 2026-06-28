@@ -1,23 +1,22 @@
 import { useRef, useState } from "react";
 import { createStore } from "rostra";
 
+import type { PostDisplayAspectRatio } from "@acme/config/posts";
+import { getPostDisplayAspectRatioValue } from "@acme/config/posts";
+
 import type { PostMediaItem } from "../store";
 
-const MIN_ASPECT_RATIO = 4 / 5;
-const MAX_ASPECT_RATIO = 1.91;
-const DEFAULT_ASPECT_RATIO = 4 / 5;
-
-function clampAspectRatio(ratio: number) {
-  if (!Number.isFinite(ratio) || ratio <= 0) return DEFAULT_ASPECT_RATIO;
-  return Math.min(MAX_ASPECT_RATIO, Math.max(MIN_ASPECT_RATIO, ratio));
-}
-
-function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
+function useInternalStore({
+  displayAspectRatio,
+  mediaItems,
+}: {
+  displayAspectRatio: PostDisplayAspectRatio;
+  mediaItems: PostMediaItem[];
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
   const [hasCarouselInteracted, setHasCarouselInteracted] = useState(false);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [naturalSizes, setNaturalSizes] = useState<
     Record<number, { height: number; width: number }>
@@ -28,9 +27,6 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
       ...sizes,
       [index]: { height, width },
     }));
-    if (index === 0 && aspectRatio === null) {
-      setAspectRatio(clampAspectRatio(width / height));
-    }
   }
 
   function goToIndex(index: number) {
@@ -81,7 +77,7 @@ function useInternalStore({ mediaItems }: { mediaItems: PostMediaItem[] }) {
       : null;
 
   return {
-    aspectRatio: aspectRatio ?? DEFAULT_ASPECT_RATIO,
+    aspectRatio: getPostDisplayAspectRatioValue(displayAspectRatio),
     carouselControls,
     closeLightbox: () => setIsLightboxOpen(false),
     goToNext,

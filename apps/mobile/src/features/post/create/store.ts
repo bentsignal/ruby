@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, Image } from "react-native";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
+import type { PostDisplayAspectRatio } from "@acme/config/posts";
 import type { ResolvedLocation } from "@acme/convex/places/types";
+import {
+  DEFAULT_POST_DISPLAY_ASPECT_RATIO,
+  getClosestPostDisplayAspectRatio,
+} from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 import { getDisplayErrorMessage } from "@acme/std/display-error";
 
@@ -18,6 +23,7 @@ import {
   resetCaptionDraft,
   writeCaptionDraft,
 } from "./lib/caption-draft";
+import { isPreviewableImage } from "./lib/media-type";
 import { pickComposerFiles } from "./lib/pick-composer-files";
 
 const LOCATION_REVEAL_DELAY_MS = 100;
@@ -31,6 +37,7 @@ function useInternalStore() {
     resetCaptionDraft();
     return "";
   });
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
   const locationResolve = useLocationResolveState({ setLocation });
@@ -39,12 +46,11 @@ function useInternalStore() {
     setItems,
     resetLocation: locationResolve.clearLocation,
   });
+  const displayAspectRatioState = useDisplayAspectRatioState(items);
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
-  const canPost =
-    !isPosting &&
-    !hasUploadingItems &&
-    (items.length > 0 || caption.trim().length > 0);
+  const hasPostContent = items.length > 0 || caption.trim().length > 0;
+  const canPost = !isPosting && !hasUploadingItems && hasPostContent;
 
   function updateItem(itemId: string, patch: Partial<ComposerItem>) {
     setItems((current) =>
@@ -57,10 +63,6 @@ function useInternalStore() {
   function setCaption(nextCaption: string) {
     writeCaptionDraft(nextCaption);
     setCaptionState(nextCaption);
-  }
-
-  function setCaptionDraft(nextCaption: string) {
-    writeCaptionDraft(nextCaption);
   }
 
   function removeItem(itemId: string) {
@@ -85,9 +87,15 @@ function useInternalStore() {
       await createPost({
         attachments: uploadedFiles.map((file) => file._id),
         caption: latestCaption || undefined,
+        displayAspectRatio: uploadedFiles.some(
+          (file) => file.mediaType === "image",
+        )
+          ? displayAspectRatioState.displayAspectRatio
+          : undefined,
         location: createPostLocation(location),
       });
       resetComposer();
+      displayAspectRatioState.resetDisplayAspectRatio();
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
@@ -96,18 +104,14 @@ function useInternalStore() {
     }
   }
 
-  function confirmPost() {
-    Alert.alert("Post this update?", "It will appear on home and profile.", [
-      { style: "cancel", text: "Cancel" },
-      { onPress: () => void publishPost(), text: "Post" },
-    ]);
-  }
-
   return {
     canPost,
     caption,
-    confirmPost,
+    confirmPost: () => confirmPost(publishPost),
+    displayAspectRatio: displayAspectRatioState.displayAspectRatio,
     foreground,
+    hasImageItems: displayAspectRatioState.hasImageItems,
+    isPreviewOpen,
     hasUploadingItems,
     isLocationResolving: locationResolve.isLocationResolving,
     isPosting,
@@ -122,7 +126,9 @@ function useInternalStore() {
     clearLocation: locationResolve.clearLocation,
     finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
-    setCaptionDraft,
+    setCaptionDraft: writeCaptionDraft,
+    setDisplayAspectRatio: displayAspectRatioState.setDisplayAspectRatio,
+    setIsPreviewOpen,
     setLocation: locationResolve.setLocation,
     startLocationResolve: locationResolve.startLocationResolve,
   };
@@ -185,6 +191,56 @@ function patchItem({
   if (item.id !== itemId) return item;
 
   return { ...item, ...patch };
+}
+
+function confirmPost(publishPost: () => Promise<void>) {
+  Alert.alert("Post this update?", "It will appear on home and profile.", [
+    { style: "cancel", text: "Cancel" },
+    { onPress: () => void publishPost(), text: "Post" },
+  ]);
+}
+
+function useDisplayAspectRatioState(items: ComposerItem[]) {
+  const [displayAspectRatio, setDisplayAspectRatioState] =
+    useState<PostDisplayAspectRatio>(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
+  const [hasSelectedDisplayAspectRatio, setHasSelectedDisplayAspectRatio] =
+    useState(false);
+  const hasImageItems = items.some(isPreviewableImage);
+  const firstImageUri = items.find(isPreviewableImage)?.file.uri;
+
+  // eslint-disable-next-line no-restricted-syntax -- Reads selected image dimensions to seed the default post shape.
+  useEffect(() => {
+    if (hasSelectedDisplayAspectRatio || !firstImageUri) return;
+
+    let active = true;
+    Image.getSize(
+      firstImageUri,
+      (width, height) => {
+        if (!active) return;
+        setDisplayAspectRatioState(
+          getClosestPostDisplayAspectRatio({ height, width }),
+        );
+      },
+      () => undefined,
+    );
+
+    return () => {
+      active = false;
+    };
+  }, [firstImageUri, hasSelectedDisplayAspectRatio]);
+
+  return {
+    displayAspectRatio,
+    hasImageItems,
+    resetDisplayAspectRatio: () => {
+      setDisplayAspectRatioState(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
+      setHasSelectedDisplayAspectRatio(false);
+    },
+    setDisplayAspectRatio: (ratio: PostDisplayAspectRatio) => {
+      setHasSelectedDisplayAspectRatio(true);
+      setDisplayAspectRatioState(ratio);
+    },
+  };
 }
 
 function createPostLocation(location: ResolvedLocation | null) {

@@ -1,22 +1,15 @@
 import { useEffect, useState } from "react";
-import { Animated, Image, useWindowDimensions } from "react-native";
+import { Animated, useWindowDimensions } from "react-native";
 import { createStore } from "rostra";
+
+import { getPostDisplayAspectRatioValue } from "@acme/config/posts";
 
 import { usePostStore } from "../store";
 
-const MIN_ASPECT_RATIO = 4 / 5;
-const MAX_ASPECT_RATIO = 1.91;
-const DEFAULT_ASPECT_RATIO = 4 / 5;
-
-function clampAspectRatio(ratio: number) {
-  if (!Number.isFinite(ratio) || ratio <= 0) return DEFAULT_ASPECT_RATIO;
-  return Math.min(MAX_ASPECT_RATIO, Math.max(MIN_ASPECT_RATIO, ratio));
-}
-
 function useInternalStore() {
+  const displayAspectRatio = usePostStore((store) => store.displayAspectRatio);
   const mediaItems = usePostStore((store) => store.mediaItems);
   const { width } = useWindowDimensions();
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -24,28 +17,7 @@ function useInternalStore() {
   const [overlayOpacity] = useState(() => new Animated.Value(1));
   const [heartPopKey, setHeartPopKey] = useState(0);
 
-  const firstImageUrl = mediaItems.find(
-    (media) => media.mediaType === "image",
-  )?.url;
-
-  // eslint-disable-next-line no-restricted-syntax -- Measures remote media after render.
-  useEffect(() => {
-    if (!firstImageUrl) return;
-
-    let active = true;
-    Image.getSize(
-      firstImageUrl,
-      (imageWidth, imageHeight) => {
-        if (!active) return;
-        setAspectRatio(clampAspectRatio(imageWidth / imageHeight));
-      },
-      () => undefined,
-    );
-
-    return () => {
-      active = false;
-    };
-  }, [firstImageUrl]);
+  const aspectRatio = getPostDisplayAspectRatioValue(displayAspectRatio);
 
   // eslint-disable-next-line no-restricted-syntax -- Runs the native counter fade sequence.
   useEffect(() => {
@@ -98,7 +70,7 @@ function useInternalStore() {
   return {
     activeIndex,
     closeViewer,
-    height: Math.round(width / (aspectRatio ?? DEFAULT_ASPECT_RATIO)),
+    height: Math.round(width / aspectRatio),
     heartPopKey,
     isMulti: mediaItems.length > 1,
     mediaItems,
