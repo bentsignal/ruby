@@ -22,10 +22,12 @@ import { LockKeyhole } from "lucide-react-native";
 import { api } from "@acme/convex/api";
 
 import { SafeAreaView } from "~/components/safe-area-view";
+import { AspectRatioField } from "~/features/post/create/components/aspect-ratio-field";
 import { CaptionField } from "~/features/post/create/components/caption-field";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
 import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaPicker } from "~/features/post/create/components/media-picker";
+import { PreviewPostButton } from "~/features/post/create/components/preview-post-button";
 import { MediaGrid } from "~/features/post/create/media-grid/media-grid";
 import { CreateStore, useCreateStore } from "~/features/post/create/store";
 import { useColor } from "~/hooks/use-color";
@@ -82,15 +84,19 @@ function CreateContent({
           keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
         >
-          <View className="flex-row items-center justify-between gap-4 px-2">
+          <View className="gap-3 px-2">
             <Text className="text-foreground text-xl font-black tracking-normal">
               Create a new post
             </Text>
-            <CreatePostButton />
+            <View className="flex-row items-center gap-2">
+              <PreviewPostButton className="flex-1" />
+              <CreatePostButton className="flex-1" />
+            </View>
           </View>
           <View className="gap-3">
             <MediaPicker />
             <MediaGrid />
+            <AspectRatioField />
           </View>
           <View className="gap-5 px-2">
             <LocationField />

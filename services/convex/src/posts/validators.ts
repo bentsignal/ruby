@@ -9,10 +9,17 @@ export const vPostLocation = v.object({
   longitude: v.optional(v.number()),
 });
 
+export const vPostDisplayAspectRatio = v.union(
+  v.literal("4:3"),
+  v.literal("3:4"),
+  v.literal("16:9"),
+);
+
 export const vPost = v.object({
   profileId: v.id("profiles"),
   attachments: v.optional(v.array(v.id("files"))),
   caption: v.optional(v.string()),
+  displayAspectRatio: v.optional(vPostDisplayAspectRatio),
   location: v.optional(vPostLocation),
 });
 

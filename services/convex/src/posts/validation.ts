@@ -1,5 +1,6 @@
 import { ConvexError } from "convex/values";
 
+import type { PostDisplayAspectRatio } from "@acme/config/posts";
 import {
   PLACE_FORMATTED_ADDRESS_MAX_LENGTH,
   PLACE_ID_MAX_LENGTH,
@@ -9,7 +10,12 @@ import {
   PLACE_MIN_LONGITUDE,
   PLACE_NAME_MAX_LENGTH,
 } from "@acme/config/places";
-import { POST_CAPTION_MAX_LENGTH, POST_MAX_FILES } from "@acme/config/posts";
+import {
+  DEFAULT_POST_DISPLAY_ASPECT_RATIO,
+  POST_CAPTION_MAX_LENGTH,
+  POST_DISPLAY_ASPECT_RATIOS,
+  POST_MAX_FILES,
+} from "@acme/config/posts";
 
 import type { Id } from "../_generated/dataModel";
 import type { AuthedMutationCtx } from "../utils";
@@ -34,6 +40,18 @@ export function validatePostInput(
     throw new ConvexError("Duplicate files are not supported");
   }
   return caption;
+}
+
+export function validatePostDisplayAspectRatio(
+  ratio: PostDisplayAspectRatio | undefined,
+  attachments: Id<"files">[],
+) {
+  if (attachments.length <= 1) return undefined;
+  if (ratio === undefined) return DEFAULT_POST_DISPLAY_ASPECT_RATIO;
+  if (!POST_DISPLAY_ASPECT_RATIOS.includes(ratio)) {
+    throw new ConvexError("Invalid post aspect ratio");
+  }
+  return ratio;
 }
 
 export async function validatePostFiles(

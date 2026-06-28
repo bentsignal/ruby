@@ -15,3 +15,13 @@ export const POST_UPLOAD_BLOCKED_CONTENT_TYPES = ["image/svg+xml"] as const;
 export const POST_CAPTION_MAX_LENGTH = 2_200;
 export const POST_MAX_FILES = 20;
 export const POST_FEED_PAGE_SIZE = 10;
+export const POST_DISPLAY_ASPECT_RATIOS = ["4:3", "3:4", "16:9"] as const;
+export type PostDisplayAspectRatio =
+  (typeof POST_DISPLAY_ASPECT_RATIOS)[number];
+export const DEFAULT_POST_DISPLAY_ASPECT_RATIO = "4:3";
+
+export function getPostDisplayAspectRatioValue(ratio: PostDisplayAspectRatio) {
+  if (ratio === "3:4") return 3 / 4;
+  if (ratio === "16:9") return 16 / 9;
+  return 4 / 3;
+}

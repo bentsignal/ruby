@@ -3,7 +3,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
+import type { PostDisplayAspectRatio } from "@acme/config/posts";
 import type { ResolvedLocation } from "@acme/convex/places/types";
+import { DEFAULT_POST_DISPLAY_ASPECT_RATIO } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 import { getDisplayErrorMessage } from "@acme/std/display-error";
 import { toast } from "@acme/ui-web/toast";
@@ -20,8 +22,11 @@ function useInternalStore() {
   const navigate = useNavigate();
   const [caption, setCaption] = useState("");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const [displayAspectRatio, setDisplayAspectRatio] =
+    useState<PostDisplayAspectRatio>(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
   const locationResolve = useLocationResolveState({ setLocation });
   const {
     addFiles,
@@ -59,6 +64,8 @@ function useInternalStore() {
       await createPost({
         attachments: uploadedFiles.map((file) => file._id),
         caption: caption.trim() || undefined,
+        displayAspectRatio:
+          uploadedFiles.length > 1 ? displayAspectRatio : undefined,
         location: createPostLocation(location),
       });
       revokeItemPreviewUrls(items);
@@ -78,10 +85,12 @@ function useInternalStore() {
     addFiles,
     canPost,
     caption,
+    displayAspectRatio,
     hasUploadingItems,
     inputRef,
     isConfirmOpen,
     isLocationResolving: locationResolve.isLocationResolving,
+    isPreviewOpen,
     isPosting,
     items,
     location,
@@ -92,7 +101,9 @@ function useInternalStore() {
     clearLocation: locationResolve.clearLocation,
     finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
+    setDisplayAspectRatio,
     setIsConfirmOpen,
+    setIsPreviewOpen,
     setLocation: locationResolve.setLocation,
     startLocationResolve: locationResolve.startLocationResolve,
   };

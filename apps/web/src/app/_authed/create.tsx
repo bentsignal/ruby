@@ -6,12 +6,14 @@ import { LockKeyhole } from "lucide-react";
 
 import { api } from "@acme/convex/api";
 
+import { AspectRatioField } from "~/features/post/create/components/aspect-ratio-field";
 import { CaptionField } from "~/features/post/create/components/caption-field";
 import { CreatePostButton } from "~/features/post/create/components/create-post-button";
 import { LocationField } from "~/features/post/create/components/location-field";
 import { MediaDropzone } from "~/features/post/create/components/media-dropzone";
 import { MediaFileInput } from "~/features/post/create/components/media-file-input";
 import { PostConfirmationDialog } from "~/features/post/create/components/post-confirmation-dialog";
+import { PreviewPostButton } from "~/features/post/create/components/preview-post-button";
 import { MediaGrid } from "~/features/post/create/media-grid/media-grid";
 import { CreateStore, useCreateStore } from "~/features/post/create/store";
 
@@ -46,12 +48,16 @@ function CreateContent() {
         <h1 className="text-foreground text-2xl font-bold">
           Create a new post
         </h1>
-        <CreatePostButton />
+        <div className="flex items-center gap-2">
+          <PreviewPostButton />
+          <CreatePostButton />
+        </div>
       </div>
       <div className="flex flex-col gap-6">
         <MediaFileInput />
         <MediaDropzone />
         <MediaGrid />
+        <AspectRatioField />
         <LocationField />
         <CaptionField />
       </div>

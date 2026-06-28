@@ -5,7 +5,9 @@ import { router } from "expo-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { createStore } from "rostra";
 
+import type { PostDisplayAspectRatio } from "@acme/config/posts";
 import type { ResolvedLocation } from "@acme/convex/places/types";
+import { DEFAULT_POST_DISPLAY_ASPECT_RATIO } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 import { getDisplayErrorMessage } from "@acme/std/display-error";
 
@@ -31,8 +33,11 @@ function useInternalStore() {
     resetCaptionDraft();
     return "";
   });
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [location, setLocation] = useState<ResolvedLocation | null>(null);
+  const [displayAspectRatio, setDisplayAspectRatio] =
+    useState<PostDisplayAspectRatio>(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
   const locationResolve = useLocationResolveState({ setLocation });
   const { resetComposer, resetKey } = useComposerReset({
     setCaptionState,
@@ -41,10 +46,8 @@ function useInternalStore() {
   });
 
   const hasUploadingItems = items.some((item) => item.status === "uploading");
-  const canPost =
-    !isPosting &&
-    !hasUploadingItems &&
-    (items.length > 0 || caption.trim().length > 0);
+  const hasPostContent = items.length > 0 || caption.trim().length > 0;
+  const canPost = !isPosting && !hasUploadingItems && hasPostContent;
 
   function updateItem(itemId: string, patch: Partial<ComposerItem>) {
     setItems((current) =>
@@ -57,10 +60,6 @@ function useInternalStore() {
   function setCaption(nextCaption: string) {
     writeCaptionDraft(nextCaption);
     setCaptionState(nextCaption);
-  }
-
-  function setCaptionDraft(nextCaption: string) {
-    writeCaptionDraft(nextCaption);
   }
 
   function removeItem(itemId: string) {
@@ -85,9 +84,12 @@ function useInternalStore() {
       await createPost({
         attachments: uploadedFiles.map((file) => file._id),
         caption: latestCaption || undefined,
+        displayAspectRatio:
+          uploadedFiles.length > 1 ? displayAspectRatio : undefined,
         location: createPostLocation(location),
       });
       resetComposer();
+      setDisplayAspectRatio(DEFAULT_POST_DISPLAY_ASPECT_RATIO);
       setIsPosting(false);
       router.replace("/home");
     } catch (caughtError) {
@@ -107,7 +109,9 @@ function useInternalStore() {
     canPost,
     caption,
     confirmPost,
+    displayAspectRatio,
     foreground,
+    isPreviewOpen,
     hasUploadingItems,
     isLocationResolving: locationResolve.isLocationResolving,
     isPosting,
@@ -122,7 +126,9 @@ function useInternalStore() {
     clearLocation: locationResolve.clearLocation,
     finishLocationResolve: locationResolve.finishLocationResolve,
     setCaption,
-    setCaptionDraft,
+    setCaptionDraft: writeCaptionDraft,
+    setDisplayAspectRatio,
+    setIsPreviewOpen,
     setLocation: locationResolve.setLocation,
     startLocationResolve: locationResolve.startLocationResolve,
   };
