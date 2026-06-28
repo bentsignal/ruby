@@ -12,6 +12,7 @@ import { getCookie } from "@tanstack/react-start/server";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { convert } from "great-time";
 
+import { createPageTitle } from "@acme/config/title";
 import { cn } from "@acme/std/cn";
 import { Toaster } from "@acme/ui-web/toast";
 
@@ -35,7 +36,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ruby" },
+      { title: createPageTitle() },
       { name: "description", content: "A place to share your adventures." },
       {
         name: "theme-color",
