@@ -1,8 +1,7 @@
 import type { ScrollView } from "react-native";
-import type PagerView from "react-native-pager-view";
+import type { GalleryRefType } from "react-native-zoom-toolkit";
 import { useRef, useState } from "react";
 import { Animated } from "react-native";
-import { Gesture } from "react-native-gesture-handler";
 import { createStore } from "rostra";
 
 import type { PostMediaItem } from "../store";
@@ -20,7 +19,7 @@ function useInternalStore({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  const pagerRef = useRef<PagerView>(null);
+  const galleryRef = useRef<GalleryRefType>(null);
   const thumbnailScrollRef = useRef<ScrollView>(null);
   const [controlsOpacity] = useState(() => new Animated.Value(1));
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -50,43 +49,40 @@ function useInternalStore({
 
   function selectThumbnail(index: number) {
     selectImage(index);
-    pagerRef.current?.setPage(index);
+    galleryRef.current?.setIndex(index);
+    galleryRef.current?.reset(false);
   }
 
   function toggleControls() {
-    setControlsShown(!controlsVisible);
+    setControlsVisible((current) => {
+      const next = !current;
+
+      Animated.timing(controlsOpacity, {
+        duration: 180,
+        toValue: next ? 1 : 0,
+        useNativeDriver: true,
+      }).start();
+
+      return next;
+    });
   }
 
   function handleZoomChange(zoomed: boolean) {
     setIsZoomed(zoomed);
-    if (zoomed && controlsVisible) setControlsShown(false);
+    if (zoomed) setControlsShown(false);
   }
-
-  const dismissGesture = Gesture.Pan()
-    .enabled(!isZoomed)
-    .activeOffsetY([-100_000, 18])
-    .failOffsetX([-28, 28])
-    .runOnJS(true)
-    .onEnd((event) => {
-      const shouldClose =
-        event.translationY > 110 ||
-        (event.translationY > 36 && event.velocityY > 900);
-
-      if (shouldClose) onClose();
-    });
 
   return {
     activeIndex,
     closeButtonTop: insets.top + 8,
     controlsOpacity,
     controlsVisible,
-    dismissGesture,
+    galleryRef,
     handleZoomChange,
     initialIndex,
     isZoomed,
     items,
     onClose,
-    pagerRef,
     selectImage,
     selectThumbnail,
     thumbnailScrollRef,

@@ -63,6 +63,7 @@
     "react-native-screens": "~4.25.2",
     "react-native-svg": "15.15.4",
     "react-native-worklets": "~0.8.3",
+    "react-native-zoom-toolkit": "5.1.0",
     "rostra": "catalog:",
     "superjson": "2.2.3",
     "tailwindcss": "catalog:",
