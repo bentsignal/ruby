@@ -84,3 +84,19 @@ export async function getRelationshipHelper({
     return { relationship: "pending-incoming", friendship };
   return { relationship: null, friendship: null };
 }
+
+export async function canViewPostsByProfile(
+  ctx: AuthedMutationCtx | AuthedQueryCtx,
+  viewerProfileId: Id<"profiles">,
+  creatorProfileId: Id<"profiles">,
+) {
+  if (viewerProfileId === creatorProfileId) return true;
+
+  const { relationship } = await getRelationshipHelper({
+    ctx,
+    profileRequestingInfo: viewerProfileId,
+    otherProfile: creatorProfileId,
+  });
+
+  return relationship === "friends";
+}

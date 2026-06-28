@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { usePaginatedQuery } from "convex/react";
 
+import type { Relationship } from "@acme/convex/friends/types";
 import { POST_FEED_PAGE_SIZE } from "@acme/config/posts";
 import { api } from "@acme/convex/api";
 
@@ -69,7 +70,11 @@ export default function ProfileByUsername() {
 }
 
 function ProfilePostList() {
+  const name = useProfileStore((store) => store.name);
   const username = useProfileStore((store) => store.username);
+  const relationship = useProfileStore((store) => store.relationship);
+  const emptyMessage = getEmptyPostsMessage(relationship, name);
+  const canViewPosts = canViewProfilePosts(relationship);
   const handleScroll = useMobileProfileFeedStore((store) => store.handleScroll);
   const {
     results: posts,
@@ -77,19 +82,26 @@ function ProfilePostList() {
     loadMore,
   } = usePaginatedQuery(
     api.posts.queries.getByUsername,
-    { username, order: "newest first" },
+    canViewPosts ? { username, order: "newest first" } : "skip",
     { initialNumItems: POST_FEED_PAGE_SIZE },
   );
+  const visiblePosts = canViewPosts ? posts : [];
+  const loadingStatus = canViewPosts ? status : "Exhausted";
 
   return (
     <PostListStore
-      loadingStatus={status}
-      loadMore={() => loadMore(POST_FEED_PAGE_SIZE)}
+      loadingStatus={loadingStatus}
+      loadMore={() => {
+        if (canViewPosts) loadMore(POST_FEED_PAGE_SIZE);
+      }}
       onScroll={handleScroll}
-      posts={posts}
+      posts={visiblePosts}
     >
       <View className="relative flex-1">
         <PostList
+          emptyMarker={emptyMessage.marker}
+          emptyText={emptyMessage.description}
+          emptyTitle={emptyMessage.title}
           headerBottomSpacing={16}
           ListHeaderComponent={<ProfileHeader />}
         />
@@ -97,6 +109,46 @@ function ProfilePostList() {
       </View>
     </PostListStore>
   );
+}
+
+function canViewProfilePosts(relationship: Relationship | undefined) {
+  return relationship === "friends" || relationship === "my-profile";
+}
+
+function getEmptyPostsMessage(
+  relationship: Relationship | undefined,
+  name: string,
+) {
+  if (relationship === "friends" || relationship === "my-profile") {
+    return {
+      marker: "dot" as const,
+      title: `${name} hasn't posted yet.`,
+      description: "When they share something, it will show up here.",
+    };
+  }
+
+  if (relationship === "pending-outgoing") {
+    return {
+      marker: "lock" as const,
+      title: `Only friends can see ${name}'s posts.`,
+      description:
+        "Your request is pending. If they accept, you will see what they share here.",
+    };
+  }
+
+  if (relationship === "pending-incoming") {
+    return {
+      marker: "lock" as const,
+      title: `Only friends can see ${name}'s posts.`,
+      description: "Accept their friend request to see what they share here.",
+    };
+  }
+
+  return {
+    marker: "lock" as const,
+    title: `Only friends can see ${name}'s posts.`,
+    description: "Send a friend request to see what they share.",
+  };
 }
 
 function ProfileHeader() {
